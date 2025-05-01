@@ -62,12 +62,14 @@ request.interceptors.response.use(
   (response: AxiosResponse) => {
     const { data } = response;
 
+    // 只要 message 有内容就显示 message
+    if (data.message) {
+      message.error(data.message);
+    }
     // 处理业务状态码
     if (data.code !== 200) {
-      message.error(data.message || "请求失败");
       return Promise.reject(new Error(data.message || "请求失败"));
     }
-
     return data.data;
   },
   (error: AxiosError) => {
