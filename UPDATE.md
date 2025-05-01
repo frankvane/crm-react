@@ -10,7 +10,9 @@
   - 更新了认证存储的登录和刷新令牌逻辑
   - 优化了错误处理，在登录失败时清除可能存在的旧令牌
 - 修复了 TypeScript 项目配置问题
-  - 在 tsconfig.node.json 中添加了 "composite": true 设置
+  - 在 tsconfig.node.json 中添加了 composite 项目所需的配置
+  - 移除了 noEmit 设置，添加了 emitDeclarationOnly
+  - 添加了必要的声明文件生成选项
   - 解决了项目引用配置的错误
 
 ### 代码优化 (refactor)
