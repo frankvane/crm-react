@@ -19,6 +19,7 @@ import {
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import CategoryForm from "./components/CategoryForm";
+import type { ICategoryType } from "@/types/api/category-type";
 import { getCategoryTypes } from "@/api/modules/category-type";
 import styles from "./style.module.less";
 import { useState } from "react";
@@ -188,10 +189,12 @@ const Categories = () => {
             <Select
               placeholder="请选择分类类型"
               allowClear
-              options={categoryTypesData?.data.list.map((type) => ({
-                label: type.name,
-                value: type.id,
-              }))}
+              options={
+                categoryTypesData?.list?.map((type: ICategoryType) => ({
+                  label: type.name,
+                  value: type.id,
+                })) || []
+              }
             />
           </Form.Item>
           <Form.Item name="status" label="状态">
@@ -228,13 +231,13 @@ const Categories = () => {
 
         <Table
           columns={columns}
-          dataSource={categoriesData?.list}
+          dataSource={categoriesData?.data?.list || []}
           rowKey="id"
           loading={isLoading}
           pagination={{
             current: currentPage,
             pageSize,
-            total: categoriesData?.pagination?.total || 0,
+            total: categoriesData?.data?.pagination?.total || 0,
             onChange: (page, size) => {
               setCurrentPage(page);
               setPageSize(size);
