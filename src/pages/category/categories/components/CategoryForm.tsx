@@ -1,187 +1,146 @@
-import { Form, Input, InputNumber, Modal, Select, message } from "antd";
-import type {
-  ICategory,
-  ICategoryTreeNode,
-  ICreateCategoryParams,
-  IUpdateCategoryParams,
-} from "@/types/api/category";
+import { Button, Card, Form, Input, Select, message } from "antd";
 import {
   createCategory,
-  getCategoryTree,
+  getCategory,
   updateCategory,
 } from "@/api/modules/category";
-import { useEffect, useMemo } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useNavigate, useParams } from "react-router-dom";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
+import type { ICategoryType } from "@/types/api/category-type";
+import type { ICreateCategoryParams } from "@/types/api/category";
 import { getCategoryTypes } from "@/api/modules/category-type";
 
-interface ICategoryFormProps {
-  visible: boolean;
-  editingCategory: ICategory | null;
-  onCancel: () => void;
-  onSuccess: () => void;
-}
-
-const CategoryForm: React.FC<ICategoryFormProps> = ({
-  visible,
-  editingCategory,
-  onCancel,
-  onSuccess,
-}) => {
+const CategoryForm = () => {
+  const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
+  const queryClient = useQueryClient();
   const [form] = Form.useForm<ICreateCategoryParams>();
 
-  // 获取分类类型列表
-  const { data: categoryTypesData } = useQuery({
-    queryKey: ["categoryTypes", { page: 1, pageSize: 100 }],
+  const { data: categoryResponse } = useQuery({
+    queryKey: ["category", id],
+    queryFn: () => getCategory(Number(id)),
+    enabled: !!id,
+  });
+
+  const { data: categoryTypesResponse } = useQuery({
+    queryKey: ["categoryTypes"],
     queryFn: () => getCategoryTypes({ page: 1, pageSize: 100 }),
   });
 
-  const categoryTypeOptions = useMemo(() => {
-    return (
-      categoryTypesData?.list?.map((type) => ({
-        label: type.name,
-        value: type.id,
-      })) || []
-    );
-  }, [categoryTypesData]);
+  const categoryData = categoryResponse?.data;
+  const categoryTypes = categoryTypesResponse?.list || [];
 
-  // 获取所有分类树（不依赖 typeId）
-  const { data: categoryTreeData } = useQuery({
-    queryKey: ["categoryTree"],
-    queryFn: () => getCategoryTree(0), // 0 或不传，后端返回所有分类树
-  });
-
-  // 创建分类
-  const createMutation = useMutation({
-    mutationFn: (data: ICreateCategoryParams) => createCategory(data),
-    onSuccess: () => {
-      message.success("创建成功");
-      onSuccess();
-    },
-  });
-
-  // 更新分类
-  const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: number; data: IUpdateCategoryParams }) =>
-      updateCategory(id, data),
-    onSuccess: () => {
-      message.success("更新成功");
-      onSuccess();
-    },
-  });
-
-  // 监听表单可见性变化
-  useEffect(() => {
-    if (visible) {
-      if (editingCategory) {
-        form.setFieldsValue(editingCategory);
-      } else {
-        form.resetFields();
-      }
-    }
-  }, [visible, editingCategory, form]);
-
-  // 处理表单提交
-  const handleSubmit = async () => {
+  const handleSubmit = async (values: ICreateCategoryParams) => {
     try {
-      const values = await form.validateFields();
-      if (editingCategory) {
-        updateMutation.mutate({
-          id: editingCategory.id,
-          data: values,
-        });
+      if (id) {
+        await updateCategory(Number(id), values);
+        message.success("更新成功");
       } else {
-        createMutation.mutate(values);
+        await createCategory(values);
+        message.success("创建成功");
       }
-    } catch (error) {
-      // 表单验证失败
-      console.error("Validate Failed:", error);
+      queryClient.invalidateQueries({ queryKey: ["categoryTree"] });
+      navigate("/category/categories");
+    } catch (err) {
+      message.error(id ? "更新失败" : "创建失败");
+      console.error(err);
     }
-  };
-
-  // 递归构建树形选项
-  interface TreeOption {
-    label: string;
-    value: number;
-    children?: TreeOption[];
-  }
-
-  const buildTreeOptions = (nodes: ICategoryTreeNode[] = []): TreeOption[] => {
-    return nodes.map((node) => ({
-      label: node.name,
-      value: node.id,
-      children: node.children ? buildTreeOptions(node.children) : undefined,
-    }));
   };
 
   return (
-    <Modal
-      title={editingCategory ? "编辑分类" : "新增分类"}
-      open={visible}
-      onCancel={onCancel}
-      onOk={handleSubmit}
-      confirmLoading={createMutation.isPending || updateMutation.isPending}
-    >
-      <Form<ICreateCategoryParams>
+    <Card title={id ? "编辑分类" : "新增分类"}>
+      <Form
         form={form}
         layout="vertical"
-        initialValues={{ status: 1 }}
+        onFinish={handleSubmit}
+        initialValues={
+          id && categoryData
+            ? {
+                name: categoryData.name,
+                code: categoryData.code,
+                description: categoryData.description,
+                status: categoryData.status,
+                parentId: categoryData.parentId,
+                typeId: categoryData.typeId,
+                sort: categoryData.sort,
+              }
+            : {
+                status: 1,
+                parentId: 0,
+                sort: 0,
+              }
+        }
       >
         <Form.Item
-          name="name"
           label="分类名称"
+          name="name"
           rules={[{ required: true, message: "请输入分类名称" }]}
         >
           <Input placeholder="请输入分类名称" />
         </Form.Item>
 
         <Form.Item
-          name="code"
           label="分类编码"
+          name="code"
           rules={[{ required: true, message: "请输入分类编码" }]}
         >
           <Input placeholder="请输入分类编码" />
         </Form.Item>
 
         <Form.Item
-          name="typeId"
           label="分类类型"
+          name="typeId"
           rules={[{ required: true, message: "请选择分类类型" }]}
         >
-          <Select placeholder="请选择分类类型" options={categoryTypeOptions} />
-        </Form.Item>
-
-        <Form.Item name="parentId" label="父级分类">
           <Select
-            placeholder="请选择父级分类"
-            allowClear
-            options={buildTreeOptions(categoryTreeData?.data)}
+            options={categoryTypes.map((type: ICategoryType) => ({
+              label: type.name,
+              value: type.id,
+            }))}
+            placeholder="请选择分类类型"
           />
         </Form.Item>
 
-        <Form.Item name="description" label="描述">
+        <Form.Item label="父级分类" name="parentId">
+          <Select
+            options={[{ label: "无", value: 0 }]}
+            placeholder="请选择父级分类"
+          />
+        </Form.Item>
+
+        <Form.Item label="描述" name="description">
           <Input.TextArea placeholder="请输入描述" />
         </Form.Item>
 
-        <Form.Item name="sort" label="排序">
-          <InputNumber placeholder="请输入排序" style={{ width: "100%" }} />
+        <Form.Item
+          label="排序"
+          name="sort"
+          rules={[{ required: true, message: "请输入排序" }]}
+        >
+          <Input type="number" placeholder="请输入排序" />
         </Form.Item>
 
         <Form.Item
-          name="status"
           label="状态"
+          name="status"
           rules={[{ required: true, message: "请选择状态" }]}
         >
           <Select
-            placeholder="请选择状态"
             options={[
               { label: "启用", value: 1 },
               { label: "禁用", value: 0 },
             ]}
           />
         </Form.Item>
+
+        <Form.Item>
+          <Button type="primary" htmlType="submit">
+            {id ? "更新" : "创建"}
+          </Button>
+        </Form.Item>
       </Form>
-    </Modal>
+    </Card>
   );
 };
 
