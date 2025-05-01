@@ -1,4 +1,4 @@
-import { Button, Card, Modal, Tree, message } from "antd";
+import { Button, Card, Modal, Tabs, Tree, message } from "antd";
 import {
   DeleteOutlined,
   EditOutlined,
@@ -12,6 +12,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import CategoryForm from "./components/CategoryForm";
 import type { DataNode } from "antd/es/tree";
 import type { ICategoryTreeResponse } from "@/types/api/category";
+import type { ICategoryType } from "@/types/api/category-type";
+import { getAllCategoryTypes } from "@/api/modules/category-type";
 
 interface ModalState {
   visible: boolean;
@@ -25,10 +27,26 @@ const Categories = () => {
     visible: false,
     type: "add",
   });
+  const [activeTypeId, setActiveTypeId] = useState<number>();
 
+  // 获取所有分类类型
+  const { data: categoryTypes } = useQuery<ICategoryType[]>({
+    queryKey: ["categoryTypes"],
+    queryFn: getAllCategoryTypes,
+  });
+
+  // 设置默认选中的分类类型
+  useMemo(() => {
+    if (categoryTypes?.length && !activeTypeId) {
+      setActiveTypeId(categoryTypes[0].id);
+    }
+  }, [categoryTypes, activeTypeId]);
+
+  // 获取指定类型的分类树
   const { data: categoryTreeResponse } = useQuery<ICategoryTreeResponse>({
-    queryKey: ["categoryTree"],
-    queryFn: () => getCategoryTree(0),
+    queryKey: ["categoryTree", activeTypeId],
+    queryFn: () => getCategoryTree(activeTypeId as number),
+    enabled: !!activeTypeId,
   });
 
   const treeData = useMemo(() => {
@@ -103,7 +121,9 @@ const Categories = () => {
     try {
       await deleteCategory(id);
       message.success("删除成功");
-      queryClient.invalidateQueries({ queryKey: ["categoryTree"] });
+      queryClient.invalidateQueries({
+        queryKey: ["categoryTree", activeTypeId],
+      });
     } catch (err) {
       message.error("删除失败");
       console.error(err);
@@ -125,28 +145,39 @@ const Categories = () => {
 
   return (
     <>
-      <Card
-        title="分类列表"
-        extra={
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={() => {
-              setModal({
-                visible: true,
-                type: "add",
-              });
-            }}
-          >
-            新增分类
-          </Button>
-        }
-      >
-        <Tree
-          treeData={treeData}
-          defaultExpandAll
-          showLine={{ showLeafIcon: false }}
-          blockNode
+      <Card title="分类列表">
+        <Tabs
+          activeKey={activeTypeId?.toString()}
+          onChange={(key) => setActiveTypeId(Number(key))}
+          tabBarExtraContent={
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={() => {
+                setModal({
+                  visible: true,
+                  type: "add",
+                });
+              }}
+              disabled={!activeTypeId}
+            >
+              新增分类
+            </Button>
+          }
+          items={
+            categoryTypes?.map((type) => ({
+              key: type.id.toString(),
+              label: type.name,
+              children: (
+                <Tree
+                  treeData={treeData}
+                  defaultExpandAll
+                  showLine={{ showLeafIcon: false }}
+                  blockNode
+                />
+              ),
+            })) || []
+          }
         />
       </Card>
 
@@ -161,9 +192,12 @@ const Categories = () => {
         <CategoryForm
           id={modal.type === "edit" ? modal.categoryId : undefined}
           parentId={modal.type === "addSub" ? modal.categoryId : undefined}
+          typeId={activeTypeId}
           onSuccess={() => {
             setModal({ visible: false, type: "add" });
-            queryClient.invalidateQueries({ queryKey: ["categoryTree"] });
+            queryClient.invalidateQueries({
+              queryKey: ["categoryTree", activeTypeId],
+            });
           }}
         />
       </Modal>

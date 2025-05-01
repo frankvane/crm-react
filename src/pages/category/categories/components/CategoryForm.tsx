@@ -1,4 +1,4 @@
-import { Button, Form, Input, Select, Space, message } from "antd";
+import { Button, Form, Input, Space, message } from "antd";
 import {
   createCategory,
   getCategory,
@@ -7,16 +7,22 @@ import {
 
 import type { ICategoryType } from "@/types/api/category-type";
 import type { ICreateCategoryParams } from "@/types/api/category";
-import { getCategoryTypes } from "@/api/modules/category-type";
+import { getAllCategoryTypes } from "@/api/modules/category-type";
 import { useQuery } from "@tanstack/react-query";
 
 interface CategoryFormProps {
   id?: number;
   parentId?: number;
+  typeId?: number;
   onSuccess?: () => void;
 }
 
-const CategoryForm = ({ id, parentId, onSuccess }: CategoryFormProps) => {
+const CategoryForm = ({
+  id,
+  parentId,
+  typeId,
+  onSuccess,
+}: CategoryFormProps) => {
   const [form] = Form.useForm<ICreateCategoryParams>();
 
   const { data: categoryData } = useQuery({
@@ -25,20 +31,37 @@ const CategoryForm = ({ id, parentId, onSuccess }: CategoryFormProps) => {
     enabled: !!id,
   });
 
-  const { data: categoryTypesResponse } = useQuery({
-    queryKey: ["categoryTypes"],
-    queryFn: () => getCategoryTypes({ page: 1, pageSize: 100 }),
+  // 获取父级分类信息
+  // 如果是编辑模式，使用 categoryData 中的 parentId
+  // 如果是新增子分类模式，使用传入的 parentId
+  const effectiveParentId = id ? categoryData?.parentId : parentId;
+
+  const { data: parentCategory } = useQuery({
+    queryKey: ["category", effectiveParentId],
+    queryFn: () => getCategory(Number(effectiveParentId)),
+    enabled: !!effectiveParentId,
   });
 
-  const categoryTypes = categoryTypesResponse?.list || [];
+  const { data: categoryTypes } = useQuery<ICategoryType[]>({
+    queryKey: ["categoryTypes"],
+    queryFn: getAllCategoryTypes,
+  });
+
+  const currentType = categoryTypes?.find((type) => type.id === typeId);
 
   const handleSubmit = async (values: ICreateCategoryParams) => {
     try {
+      const submitData = {
+        ...values,
+        typeId: typeId as number,
+        parentId: effectiveParentId || undefined,
+      };
+
       if (id) {
-        await updateCategory(id, values);
+        await updateCategory(id, submitData);
         message.success("更新成功");
       } else {
-        await createCategory(values);
+        await createCategory(submitData);
         message.success("创建成功");
       }
       onSuccess?.();
@@ -59,12 +82,9 @@ const CategoryForm = ({ id, parentId, onSuccess }: CategoryFormProps) => {
               name: categoryData.name,
               code: categoryData.code,
               description: categoryData.description,
-              parentId: categoryData.parentId,
-              typeId: categoryData.typeId,
               sort: categoryData.sort,
             }
           : {
-              parentId: parentId ?? null,
               sort: 0,
             }
       }
@@ -85,24 +105,14 @@ const CategoryForm = ({ id, parentId, onSuccess }: CategoryFormProps) => {
         <Input placeholder="请输入分类编码" />
       </Form.Item>
 
-      <Form.Item
-        label="分类类型"
-        name="typeId"
-        rules={[{ required: true, message: "请选择分类类型" }]}
-      >
-        <Select
-          options={categoryTypes.map((type: ICategoryType) => ({
-            label: type.name,
-            value: type.id,
-          }))}
-          placeholder="请选择分类类型"
-        />
+      <Form.Item label="分类类型">
+        <Input value={currentType?.name} disabled />
       </Form.Item>
 
-      <Form.Item label="父级分类" name="parentId">
-        <Select
-          options={[{ label: "无", value: null }]}
-          placeholder="请选择父级分类"
+      <Form.Item label="父级分类">
+        <Input
+          value={parentCategory ? parentCategory.name : "无（顶级分类）"}
+          disabled
         />
       </Form.Item>
 
