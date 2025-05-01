@@ -1,0 +1,26 @@
+{
+    "sourceFile": "tsconfig.node.json",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 2,
+            "patches": [
+                {
+                    "date": 1746097334320,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1746097388441,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -10,14 +10,18 @@\n     \"moduleResolution\": \"bundler\",\n     \"allowImportingTsExtensions\": true,\n     \"isolatedModules\": true,\n     \"moduleDetection\": \"force\",\n-    \"noEmit\": true,\n \n     /* Linting */\n     \"strict\": true,\n     \"noUnusedLocals\": true,\n     \"noUnusedParameters\": true,\n-    \"noFallthroughCasesInSwitch\": true\n+    \"noFallthroughCasesInSwitch\": true,\n+\n+    /* Composite Project */\n+    \"declaration\": true,\n+    \"declarationMap\": true,\n+    \"sourceMap\": true\n   },\n   \"include\": [\"vite.config.ts\"]\n }\n"
+                },
+                {
+                    "date": 1746097397483,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -20,8 +20,9 @@\n \n     /* Composite Project */\n     \"declaration\": true,\n     \"declarationMap\": true,\n-    \"sourceMap\": true\n+    \"sourceMap\": true,\n+    \"emitDeclarationOnly\": true\n   },\n   \"include\": [\"vite.config.ts\"]\n }\n"
+                }
+            ],
+            "date": 1746097334320,
+            "name": "Commit-0",
+            "content": "{\n  \"compilerOptions\": {\n    \"composite\": true,\n    \"target\": \"ES2022\",\n    \"lib\": [\"ES2023\"],\n    \"module\": \"ESNext\",\n    \"skipLibCheck\": true,\n\n    /* Bundler mode */\n    \"moduleResolution\": \"bundler\",\n    \"allowImportingTsExtensions\": true,\n    \"isolatedModules\": true,\n    \"moduleDetection\": \"force\",\n    \"noEmit\": true,\n\n    /* Linting */\n    \"strict\": true,\n    \"noUnusedLocals\": true,\n    \"noUnusedParameters\": true,\n    \"noFallthroughCasesInSwitch\": true\n  },\n  \"include\": [\"vite.config.ts\"]\n}\n"
+        }
+    ]
+}

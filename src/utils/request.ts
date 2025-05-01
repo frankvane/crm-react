@@ -61,11 +61,6 @@ request.interceptors.request.use(
 request.interceptors.response.use(
   (response: AxiosResponse) => {
     const { data } = response;
-
-    // 只要 message 有内容就显示 message
-    if (data.message) {
-      message.error(data.message);
-    }
     // 处理业务状态码
     if (data.code !== 200) {
       return Promise.reject(new Error(data.message || "请求失败"));
@@ -74,27 +69,26 @@ request.interceptors.response.use(
   },
   (error: AxiosError) => {
     if (error.response) {
-      const { status } = error.response;
-
+      const { status, data } = error.response as any;
+      const apiMessage = data && data.message;
       switch (status) {
         case 403:
-          message.error("拒绝访问");
+          message.error(apiMessage || "拒绝访问");
           break;
         case 404:
-          message.error("请求的资源不存在");
+          message.error(apiMessage || "请求的资源不存在");
           break;
         case 500:
-          message.error("服务器错误");
+          message.error(apiMessage || "服务器错误");
           break;
         default:
-          message.error("网络错误");
+          message.error(apiMessage || "网络错误");
       }
     } else if (error.request) {
       message.error("网络连接失败，请检查网络");
     } else {
       message.error("请求失败");
     }
-
     return Promise.reject(error);
   }
 );

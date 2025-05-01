@@ -1,0 +1,26 @@
+{
+    "sourceFile": "src/types/api/role.ts",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 2,
+            "patches": [
+                {
+                    "date": 1746087703693,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1746088927642,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -37,5 +37,5 @@\n // 分配资源参数\r\n export interface IAssignResourcesParams {\r\n   roleId: number;\r\n   resourceIds: number[];\r\n-} \n\\ No newline at end of file\n+}\r\n"
+                },
+                {
+                    "date": 1746097548016,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,9 +6,9 @@\n   name: string;\r\n   code: string;\r\n   description: string;\r\n   resourceIds: number[];\r\n-  status: boolean;\r\n+  status: number;\r\n   createdAt: string;\r\n   updatedAt: string;\r\n }\r\n \r\n@@ -17,9 +17,9 @@\n   name: string;\r\n   code: string;\r\n   description: string;\r\n   resourceIds: number[];\r\n-  status: boolean;\r\n+  status: number;\r\n }\r\n \r\n // 更新角色参数\r\n export type IUpdateRoleParams = ICreateRoleParams;\r\n@@ -27,9 +27,9 @@\n // 角色查询参数\r\n export interface IRoleQueryParams extends IPaginationParams {\r\n   name?: string;\r\n   code?: string;\r\n-  status?: boolean;\r\n+  status?: number;\r\n }\r\n \r\n // 角色列表响应\r\n export type IRoleListResponse = IPaginationResponse<IRole>;\r\n"
+                }
+            ],
+            "date": 1746087703693,
+            "name": "Commit-0",
+            "content": "import type { IPaginationParams, IPaginationResponse } from \"./common\";\r\n\r\n// 角色接口\r\nexport interface IRole {\r\n  id: number;\r\n  name: string;\r\n  code: string;\r\n  description: string;\r\n  resourceIds: number[];\r\n  status: boolean;\r\n  createdAt: string;\r\n  updatedAt: string;\r\n}\r\n\r\n// 创建角色参数\r\nexport interface ICreateRoleParams {\r\n  name: string;\r\n  code: string;\r\n  description: string;\r\n  resourceIds: number[];\r\n  status: boolean;\r\n}\r\n\r\n// 更新角色参数\r\nexport type IUpdateRoleParams = ICreateRoleParams;\r\n\r\n// 角色查询参数\r\nexport interface IRoleQueryParams extends IPaginationParams {\r\n  name?: string;\r\n  code?: string;\r\n  status?: boolean;\r\n}\r\n\r\n// 角色列表响应\r\nexport type IRoleListResponse = IPaginationResponse<IRole>;\r\n\r\n// 分配资源参数\r\nexport interface IAssignResourcesParams {\r\n  roleId: number;\r\n  resourceIds: number[];\r\n} "
+        }
+    ]
+}

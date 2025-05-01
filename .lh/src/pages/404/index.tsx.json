@@ -1,0 +1,18 @@
+{
+    "sourceFile": "src/pages/404/index.tsx",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1746090732276,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1746090732276,
+            "name": "Commit-0",
+            "content": "import { Button, Result } from \"antd\";\r\n\r\nimport React from \"react\";\r\nimport { useNavigate } from \"react-router-dom\";\r\n\r\nconst NotFound: React.FC = () => {\r\n  const navigate = useNavigate();\r\n\r\n  return (\r\n    <Result\r\n      status=\"404\"\r\n      title=\"404\"\r\n      subTitle=\"抱歉，您访问的页面不存在。\"\r\n      extra={\r\n        <Button type=\"primary\" onClick={() => navigate(\"/app/dashboard\")}>\r\n          返回首页\r\n        </Button>\r\n      }\r\n    />\r\n  );\r\n};\r\n\r\nexport default NotFound;\r\n"
+        }
+    ]
+}

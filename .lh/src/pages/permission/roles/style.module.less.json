@@ -1,0 +1,22 @@
+{
+    "sourceFile": "src/pages/permission/roles/style.module.less",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1746087818335,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1746088912449,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -15,5 +15,5 @@\n .tableHeader {\r\n   margin-bottom: 16px;\r\n   display: flex;\r\n   justify-content: flex-end;\r\n-} \n\\ No newline at end of file\n+}\r\n"
+                }
+            ],
+            "date": 1746087818335,
+            "name": "Commit-0",
+            "content": ".container {\r\n  padding: 24px;\r\n\r\n  :global {\r\n    .ant-card {\r\n      min-height: calc(100vh - 48px);\r\n    }\r\n  }\r\n}\r\n\r\n.searchForm {\r\n  margin-bottom: 24px;\r\n}\r\n\r\n.tableHeader {\r\n  margin-bottom: 16px;\r\n  display: flex;\r\n  justify-content: flex-end;\r\n} "
+        }
+    ]
+}

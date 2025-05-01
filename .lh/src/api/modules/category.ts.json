@@ -1,0 +1,46 @@
+{
+    "sourceFile": "src/api/modules/category.ts",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 7,
+            "patches": [
+                {
+                    "date": 1746088215680,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1746088927384,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -46,16 +46,14 @@\n   return request.put(`/categories/${id}`, data);\r\n };\r\n \r\n // 删除分类\r\n-export const deleteCategory = async (\r\n-  id: number\r\n-): Promise<IResponse<null>> => {\r\n+export const deleteCategory = async (id: number): Promise<IResponse<null>> => {\r\n   return request.delete(`/categories/${id}`);\r\n };\r\n \r\n // 切换分类状态\r\n export const toggleCategoryStatus = async (\r\n   id: number\r\n ): Promise<IResponse<ICategory>> => {\r\n   return request.patch(`/categories/${id}/toggle-status`);\r\n\\ No newline at end of file\n-}; \n+};\r\n"
+                },
+                {
+                    "date": 1746099041331,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -55,5 +55,5 @@\n export const toggleCategoryStatus = async (\r\n   id: number\r\n ): Promise<IResponse<ICategory>> => {\r\n   return request.patch(`/categories/${id}/toggle-status`);\r\n-};\n\\ No newline at end of file\n+};\r\n"
+                },
+                {
+                    "date": 1746111164328,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -49,11 +49,4 @@\n // 删除分类\r\n export const deleteCategory = async (id: number): Promise<IResponse<null>> => {\r\n   return request.delete(`/categories/${id}`);\r\n };\r\n-\r\n-// 切换分类状态\r\n-export const toggleCategoryStatus = async (\r\n-  id: number\r\n-): Promise<IResponse<ICategory>> => {\r\n-  return request.patch(`/categories/${id}/toggle-status`);\r\n-};\r\n"
+                },
+                {
+                    "date": 1746112914697,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -20,9 +20,9 @@\n // 获取分类树\r\n export const getCategoryTree = async (\r\n   typeId: number\r\n ): Promise<IResponse<ICategoryTreeResponse>> => {\r\n-  return request.get(`/categories/tree/${typeId}`);\r\n+  return request.get(`/categories/tree?typeId=${typeId}`);\r\n };\r\n \r\n // 获取单个分类\r\n export const getCategory = async (\r\n"
+                },
+                {
+                    "date": 1746113094546,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -12,41 +12,41 @@\n \r\n // 获取分类列表\r\n export const getCategories = async (\r\n   params: ICategoryQueryParams\r\n-): Promise<IResponse<ICategoryListResponse>> => {\r\n+): Promise<ICategoryListResponse> => {\r\n   return request.get(\"/categories\", { params });\r\n };\r\n \r\n // 获取分类树\r\n export const getCategoryTree = async (\r\n   typeId: number\r\n-): Promise<IResponse<ICategoryTreeResponse>> => {\r\n+): Promise<ICategoryTreeResponse> => {\r\n   return request.get(`/categories/tree?typeId=${typeId}`);\r\n };\r\n \r\n // 获取单个分类\r\n export const getCategory = async (\r\n   id: number\r\n-): Promise<IResponse<ICategory>> => {\r\n+): Promise<ICategory> => {\r\n   return request.get(`/categories/${id}`);\r\n };\r\n \r\n // 创建分类\r\n export const createCategory = async (\r\n   data: ICreateCategoryParams\r\n-): Promise<IResponse<ICategory>> => {\r\n+): Promise<ICategory> => {\r\n   return request.post(\"/categories\", data);\r\n };\r\n \r\n // 更新分类\r\n export const updateCategory = async (\r\n   id: number,\r\n   data: IUpdateCategoryParams\r\n-): Promise<IResponse<ICategory>> => {\r\n+): Promise<ICategory> => {\r\n   return request.put(`/categories/${id}`, data);\r\n };\r\n \r\n // 删除分类\r\n-export const deleteCategory = async (id: number): Promise<IResponse<null>> => {\r\n+export const deleteCategory = async (id: number): Promise<null> => {\r\n   return request.delete(`/categories/${id}`);\r\n };\r\n"
+                },
+                {
+                    "date": 1746113110448,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,9 +6,8 @@\n   ICreateCategoryParams,\r\n   IUpdateCategoryParams,\r\n } from \"@/types/api/category\";\r\n \r\n-import type { IResponse } from \"@/types/api/common\";\r\n import request from \"@/utils/request\";\r\n \r\n // 获取分类列表\r\n export const getCategories = async (\r\n"
+                },
+                {
+                    "date": 1746113130229,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -23,11 +23,9 @@\n   return request.get(`/categories/tree?typeId=${typeId}`);\r\n };\r\n \r\n // 获取单个分类\r\n-export const getCategory = async (\r\n-  id: number\r\n-): Promise<ICategory> => {\r\n+export const getCategory = async (id: number): Promise<ICategory> => {\r\n   return request.get(`/categories/${id}`);\r\n };\r\n \r\n // 创建分类\r\n"
+                }
+            ],
+            "date": 1746088215680,
+            "name": "Commit-0",
+            "content": "import type {\r\n  ICategory,\r\n  ICategoryListResponse,\r\n  ICategoryQueryParams,\r\n  ICategoryTreeResponse,\r\n  ICreateCategoryParams,\r\n  IUpdateCategoryParams,\r\n} from \"@/types/api/category\";\r\n\r\nimport type { IResponse } from \"@/types/api/common\";\r\nimport request from \"@/utils/request\";\r\n\r\n// 获取分类列表\r\nexport const getCategories = async (\r\n  params: ICategoryQueryParams\r\n): Promise<IResponse<ICategoryListResponse>> => {\r\n  return request.get(\"/categories\", { params });\r\n};\r\n\r\n// 获取分类树\r\nexport const getCategoryTree = async (\r\n  typeId: number\r\n): Promise<IResponse<ICategoryTreeResponse>> => {\r\n  return request.get(`/categories/tree/${typeId}`);\r\n};\r\n\r\n// 获取单个分类\r\nexport const getCategory = async (\r\n  id: number\r\n): Promise<IResponse<ICategory>> => {\r\n  return request.get(`/categories/${id}`);\r\n};\r\n\r\n// 创建分类\r\nexport const createCategory = async (\r\n  data: ICreateCategoryParams\r\n): Promise<IResponse<ICategory>> => {\r\n  return request.post(\"/categories\", data);\r\n};\r\n\r\n// 更新分类\r\nexport const updateCategory = async (\r\n  id: number,\r\n  data: IUpdateCategoryParams\r\n): Promise<IResponse<ICategory>> => {\r\n  return request.put(`/categories/${id}`, data);\r\n};\r\n\r\n// 删除分类\r\nexport const deleteCategory = async (\r\n  id: number\r\n): Promise<IResponse<null>> => {\r\n  return request.delete(`/categories/${id}`);\r\n};\r\n\r\n// 切换分类状态\r\nexport const toggleCategoryStatus = async (\r\n  id: number\r\n): Promise<IResponse<ICategory>> => {\r\n  return request.patch(`/categories/${id}/toggle-status`);\r\n}; "
+        }
+    ]
+}

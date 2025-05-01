@@ -1,0 +1,38 @@
+{
+    "sourceFile": "src/types/api/category-type.ts",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 5,
+            "patches": [
+                {
+                    "date": 1746088048289,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1746088927412,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -29,5 +29,5 @@\n   status?: boolean;\r\n }\r\n \r\n // 分类类型列表响应\r\n-export type ICategoryTypeListResponse = IPaginationResponse<ICategoryType>; \n\\ No newline at end of file\n+export type ICategoryTypeListResponse = IPaginationResponse<ICategoryType>;\r\n"
+                },
+                {
+                    "date": 1746097819073,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -5,9 +5,9 @@\n   id: number;\r\n   name: string;\r\n   code: string;\r\n   description?: string;\r\n-  status: boolean;\r\n+  status: number;\r\n   createdAt: string;\r\n   updatedAt: string;\r\n }\r\n \r\n@@ -15,9 +15,9 @@\n export interface ICreateCategoryTypeParams {\r\n   name: string;\r\n   code: string;\r\n   description?: string;\r\n-  status: boolean;\r\n+  status: number;\r\n }\r\n \r\n // 更新分类类型参数\r\n export type IUpdateCategoryTypeParams = ICreateCategoryTypeParams;\r\n@@ -25,9 +25,9 @@\n // 分类类型查询参数\r\n export interface ICategoryTypeQueryParams extends IPaginationParams {\r\n   name?: string;\r\n   code?: string;\r\n-  status?: boolean;\r\n+  status?: number;\r\n }\r\n \r\n // 分类类型列表响应\r\n export type ICategoryTypeListResponse = IPaginationResponse<ICategoryType>;\r\n"
+                },
+                {
+                    "date": 1746111050989,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -5,9 +5,8 @@\n   id: number;\r\n   name: string;\r\n   code: string;\r\n   description?: string;\r\n-  status: number;\r\n   createdAt: string;\r\n   updatedAt: string;\r\n }\r\n \r\n@@ -15,9 +14,8 @@\n export interface ICreateCategoryTypeParams {\r\n   name: string;\r\n   code: string;\r\n   description?: string;\r\n-  status: number;\r\n }\r\n \r\n // 更新分类类型参数\r\n export type IUpdateCategoryTypeParams = ICreateCategoryTypeParams;\r\n"
+                },
+                {
+                    "date": 1746140195167,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -5,8 +5,9 @@\n   id: number;\r\n   name: string;\r\n   code: string;\r\n   description?: string;\r\n+  status: boolean;\r\n   createdAt: string;\r\n   updatedAt: string;\r\n }\r\n \r\n@@ -20,11 +21,23 @@\n // 更新分类类型参数\r\n export type IUpdateCategoryTypeParams = ICreateCategoryTypeParams;\r\n \r\n // 分类类型查询参数\r\n-export interface ICategoryTypeQueryParams extends IPaginationParams {\r\n+export interface ICategoryTypeQueryParams {\r\n+  page?: number;\r\n+  pageSize?: number;\r\n+  search?: string;\r\n   name?: string;\r\n   code?: string;\r\n+  description?: string;\r\n+  status?: boolean;\r\n }\r\n \r\n // 分类类型列表响应\r\n-export type ICategoryTypeListResponse = IPaginationResponse<ICategoryType>;\r\n+export interface ICategoryTypeListResponse {\r\n+  list: ICategoryType[];\r\n+  pagination: {\r\n+    total: number;\r\n+    page: number;\r\n+    pageSize: number;\r\n+  };\r\n+}\r\n"
+                },
+                {
+                    "date": 1746140204626,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,4 @@\n-import type { IPaginationParams, IPaginationResponse } from \"./common\";\r\n-\r\n-// 分类类型接口\r\n export interface ICategoryType {\r\n   id: number;\r\n   name: string;\r\n   code: string;\r\n"
+                }
+            ],
+            "date": 1746088048289,
+            "name": "Commit-0",
+            "content": "import type { IPaginationParams, IPaginationResponse } from \"./common\";\r\n\r\n// 分类类型接口\r\nexport interface ICategoryType {\r\n  id: number;\r\n  name: string;\r\n  code: string;\r\n  description?: string;\r\n  status: boolean;\r\n  createdAt: string;\r\n  updatedAt: string;\r\n}\r\n\r\n// 创建分类类型参数\r\nexport interface ICreateCategoryTypeParams {\r\n  name: string;\r\n  code: string;\r\n  description?: string;\r\n  status: boolean;\r\n}\r\n\r\n// 更新分类类型参数\r\nexport type IUpdateCategoryTypeParams = ICreateCategoryTypeParams;\r\n\r\n// 分类类型查询参数\r\nexport interface ICategoryTypeQueryParams extends IPaginationParams {\r\n  name?: string;\r\n  code?: string;\r\n  status?: boolean;\r\n}\r\n\r\n// 分类类型列表响应\r\nexport type ICategoryTypeListResponse = IPaginationResponse<ICategoryType>; "
+        }
+    ]
+}

@@ -1,0 +1,22 @@
+{
+    "sourceFile": "src/pages/category/category-types/style.module.less",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1746090551236,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1746137271560,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -3,14 +3,21 @@\n \r\n   :global(.ant-card) {\r\n     min-height: calc(100vh - 48px);\r\n   }\r\n+\r\n+  :global {\r\n+    .ant-form {\r\n+      margin-bottom: 24px;\r\n+    }\r\n+  }\r\n }\r\n \r\n .searchForm {\r\n   margin-bottom: 24px;\r\n }\r\n \r\n .tableHeader {\r\n+  margin-bottom: 16px;\r\n   display: flex;\r\n   justify-content: flex-end;\r\n }\r\n"
+                }
+            ],
+            "date": 1746090551236,
+            "name": "Commit-0",
+            "content": ".container {\r\n  padding: 24px;\r\n\r\n  :global(.ant-card) {\r\n    min-height: calc(100vh - 48px);\r\n  }\r\n}\r\n\r\n.searchForm {\r\n  margin-bottom: 24px;\r\n}\r\n\r\n.tableHeader {\r\n  display: flex;\r\n  justify-content: flex-end;\r\n}\r\n"
+        }
+    ]
+}

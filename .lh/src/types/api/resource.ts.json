@@ -1,0 +1,26 @@
+{
+    "sourceFile": "src/types/api/resource.ts",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 2,
+            "patches": [
+                {
+                    "date": 1746087860111,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1746088927468,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -55,5 +55,5 @@\n   children?: IResourceTreeNode[];\r\n }\r\n \r\n // 资源树响应\r\n-export type IResourceTreeResponse = IResourceTreeNode[]; \n\\ No newline at end of file\n+export type IResourceTreeResponse = IResourceTreeNode[];\r\n"
+                },
+                {
+                    "date": 1746097680628,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -17,9 +17,9 @@\n   method?: string;\r\n   icon?: string;\r\n   parentId?: number;\r\n   sort: number;\r\n-  status: boolean;\r\n+  status: number;\r\n   createdAt: string;\r\n   updatedAt: string;\r\n }\r\n \r\n@@ -32,9 +32,9 @@\n   method?: string;\r\n   icon?: string;\r\n   parentId?: number;\r\n   sort: number;\r\n-  status: boolean;\r\n+  status: number;\r\n }\r\n \r\n // 更新资源参数\r\n export type IUpdateResourceParams = ICreateResourceParams;\r\n@@ -43,9 +43,9 @@\n export interface IResourceQueryParams extends IPaginationParams {\r\n   name?: string;\r\n   code?: string;\r\n   type?: ResourceType;\r\n-  status?: boolean;\r\n+  status?: number;\r\n }\r\n \r\n // 资源列表响应\r\n export type IResourceListResponse = IPaginationResponse<IResource>;\r\n"
+                }
+            ],
+            "date": 1746087860111,
+            "name": "Commit-0",
+            "content": "import type { IPaginationParams, IPaginationResponse } from \"./common\";\r\n\r\n// 资源类型枚举\r\nexport enum ResourceType {\r\n  MENU = \"MENU\",\r\n  BUTTON = \"BUTTON\",\r\n  API = \"API\",\r\n}\r\n\r\n// 资源接口\r\nexport interface IResource {\r\n  id: number;\r\n  name: string;\r\n  code: string;\r\n  type: ResourceType;\r\n  path?: string;\r\n  method?: string;\r\n  icon?: string;\r\n  parentId?: number;\r\n  sort: number;\r\n  status: boolean;\r\n  createdAt: string;\r\n  updatedAt: string;\r\n}\r\n\r\n// 创建资源参数\r\nexport interface ICreateResourceParams {\r\n  name: string;\r\n  code: string;\r\n  type: ResourceType;\r\n  path?: string;\r\n  method?: string;\r\n  icon?: string;\r\n  parentId?: number;\r\n  sort: number;\r\n  status: boolean;\r\n}\r\n\r\n// 更新资源参数\r\nexport type IUpdateResourceParams = ICreateResourceParams;\r\n\r\n// 资源查询参数\r\nexport interface IResourceQueryParams extends IPaginationParams {\r\n  name?: string;\r\n  code?: string;\r\n  type?: ResourceType;\r\n  status?: boolean;\r\n}\r\n\r\n// 资源列表响应\r\nexport type IResourceListResponse = IPaginationResponse<IResource>;\r\n\r\n// 资源树节点\r\nexport interface IResourceTreeNode extends IResource {\r\n  children?: IResourceTreeNode[];\r\n}\r\n\r\n// 资源树响应\r\nexport type IResourceTreeResponse = IResourceTreeNode[]; "
+        }
+    ]
+}

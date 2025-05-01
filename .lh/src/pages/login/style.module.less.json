@@ -1,0 +1,22 @@
+{
+    "sourceFile": "src/pages/login/style.module.less",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1746087011247,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1746089185091,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,20 +0,0 @@\n-.container {\r\n-  display: flex;\r\n-  justify-content: center;\r\n-  align-items: center;\r\n-  min-height: 100vh;\r\n-  background: #f0f2f5;\r\n-}\r\n-\r\n-.card {\r\n-  width: 100%;\r\n-  max-width: 400px;\r\n-\r\n-  :global {\r\n-    .ant-card-head-title {\r\n-      text-align: center;\r\n-      font-size: 24px;\r\n-      font-weight: bold;\r\n-    }\r\n-  }\r\n-}\r\n\\ No newline at end of file\n"
+                }
+            ],
+            "date": 1746087011247,
+            "name": "Commit-0",
+            "content": ".container {\r\n  display: flex;\r\n  justify-content: center;\r\n  align-items: center;\r\n  min-height: 100vh;\r\n  background: #f0f2f5;\r\n}\r\n\r\n.card {\r\n  width: 100%;\r\n  max-width: 400px;\r\n\r\n  :global {\r\n    .ant-card-head-title {\r\n      text-align: center;\r\n      font-size: 24px;\r\n      font-weight: bold;\r\n    }\r\n  }\r\n}\r\n"
+        }
+    ]
+}

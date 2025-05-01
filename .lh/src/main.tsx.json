@@ -1,0 +1,18 @@
+{
+    "sourceFile": "src/main.tsx",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1746086915750,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1746086915750,
+            "name": "Commit-0",
+            "content": "import \"./assets/styles/global.less\";\n\nimport { QueryClient, QueryClientProvider } from \"@tanstack/react-query\";\n\nimport App from \"./App\";\nimport { BrowserRouter } from \"react-router-dom\";\nimport { ConfigProvider } from \"antd\";\nimport React from \"react\";\nimport ReactDOM from \"react-dom/client\";\nimport { ReactQueryDevtools } from \"@tanstack/react-query-devtools\";\nimport zhCN from \"antd/locale/zh_CN\";\n\nconst queryClient = new QueryClient({\n  defaultOptions: {\n    queries: {\n      refetchOnWindowFocus: false,\n      retry: false,\n    },\n  },\n});\n\nReactDOM.createRoot(document.getElementById(\"root\")!).render(\n  <React.StrictMode>\n    <QueryClientProvider client={queryClient}>\n      <ConfigProvider locale={zhCN}>\n        <BrowserRouter>\n          <App />\n        </BrowserRouter>\n      </ConfigProvider>\n      <ReactQueryDevtools initialIsOpen={false} />\n    </QueryClientProvider>\n  </React.StrictMode>\n);\n"
+        }
+    ]
+}

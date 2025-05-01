@@ -1,0 +1,22 @@
+{
+    "sourceFile": "src/pages/dashboard/index.tsx",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1746088672596,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1746088927327,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -55,19 +55,15 @@\n       </Row>\r\n \r\n       <Row gutter={[24, 24]} className={styles.charts}>\r\n         <Col xs={24} lg={12}>\r\n-          <Card title=\"访问量趋势\">\r\n-            {/* 这里可以添加访问量趋势图表 */}\r\n-          </Card>\r\n+          <Card title=\"访问量趋势\">{/* 这里可以添加访问量趋势图表 */}</Card>\r\n         </Col>\r\n         <Col xs={24} lg={12}>\r\n-          <Card title=\"销售额趋势\">\r\n-            {/* 这里可以添加销售额趋势图表 */}\r\n-          </Card>\r\n+          <Card title=\"销售额趋势\">{/* 这里可以添加销售额趋势图表 */}</Card>\r\n         </Col>\r\n       </Row>\r\n     </div>\r\n   );\r\n };\r\n\\ No newline at end of file\n \r\n-export default Dashboard; \n+export default Dashboard;\r\n"
+                }
+            ],
+            "date": 1746088672596,
+            "name": "Commit-0",
+            "content": "import { Card, Col, Row, Statistic } from \"antd\";\r\nimport {\r\n  DollarOutlined,\r\n  FileTextOutlined,\r\n  ShoppingCartOutlined,\r\n  UserOutlined,\r\n} from \"@ant-design/icons\";\r\n\r\nimport styles from \"./style.module.less\";\r\n\r\nconst Dashboard = () => {\r\n  return (\r\n    <div className={styles.container}>\r\n      <Row gutter={[24, 24]}>\r\n        <Col xs={24} sm={12} md={12} lg={6}>\r\n          <Card>\r\n            <Statistic\r\n              title=\"总用户数\"\r\n              value={1128}\r\n              prefix={<UserOutlined />}\r\n              valueStyle={{ color: \"#3f8600\" }}\r\n            />\r\n          </Card>\r\n        </Col>\r\n        <Col xs={24} sm={12} md={12} lg={6}>\r\n          <Card>\r\n            <Statistic\r\n              title=\"总订单数\"\r\n              value={93}\r\n              prefix={<ShoppingCartOutlined />}\r\n              valueStyle={{ color: \"#cf1322\" }}\r\n            />\r\n          </Card>\r\n        </Col>\r\n        <Col xs={24} sm={12} md={12} lg={6}>\r\n          <Card>\r\n            <Statistic\r\n              title=\"文章数量\"\r\n              value={56}\r\n              prefix={<FileTextOutlined />}\r\n              valueStyle={{ color: \"#1890ff\" }}\r\n            />\r\n          </Card>\r\n        </Col>\r\n        <Col xs={24} sm={12} md={12} lg={6}>\r\n          <Card>\r\n            <Statistic\r\n              title=\"总收入\"\r\n              value={11280}\r\n              prefix={<DollarOutlined />}\r\n              valueStyle={{ color: \"#faad14\" }}\r\n            />\r\n          </Card>\r\n        </Col>\r\n      </Row>\r\n\r\n      <Row gutter={[24, 24]} className={styles.charts}>\r\n        <Col xs={24} lg={12}>\r\n          <Card title=\"访问量趋势\">\r\n            {/* 这里可以添加访问量趋势图表 */}\r\n          </Card>\r\n        </Col>\r\n        <Col xs={24} lg={12}>\r\n          <Card title=\"销售额趋势\">\r\n            {/* 这里可以添加销售额趋势图表 */}\r\n          </Card>\r\n        </Col>\r\n      </Row>\r\n    </div>\r\n  );\r\n};\r\n\r\nexport default Dashboard; "
+        }
+    ]
+}

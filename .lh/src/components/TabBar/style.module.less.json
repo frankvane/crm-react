@@ -1,0 +1,26 @@
+{
+    "sourceFile": "src/components/TabBar/style.module.less",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 2,
+            "patches": [
+                {
+                    "date": 1746088343880,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1746088913155,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -23,5 +23,5 @@\n         background-color: #fff !important;\r\n       }\r\n     }\r\n   }\r\n-} \n\\ No newline at end of file\n+}\r\n"
+                },
+                {
+                    "date": 1746090243265,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,27 +1,59 @@\n .tabBar {\r\n-  background-color: #fff;\r\n-  padding: 8px 16px 0;\r\n+  background: #fff;\r\n+  padding: 6px 16px 0;\r\n   border-bottom: 1px solid #f0f0f0;\r\n \r\n   :global {\r\n-    .ant-tabs-nav {\r\n-      margin-bottom: 0;\r\n-    }\r\n+    .ant-tabs {\r\n+      .ant-tabs-nav {\r\n+        margin: 0;\r\n+      }\r\n \r\n-    .ant-tabs-tab {\r\n-      background-color: #f5f5f5 !important;\r\n-      border-radius: 4px 4px 0 0 !important;\r\n-      margin-right: 4px !important;\r\n-      padding: 8px 16px !important;\r\n-      transition: all 0.3s;\r\n+      .ant-tabs-tab {\r\n+        background: transparent;\r\n+        border: none;\r\n+        padding: 8px 16px;\r\n+        transition: all 0.3s;\r\n \r\n-      &:hover {\r\n-        background-color: #e6e6e6 !important;\r\n-      }\r\n+        &:hover {\r\n+          color: #1890ff;\r\n+        }\r\n \r\n-      &.ant-tabs-tab-active {\r\n-        background-color: #fff !important;\r\n+        &.ant-tabs-tab-active {\r\n+          background: #e6f7ff;\r\n+          border-radius: 4px 4px 0 0;\r\n+\r\n+          .ant-tabs-tab-btn {\r\n+            color: #1890ff;\r\n+          }\r\n+        }\r\n+\r\n+        .anticon-close {\r\n+          margin-left: 8px;\r\n+          font-size: 12px;\r\n+          &:hover {\r\n+            color: #ff4d4f;\r\n+          }\r\n+        }\r\n       }\r\n     }\r\n   }\r\n }\r\n+\r\n+.operations {\r\n+  display: flex;\r\n+  align-items: center;\r\n+  margin-left: 16px;\r\n+\r\n+  .action {\r\n+    padding: 8px;\r\n+    font-size: 14px;\r\n+    color: rgba(0, 0, 0, 0.45);\r\n+    cursor: pointer;\r\n+    transition: all 0.3s;\r\n+\r\n+    &:hover {\r\n+      color: #1890ff;\r\n+    }\r\n+  }\r\n+}\r\n"
+                }
+            ],
+            "date": 1746088343880,
+            "name": "Commit-0",
+            "content": ".tabBar {\r\n  background-color: #fff;\r\n  padding: 8px 16px 0;\r\n  border-bottom: 1px solid #f0f0f0;\r\n\r\n  :global {\r\n    .ant-tabs-nav {\r\n      margin-bottom: 0;\r\n    }\r\n\r\n    .ant-tabs-tab {\r\n      background-color: #f5f5f5 !important;\r\n      border-radius: 4px 4px 0 0 !important;\r\n      margin-right: 4px !important;\r\n      padding: 8px 16px !important;\r\n      transition: all 0.3s;\r\n\r\n      &:hover {\r\n        background-color: #e6e6e6 !important;\r\n      }\r\n\r\n      &.ant-tabs-tab-active {\r\n        background-color: #fff !important;\r\n      }\r\n    }\r\n  }\r\n} "
+        }
+    ]
+}

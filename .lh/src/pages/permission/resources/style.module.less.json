@@ -1,0 +1,22 @@
+{
+    "sourceFile": "src/pages/permission/resources/style.module.less",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1746088006494,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1746088913152,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -13,5 +13,5 @@\n .tableHeader {\r\n   display: flex;\r\n   justify-content: flex-end;\r\n   margin-bottom: 16px;\r\n-} \n\\ No newline at end of file\n+}\r\n"
+                }
+            ],
+            "date": 1746088006494,
+            "name": "Commit-0",
+            "content": ".container {\r\n  padding: 24px;\r\n\r\n  :global(.ant-card) {\r\n    min-height: calc(100vh - 48px);\r\n  }\r\n}\r\n\r\n.searchForm {\r\n  margin-bottom: 24px;\r\n}\r\n\r\n.tableHeader {\r\n  display: flex;\r\n  justify-content: flex-end;\r\n  margin-bottom: 16px;\r\n} "
+        }
+    ]
+}

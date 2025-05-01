@@ -1,55 +1,77 @@
-import { Button, Card, Modal, Space, Table, Tag, message } from "antd";
+import {
+  Button,
+  Card,
+  Form,
+  Input,
+  Modal,
+  Select,
+  Space,
+  Table,
+  message,
+} from "antd";
+import type {
+  ICategoryType,
+  ICategoryTypeQueryParams,
+} from "@/types/api/category-type";
 import {
   deleteCategoryType,
   getCategoryTypes,
-  toggleCategoryTypeStatus,
 } from "@/api/modules/category-type";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import type { ICategoryType } from "@/types/api/category-type";
+import CategoryTypeForm from "./components/CategoryTypeForm";
+import type { ICategoryTypeListResponse } from "@/types/api/category-type";
 import dayjs from "dayjs";
-import { useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import styles from "./style.module.less";
+import { useState } from "react";
+
+const { confirm } = Modal;
 
 const CategoryTypes = () => {
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const [form] = Form.useForm<ICategoryTypeQueryParams>();
+  const [modalVisible, setModalVisible] = useState(false);
+  const [editingCategoryType, setEditingCategoryType] =
+    useState<ICategoryType | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [searchValues, setSearchValues] = useState<
+    Partial<ICategoryTypeQueryParams>
+  >({});
 
-  const { data: categoryTypesResponse } = useQuery({
-    queryKey: ["categoryTypes"],
-    queryFn: () => getCategoryTypes({ page: 1, pageSize: 100 }),
+  // 获取分类类型列表
+  const { data: categoryTypesData, isLoading } =
+    useQuery<ICategoryTypeListResponse>({
+      queryKey: ["categoryTypes", currentPage, pageSize, searchValues],
+      queryFn: () =>
+        getCategoryTypes({
+          page: currentPage,
+          pageSize,
+          ...searchValues,
+        }),
+    });
+
+  // 删除分类类型
+  const deleteMutation = useMutation({
+    mutationFn: deleteCategoryType,
+    onSuccess: () => {
+      message.success("删除成功");
+      queryClient.invalidateQueries({ queryKey: ["categoryTypes"] });
+    },
   });
 
-  const categoryTypes = categoryTypesResponse?.list || [];
+  // 处理删除
+  const handleDelete = (id: number) => {
+    confirm({
+      title: "确认删除",
+      content: "确定要删除这个分类类型吗？此操作不可恢复。",
+      okText: "确认",
+      cancelText: "取消",
+      onOk: () => deleteMutation.mutate(id),
+    });
+  };
 
-  const handleDelete = useCallback(
-    async (id: number) => {
-      try {
-        await deleteCategoryType(id);
-        message.success("删除成功");
-        queryClient.invalidateQueries({ queryKey: ["categoryTypes"] });
-      } catch (err) {
-        message.error("删除失败");
-        console.error(err);
-      }
-    },
-    [queryClient]
-  );
-
-  const handleToggleStatus = useCallback(
-    async (id: number) => {
-      try {
-        await toggleCategoryTypeStatus(id);
-        message.success("状态更新成功");
-        queryClient.invalidateQueries({ queryKey: ["categoryTypes"] });
-      } catch (err) {
-        message.error("状态更新失败");
-        console.error(err);
-      }
-    },
-    [queryClient]
-  );
-
+  // 表格列配置
   const columns = [
     {
       title: "ID",
@@ -67,14 +89,15 @@ const CategoryTypes = () => {
       key: "code",
     },
     {
+      title: "描述",
+      dataIndex: "description",
+      key: "description",
+    },
+    {
       title: "状态",
       dataIndex: "status",
       key: "status",
-      render: (status: number) => (
-        <Tag color={status === 1 ? "success" : "error"}>
-          {status === 1 ? "启用" : "禁用"}
-        </Tag>
-      ),
+      render: (status: boolean) => (status ? "启用" : "禁用"),
     },
     {
       title: "创建时间",
@@ -94,29 +117,17 @@ const CategoryTypes = () => {
       title: "操作",
       key: "action",
       render: (_: unknown, record: ICategoryType) => (
-        <Space>
+        <Space size="middle">
           <Button
             type="link"
-            onClick={() =>
-              navigate(`/category/category-types/${record.id}/edit`)
-            }
+            onClick={() => {
+              setEditingCategoryType(record);
+              setModalVisible(true);
+            }}
           >
             编辑
           </Button>
-          <Button type="link" onClick={() => handleToggleStatus(record.id)}>
-            {record.status === 1 ? "禁用" : "启用"}
-          </Button>
-          <Button
-            type="link"
-            danger
-            onClick={() => {
-              Modal.confirm({
-                title: "确认删除",
-                content: "确定要删除该分类类型吗？",
-                onOk: () => handleDelete(record.id),
-              });
-            }}
-          >
+          <Button type="link" danger onClick={() => handleDelete(record.id)}>
             删除
           </Button>
         </Space>
@@ -124,25 +135,111 @@ const CategoryTypes = () => {
     },
   ];
 
-  return (
-    <Card
-      title="分类类型管理"
-      extra={
-        <Button
-          type="primary"
-          onClick={() => navigate("/category/category-types/new")}
-        >
-          新增分类类型
-        </Button>
+  // 处理搜索
+  const handleSearch = (values: Partial<ICategoryTypeQueryParams>) => {
+    // 移除空值
+    const searchParams = Object.entries(values).reduce((acc, [key, value]) => {
+      if (value !== undefined && value !== null && value !== "") {
+        return { ...acc, [key]: value };
       }
-    >
-      <Table
-        columns={columns}
-        dataSource={categoryTypes}
-        rowKey="id"
-        pagination={false}
+      return acc;
+    }, {});
+
+    setSearchValues(searchParams);
+    setCurrentPage(1);
+  };
+
+  // 处理重置
+  const handleReset = () => {
+    form.resetFields();
+    setSearchValues({});
+    setCurrentPage(1);
+  };
+
+  return (
+    <div className={styles.container}>
+      <Card>
+        <Form<ICategoryTypeQueryParams>
+          form={form}
+          layout="inline"
+          className={styles.searchForm}
+          onFinish={handleSearch}
+        >
+          <Form.Item name="search" label="全局搜索">
+            <Input placeholder="搜索全部字段" allowClear />
+          </Form.Item>
+          <Form.Item name="name" label="类型名称">
+            <Input placeholder="请输入类型名称" allowClear />
+          </Form.Item>
+          <Form.Item name="code" label="类型编码">
+            <Input placeholder="请输入类型编码" allowClear />
+          </Form.Item>
+          <Form.Item name="description" label="描述">
+            <Input placeholder="请输入描述" allowClear />
+          </Form.Item>
+          <Form.Item name="status" label="状态">
+            <Select
+              placeholder="请选择状态"
+              allowClear
+              options={[
+                { label: "启用", value: true },
+                { label: "禁用", value: false },
+              ]}
+            />
+          </Form.Item>
+          <Form.Item>
+            <Space>
+              <Button type="primary" htmlType="submit">
+                搜索
+              </Button>
+              <Button onClick={handleReset}>重置</Button>
+            </Space>
+          </Form.Item>
+        </Form>
+
+        <div className={styles.tableHeader}>
+          <Button
+            type="primary"
+            onClick={() => {
+              setEditingCategoryType(null);
+              setModalVisible(true);
+            }}
+          >
+            新增分类类型
+          </Button>
+        </div>
+
+        <Table
+          columns={columns}
+          dataSource={categoryTypesData?.list}
+          rowKey="id"
+          loading={isLoading}
+          pagination={{
+            current: currentPage,
+            pageSize,
+            total: categoryTypesData?.pagination?.total || 0,
+            onChange: (page, size) => {
+              setCurrentPage(page);
+              setPageSize(size);
+            },
+          }}
+        />
+      </Card>
+
+      <CategoryTypeForm
+        visible={modalVisible}
+        editingCategoryType={editingCategoryType}
+        onCancel={() => {
+          setModalVisible(false);
+          setEditingCategoryType(null);
+        }}
+        onSuccess={() => {
+          setModalVisible(false);
+          setEditingCategoryType(null);
+          queryClient.invalidateQueries({ queryKey: ["categoryTypes"] });
+        }}
       />
-    </Card>
+    </div>
   );
 };
 

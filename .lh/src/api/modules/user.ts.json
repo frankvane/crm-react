@@ -1,0 +1,22 @@
+{
+    "sourceFile": "src/api/modules/user.ts",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1746087235852,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1746087438229,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,31 +6,41 @@\n   IUserListResponse,\r\n   IUserQueryParams,\r\n } from \"@/types/api/user\";\r\n \r\n-import type { IBaseResponse } from \"@/types/api/common\";\r\n+import type { IResponse } from \"@/types/api/common\";\r\n import request from \"@/utils/request\";\r\n \r\n-export const userApi = {\r\n-  getUsers: (params: IUserQueryParams) =>\r\n-    request.get<IBaseResponse<IUserListResponse>>(\"/users\", { params }),\r\n+// 获取用户列表\r\n+export const getUsers = async (params: IUserQueryParams): Promise<IResponse<IUserListResponse>> => {\r\n+  return request.get(\"/users\", { params });\r\n+};\r\n \r\n-  getUser: (id: number) => request.get<IBaseResponse<IUser>>(`/users/${id}`),\r\n+// 获取单个用户\r\n+export const getUser = async (id: number): Promise<IResponse<IUser>> => {\r\n+  return request.get(`/users/${id}`);\r\n+};\r\n \r\n-  createUser: (data: ICreateUserParams) =>\r\n-    request.post<IBaseResponse<IUser>>(\"/users\", data),\r\n+// 创建用户\r\n+export const createUser = async (data: ICreateUserParams): Promise<IResponse<IUser>> => {\r\n+  return request.post(\"/users\", data);\r\n+};\r\n \r\n-  updateUser: (data: IUpdateUserParams) =>\r\n-    request.put<IBaseResponse<IUser>>(`/users/${data.id}`, data),\r\n+// 更新用户\r\n+export const updateUser = async (id: number, data: IUpdateUserParams): Promise<IResponse<IUser>> => {\r\n+  return request.put(`/users/${id}`, data);\r\n+};\r\n \r\n-  deleteUser: (id: number) =>\r\n-    request.delete<IBaseResponse<null>>(`/users/${id}`),\r\n+// 删除用户\r\n+export const deleteUser = async (id: number): Promise<IResponse<null>> => {\r\n+  return request.delete(`/users/${id}`);\r\n+};\r\n \r\n-  changePassword: (data: IChangePasswordParams) =>\r\n-    request.post<IBaseResponse<null>>(\r\n-      `/users/${data.id}/change-password`,\r\n-      data\r\n-    ),\r\n+// 修改密码\r\n+export const changePassword = async (data: IChangePasswordParams): Promise<IResponse<null>> => {\r\n+  return request.post(\"/users/change-password\", data);\r\n+};\r\n \r\n-  toggleUserStatus: (id: number) =>\r\n-    request.post<IBaseResponse<IUser>>(`/users/${id}/toggle-status`),\r\n+// 切换用户状态\r\n+export const toggleUserStatus = async (id: number): Promise<IResponse<IUser>> => {\r\n+  return request.patch(`/users/${id}/toggle-status`);\r\n };\r\n"
+                }
+            ],
+            "date": 1746087235852,
+            "name": "Commit-0",
+            "content": "import type {\r\n  IChangePasswordParams,\r\n  ICreateUserParams,\r\n  IUpdateUserParams,\r\n  IUser,\r\n  IUserListResponse,\r\n  IUserQueryParams,\r\n} from '@/types/api/user';\r\n\r\nimport type { IBaseResponse } from '@/types/api/common';\r\nimport request from '@/utils/request';\r\n\r\nexport const userApi = {\r\n  getUsers: (params: IUserQueryParams) =>\r\n    request.get<IBaseResponse<IUserListResponse>>('/users', { params }),\r\n\r\n  getUser: (id: number) =>\r\n    request.get<IBaseResponse<IUser>>(`/users/${id}`),\r\n\r\n  createUser: (data: ICreateUserParams) =>\r\n    request.post<IBaseResponse<IUser>>('/users', data),\r\n\r\n  updateUser: (data: IUpdateUserParams) =>\r\n    request.put<IBaseResponse<IUser>>(`/users/${data.id}`, data),\r\n\r\n  deleteUser: (id: number) =>\r\n    request.delete<IBaseResponse<null>>(`/users/${id}`),\r\n\r\n  changePassword: (data: IChangePasswordParams) =>\r\n    request.post<IBaseResponse<null>>(`/users/${data.id}/change-password`, data),\r\n\r\n  toggleUserStatus: (id: number) =>\r\n    request.post<IBaseResponse<IUser>>(`/users/${id}/toggle-status`),\r\n}; "
+        }
+    ]
+}

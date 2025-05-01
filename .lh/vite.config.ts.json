@@ -1,0 +1,30 @@
+{
+    "sourceFile": "vite.config.ts",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 3,
+            "patches": [
+                {
+                    "date": 1746086622179,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1746086628663,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,5 +4,11 @@\n // https://vitejs.dev/config/\n export default defineConfig({\n   plugins: [react()],\n   // 别名、后缀\n+  resolve: {\n+    alias: {\n+      \"@\": \"/src\",\n+    },\n+    extensions: [\".js\", \".ts\", \".jsx\", \".tsx\"],\n+  },\n });\n"
+                },
+                {
+                    "date": 1746087390134,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,14 +1,26 @@\n import { defineConfig } from \"vite\";\n+import path from 'path';\n import react from \"@vitejs/plugin-react-swc\";\n \n // https://vitejs.dev/config/\n export default defineConfig({\n   plugins: [react()],\n   // 别名、后缀\n   resolve: {\n     alias: {\n-      \"@\": \"/src\",\n+      \"@\": path.resolve(__dirname, './src'),\n     },\n     extensions: [\".js\", \".ts\", \".jsx\", \".tsx\"],\n   },\n+  css: {\n+    modules: {\n+      localsConvention: 'camelCase',\n+      generateScopedName: '[local]_[hash:base64:5]',\n+    },\n+    preprocessorOptions: {\n+      less: {\n+        javascriptEnabled: true,\n+      },\n+    },\n+  },\n });\n"
+                },
+                {
+                    "date": 1746088927645,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,22 +1,22 @@\n import { defineConfig } from \"vite\";\n-import path from 'path';\n+import path from \"path\";\n import react from \"@vitejs/plugin-react-swc\";\n \n // https://vitejs.dev/config/\n export default defineConfig({\n   plugins: [react()],\n   // 别名、后缀\n   resolve: {\n     alias: {\n-      \"@\": path.resolve(__dirname, './src'),\n+      \"@\": path.resolve(__dirname, \"./src\"),\n     },\n     extensions: [\".js\", \".ts\", \".jsx\", \".tsx\"],\n   },\n   css: {\n     modules: {\n-      localsConvention: 'camelCase',\n-      generateScopedName: '[local]_[hash:base64:5]',\n+      localsConvention: \"camelCase\",\n+      generateScopedName: \"[local]_[hash:base64:5]\",\n     },\n     preprocessorOptions: {\n       less: {\n         javascriptEnabled: true,\n"
+                }
+            ],
+            "date": 1746086622179,
+            "name": "Commit-0",
+            "content": "import { defineConfig } from \"vite\";\nimport react from \"@vitejs/plugin-react-swc\";\n\n// https://vitejs.dev/config/\nexport default defineConfig({\n  plugins: [react()],\n  // 别名、后缀\n});\n"
+        }
+    ]
+}

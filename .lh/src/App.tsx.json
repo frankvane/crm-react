@@ -1,0 +1,18 @@
+{
+    "sourceFile": "src/App.tsx",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1746086927828,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1746086927828,
+            "name": "Commit-0",
+            "content": "import { Spin } from \"antd\";\nimport { Suspense } from \"react\";\nimport { routes } from \"./config/routes\";\nimport { useRoutes } from \"react-router-dom\";\n\nconst App = () => {\n  const element = useRoutes(routes);\n\n  return (\n    <Suspense\n      fallback={\n        <div\n          style={{\n            width: \"100%\",\n            height: \"100vh\",\n            display: \"flex\",\n            justifyContent: \"center\",\n            alignItems: \"center\",\n          }}\n        >\n          <Spin size=\"large\" />\n        </div>\n      }\n    >\n      {element}\n    </Suspense>\n  );\n};\n\nexport default App;\n"
+        }
+    ]
+}
