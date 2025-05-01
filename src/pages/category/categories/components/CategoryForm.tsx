@@ -10,10 +10,9 @@ import {
   getCategoryTree,
   updateCategory,
 } from "@/api/modules/category";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
-import { getCategories } from "@/api/modules/category";
 import { getCategoryTypes } from "@/api/modules/category-type";
 
 interface ICategoryFormProps {
@@ -30,17 +29,11 @@ const CategoryForm: React.FC<ICategoryFormProps> = ({
   onSuccess,
 }) => {
   const [form] = Form.useForm<ICreateCategoryParams>();
-  const [selectedTypeId, setSelectedTypeId] = useState<number | null>(null);
 
   // 获取分类类型列表
   const { data: categoryTypesData } = useQuery({
     queryKey: ["categoryTypes", { page: 1, pageSize: 100 }],
     queryFn: () => getCategoryTypes({ page: 1, pageSize: 100 }),
-  });
-
-  const { data: categoriesData } = useQuery({
-    queryKey: ["categories", { page: 1, pageSize: 100 }],
-    queryFn: () => getCategories({ page: 1, pageSize: 100 }),
   });
 
   const categoryTypeOptions = useMemo(() => {
@@ -52,20 +45,10 @@ const CategoryForm: React.FC<ICategoryFormProps> = ({
     );
   }, [categoryTypesData]);
 
-  const parentCategoryOptions = useMemo(() => {
-    return (
-      categoriesData?.list?.map((category) => ({
-        label: category.name,
-        value: category.id,
-      })) || []
-    );
-  }, [categoriesData]);
-
-  // 获取分类树
+  // 获取所有分类树（不依赖 typeId）
   const { data: categoryTreeData } = useQuery({
-    queryKey: ["categoryTree", selectedTypeId],
-    queryFn: () => getCategoryTree(selectedTypeId!),
-    enabled: !!selectedTypeId,
+    queryKey: ["categoryTree"],
+    queryFn: () => getCategoryTree(0), // 0 或不传，后端返回所有分类树
   });
 
   // 创建分类
@@ -92,10 +75,8 @@ const CategoryForm: React.FC<ICategoryFormProps> = ({
     if (visible) {
       if (editingCategory) {
         form.setFieldsValue(editingCategory);
-        setSelectedTypeId(editingCategory.typeId);
       } else {
         form.resetFields();
-        setSelectedTypeId(null);
       }
     }
   }, [visible, editingCategory, form]);
@@ -167,11 +148,7 @@ const CategoryForm: React.FC<ICategoryFormProps> = ({
           label="分类类型"
           rules={[{ required: true, message: "请选择分类类型" }]}
         >
-          <Select
-            placeholder="请选择分类类型"
-            options={categoryTypeOptions}
-            onChange={(value) => setSelectedTypeId(value)}
-          />
+          <Select placeholder="请选择分类类型" options={categoryTypeOptions} />
         </Form.Item>
 
         <Form.Item name="parentId" label="父级分类">
@@ -179,7 +156,6 @@ const CategoryForm: React.FC<ICategoryFormProps> = ({
             placeholder="请选择父级分类"
             allowClear
             options={buildTreeOptions(categoryTreeData?.data)}
-            disabled={!selectedTypeId}
           />
         </Form.Item>
 
