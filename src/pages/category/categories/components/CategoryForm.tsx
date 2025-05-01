@@ -44,7 +44,7 @@ const CategoryForm = ({
 
   const { data: categoryTypes } = useQuery<ICategoryType[]>({
     queryKey: ["categoryTypes"],
-    queryFn: getAllCategoryTypes,
+    queryFn: () => getAllCategoryTypes().then((response) => response.data),
   });
 
   const currentType = categoryTypes?.find((type) => type.id === typeId);
