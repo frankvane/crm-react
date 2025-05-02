@@ -3,11 +3,15 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 0,
+            "activePatchIndex": 1,
             "patches": [
                 {
                     "date": 1746086927828,
                     "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1746200981019,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,12 +1,43 @@\n+import { Navigate, useRoutes } from \"react-router-dom\";\n+import { Suspense, useMemo } from \"react\";\n+\n+import AuthGuard from \"@/components/AuthGuard\";\n+import BasicLayout from \"@/layouts/BasicLayout\";\n import { Spin } from \"antd\";\n-import { Suspense } from \"react\";\n-import { routes } from \"./config/routes\";\n-import { useRoutes } from \"react-router-dom\";\n+import { generateRoutes } from \"@/router/dynamicRoutes\";\n+import staticRoutes from \"@/router/staticRoutes\";\n+import { useAuthStore } from \"@/store/modules/auth\";\n \n const App = () => {\n-  const element = useRoutes(routes);\n+  const resources = useAuthStore((state) => state.resources);\n \n+  // 动态路由生成\n+  const dynamicRoutes = useMemo(\n+    () => generateRoutes(resources || []),\n+    [resources]\n+  );\n+\n+  // 合并静态、动态、任意路由\n+  const allRoutes = useMemo(\n+    () => [\n+      ...staticRoutes,\n+      {\n+        path: \"/app\",\n+        element: (\n+          <AuthGuard>\n+            <BasicLayout />\n+          </AuthGuard>\n+        ),\n+        children: dynamicRoutes,\n+      },\n+      { path: \"*\", element: <Navigate to=\"/404\" replace /> },\n+    ],\n+    [dynamicRoutes]\n+  );\n+\n+  const element = useRoutes(allRoutes);\n+\n   return (\n     <Suspense\n       fallback={\n         <div\n"
                 }
             ],
             "date": 1746086927828,

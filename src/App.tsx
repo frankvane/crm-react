@@ -1,10 +1,41 @@
+import { Navigate, useRoutes } from "react-router-dom";
+import { Suspense, useMemo } from "react";
+
+import AuthGuard from "@/components/AuthGuard";
+import BasicLayout from "@/layouts/BasicLayout";
 import { Spin } from "antd";
-import { Suspense } from "react";
-import { routes } from "./config/routes";
-import { useRoutes } from "react-router-dom";
+import { generateRoutes } from "@/router/dynamicRoutes";
+import staticRoutes from "@/router/staticRoutes";
+import { useAuthStore } from "@/store/modules/auth";
 
 const App = () => {
-  const element = useRoutes(routes);
+  const resources = useAuthStore((state) => state.resources);
+
+  // 动态路由生成
+  const dynamicRoutes = useMemo(
+    () => generateRoutes(resources || []),
+    [resources]
+  );
+
+  // 合并静态、动态、任意路由
+  const allRoutes = useMemo(
+    () => [
+      ...staticRoutes,
+      {
+        path: "/app",
+        element: (
+          <AuthGuard>
+            <BasicLayout />
+          </AuthGuard>
+        ),
+        children: dynamicRoutes,
+      },
+      { path: "*", element: <Navigate to="/404" replace /> },
+    ],
+    [dynamicRoutes]
+  );
+
+  const element = useRoutes(allRoutes);
 
   return (
     <Suspense
