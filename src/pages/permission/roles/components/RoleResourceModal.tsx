@@ -1,12 +1,9 @@
-import { Button, Checkbox, Modal, Spin, Tree, message } from "antd";
-import type { IResourceAction, IResourceTreeNode } from "@/types/api/resource";
+import { Checkbox, Modal, Spin, Tree, message } from "antd";
 import { assignResources, getRoleResources } from "@/api/modules/role";
-import {
-  getResourceActions,
-  getResourceTreeWithActions,
-} from "@/api/modules/resource";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
+
+import { getResourceTreeWithActions } from "@/api/modules/resource";
 
 interface RoleResourceModalProps {
   visible: boolean;
@@ -26,37 +23,33 @@ const RoleResourceModal = ({
     {}
   ); // resourceId -> actionIds
   const [expandedKeys, setExpandedKeys] = useState<React.Key[]>([]);
-  const [loadingActions, setLoadingActions] = useState<number | null>(null);
 
   // 获取带操作的资源树
-  const { data: resourceTree = [], isLoading } = useQuery<IResourceTreeNode[]>({
+  const { data: resourceTree = [], isLoading } = useQuery<unknown[]>({
     queryKey: ["resourceTreeWithActions"],
     queryFn: getResourceTreeWithActions,
     enabled: visible,
   });
 
   // 获取角色已分配资源
-  const { data: roleResources = [] } = useQuery<any[]>({
+  const { data: roleResources = [] } = useQuery<unknown[]>({
     queryKey: ["roleResources", roleId],
     queryFn: () => getRoleResources(roleId!),
     enabled: visible && !!roleId,
   });
 
-  // 资源操作缓存
-  const [actionMap, setActionMap] = useState<Record<number, IResourceAction[]>>(
-    {}
-  );
-
-  // 加载资源操作
-  const loadActions = async (resourceId: number) => {
-    setLoadingActions(resourceId);
-    try {
-      const actions = await getResourceActions(resourceId);
-      setActionMap((prev) => ({ ...prev, [resourceId]: actions }));
-    } finally {
-      setLoadingActions(null);
-    }
-  };
+  // 资源树所有 id 扁平化
+  function getAllNodeIds(nodes: unknown[]): number[] {
+    let ids: number[] = [];
+    (nodes as any[]).forEach((n) => {
+      if (n && typeof n.id === "number") {
+        ids.push(n.id);
+        if (Array.isArray(n.children))
+          ids = ids.concat(getAllNodeIds(n.children));
+      }
+    });
+    return ids;
+  }
 
   // 处理资源树节点勾选
   const onCheck = (checked: any) => {
@@ -72,11 +65,10 @@ const RoleResourceModal = ({
   const mutation = useMutation({
     mutationFn: async () => {
       // 组装提交数据
-      const data = checkedKeys.map((resourceId) => ({
-        resourceId,
-        actionIds: actionChecked[resourceId as number] || [],
-      }));
-      await assignResources(roleId!, data);
+      await assignResources({
+        roleId: roleId!,
+        resourceIds: checkedKeys as number[],
+      });
     },
     onSuccess: () => {
       message.success("分配资源成功");
@@ -85,55 +77,64 @@ const RoleResourceModal = ({
   });
 
   // 渲染资源树节点
-  const renderTreeNodes = (nodes: IResourceTreeNode[]): any[] =>
-    nodes.map((node) => ({
-      title: (
-        <div style={{ display: "flex", alignItems: "center", width: "100%" }}>
-          <span
-            style={{ minWidth: 180, flexShrink: 0, display: "inline-block" }}
-          >
-            {node.name}
-          </span>
-          <div style={{ flex: 1, display: "flex", justifyContent: "flex-end" }}>
-            {Array.isArray(node.actions) && node.actions.length > 0 && (
-              <Checkbox.Group
-                options={node.actions.map((a) => ({
-                  label: a.name,
-                  value: a.id,
-                }))}
-                value={actionChecked[node.id] || []}
-                onChange={(checked) =>
-                  onActionCheck(node.id, checked as number[])
-                }
-              />
-            )}
-          </div>
-        </div>
-      ),
-      key: node.id,
-      children: node.children ? renderTreeNodes(node.children) : undefined,
-    }));
+  const renderTreeNodes = (nodes: unknown[]): any[] =>
+    Array.isArray(nodes)
+      ? (nodes as any[]).map((node) => ({
+          title: (
+            <div
+              style={{ display: "flex", alignItems: "center", width: "100%" }}
+            >
+              <span
+                style={{
+                  minWidth: 180,
+                  flexShrink: 0,
+                  display: "inline-block",
+                }}
+              >
+                {node.name}
+              </span>
+              <div
+                style={{ flex: 1, display: "flex", justifyContent: "flex-end" }}
+              >
+                {Array.isArray(node.actions) && node.actions.length > 0 && (
+                  <Checkbox.Group
+                    options={node.actions.map((a: any) => ({
+                      label: a.name,
+                      value: a.id,
+                    }))}
+                    value={actionChecked[node.id] || []}
+                    onChange={(checked) =>
+                      onActionCheck(node.id, checked as number[])
+                    }
+                  />
+                )}
+              </div>
+            </div>
+          ),
+          key: node.id,
+          children: node.children ? renderTreeNodes(node.children) : undefined,
+        }))
+      : [];
 
   useEffect(() => {
     if (visible) {
-      if (roleId && roleResources && roleResources.length) {
-        // 编辑角色分配权限，初始化勾选
-        setCheckedKeys(roleResources.map((r) => r.id));
+      setExpandedKeys(getAllNodeIds(resourceTree)); // 默认全部展开
+      if (roleId && Array.isArray(roleResources) && roleResources.length) {
+        setCheckedKeys(roleResources.map((r: any) => r.id));
         const actionCheckedInit: Record<number, number[]> = {};
-        roleResources.forEach((r) => {
-          actionCheckedInit[r.id] = (r.actions || []).map((a: any) => a.id);
+        (roleResources as any[]).forEach((r: any) => {
+          actionCheckedInit[r.id] = (r.actions || []).map(
+            (a: { id: number }) => a.id
+          );
         });
         setActionChecked(actionCheckedInit);
       } else {
-        // 新增分配，全部不选
         setCheckedKeys([]);
         setActionChecked({});
       }
-      setActionMap({});
     }
-    // 只依赖 visible，避免死循环
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [visible]);
+    // 依赖 resourceTree/roleResources/visible
+  }, [visible, resourceTree, roleResources, roleId]);
 
   return (
     <Modal
