@@ -1,14 +1,4 @@
-import {
-  Button,
-  Card,
-  Form,
-  Input,
-  Modal,
-  Select,
-  Space,
-  Table,
-  message,
-} from "antd";
+import { Button, Card, Form, Input, Modal, Space, Table, message } from "antd";
 import type {
   ICategoryType,
   ICategoryTypeQueryParams,
@@ -40,16 +30,23 @@ const CategoryTypes = () => {
   >({});
 
   // 获取分类类型列表
-  const { data: categoryTypesData, isLoading } =
-    useQuery<ICategoryTypeListResponse>({
-      queryKey: ["categoryTypes", currentPage, pageSize, searchValues],
-      queryFn: () =>
-        getCategoryTypes({
-          page: currentPage,
-          pageSize,
-          ...searchValues,
-        }),
-    });
+  const {
+    data: categoryTypesData = { list: [], pagination: { total: 0 } },
+    isLoading,
+  } = useQuery<ICategoryTypeListResponse>({
+    queryKey: ["categoryTypes", currentPage, pageSize, searchValues],
+    queryFn: async () => {
+      const response = await getCategoryTypes({
+        page: currentPage,
+        pageSize,
+        ...searchValues,
+      });
+      if (!response) {
+        throw new Error("Failed to fetch category types");
+      }
+      return response;
+    },
+  });
 
   // 删除分类类型
   const deleteMutation = useMutation({
@@ -92,12 +89,6 @@ const CategoryTypes = () => {
       title: "描述",
       dataIndex: "description",
       key: "description",
-    },
-    {
-      title: "状态",
-      dataIndex: "status",
-      key: "status",
-      render: (status: boolean) => (status ? "启用" : "禁用"),
     },
     {
       title: "创建时间",
@@ -176,16 +167,6 @@ const CategoryTypes = () => {
           </Form.Item>
           <Form.Item name="description" label="描述">
             <Input placeholder="请输入描述" allowClear />
-          </Form.Item>
-          <Form.Item name="status" label="状态">
-            <Select
-              placeholder="请选择状态"
-              allowClear
-              options={[
-                { label: "启用", value: true },
-                { label: "禁用", value: false },
-              ]}
-            />
           </Form.Item>
           <Form.Item>
             <Space>

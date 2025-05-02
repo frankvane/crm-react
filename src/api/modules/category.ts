@@ -3,8 +3,6 @@ import type {
   ICategoryListResponse,
   ICategoryQueryParams,
   ICategoryTreeResponse,
-  ICreateCategoryParams,
-  IUpdateCategoryParams,
 } from "@/types/api/category";
 
 import request from "@/utils/request";
@@ -20,7 +18,7 @@ export const getCategories = async (
 export const getCategoryTree = async (
   typeId: number
 ): Promise<ICategoryTreeResponse> => {
-  return request.get(`/categories/tree?typeId=${typeId}`);
+  return request.get("/categories/tree", { params: { typeId } });
 };
 
 // 获取单个分类
@@ -30,7 +28,7 @@ export const getCategory = async (id: number): Promise<ICategory> => {
 
 // 创建分类
 export const createCategory = async (
-  data: ICreateCategoryParams
+  data: Partial<ICategory>
 ): Promise<ICategory> => {
   return request.post("/categories", data);
 };
@@ -38,7 +36,7 @@ export const createCategory = async (
 // 更新分类
 export const updateCategory = async (
   id: number,
-  data: IUpdateCategoryParams
+  data: Partial<ICategory>
 ): Promise<ICategory> => {
   return request.put(`/categories/${id}`, data);
 };

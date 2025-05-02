@@ -25,15 +25,6 @@ const UserForm: React.FC<IUserFormProps> = ({
 }) => {
   const [form] = Form.useForm();
 
-  // 获取角色列表
-  const { data: rolesData } = useQuery({
-    queryKey: ["roles"],
-    queryFn: () => {
-      // TODO: 实现获取角色列表的 API
-      return Promise.resolve({ data: { list: [] as IRole[] } });
-    },
-  });
-
   // 创建用户
   const createMutation = useMutation({
     mutationFn: (data: ICreateUserParams) => createUser(data),
@@ -127,21 +118,6 @@ const UserForm: React.FC<IUserFormProps> = ({
             <Input.Password placeholder="请输入密码" />
           </Form.Item>
         )}
-
-        <Form.Item
-          name="roleIds"
-          label="角色"
-          rules={[{ required: true, message: "请选择角色" }]}
-        >
-          <Select
-            mode="multiple"
-            placeholder="请选择角色"
-            options={rolesData?.data.list.map((role) => ({
-              label: role.name,
-              value: role.id,
-            }))}
-          />
-        </Form.Item>
 
         <Form.Item
           name="status"

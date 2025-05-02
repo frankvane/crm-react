@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 11,
+            "activePatchIndex": 12,
             "patches": [
                 {
                     "date": 1746088065001,
@@ -52,6 +52,10 @@
                 {
                     "date": 1746140717116,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -7,25 +7,25 @@\n import request from \"@/utils/request\";\n \n // 获取所有分类类型（不分页）\n export const getAllCategoryTypes = () =>\n-  request.get<ICategoryType[]>(\"/api/category-types/all\");\n+  request.get<ICategoryType[]>(\"/category-types/all\");\n \n // 获取分类类型列表\n export const getCategoryTypes = (params: ICategoryTypeQueryParams) =>\n-  request.get<ICategoryTypeListResponse>(\"/api/category-types\", { params });\n+  request.get<ICategoryTypeListResponse>(\"/category-types\", { params });\n \n // 获取单个分类类型\n export const getCategoryType = (id: number) =>\n-  request.get<ICategoryType>(`/api/category-types/${id}`);\n+  request.get<ICategoryType>(`/category-types/${id}`);\n \n // 创建分类类型\n export const createCategoryType = (data: Partial<ICategoryType>) =>\n-  request.post<ICategoryType>(\"/api/category-types\", data);\n+  request.post<ICategoryType>(\"/category-types\", data);\n \n // 更新分类类型\n export const updateCategoryType = (id: number, data: Partial<ICategoryType>) =>\n-  request.put<ICategoryType>(`/api/category-types/${id}`, data);\n+  request.put<ICategoryType>(`/category-types/${id}`, data);\n \n // 删除分类类型\n export const deleteCategoryType = (id: number) =>\n-  request.delete<void>(`/api/category-types/${id}`);\n+  request.delete<void>(`/category-types/${id}`);\n"
+                },
+                {
+                    "date": 1746145481172,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -5,27 +5,40 @@\n } from \"@/types/api/category-type\";\n \n import request from \"@/utils/request\";\n \n+// 获取分类类型列表\n+export const getCategoryTypes = async (\n+  params: ICategoryTypeQueryParams\n+): Promise<ICategoryTypeListResponse> => {\n+  return request.get(\"/category-types\", { params });\n+};\n+\n // 获取所有分类类型（不分页）\n-export const getAllCategoryTypes = () =>\n-  request.get<ICategoryType[]>(\"/category-types/all\");\n+export const getAllCategoryTypes = async (): Promise<ICategoryType[]> => {\n+  return request.get(\"/category-types/all\");\n+};\n \n-// 获取分类类型列表\n-export const getCategoryTypes = (params: ICategoryTypeQueryParams) =>\n-  request.get<ICategoryTypeListResponse>(\"/category-types\", { params });\n-\n // 获取单个分类类型\n-export const getCategoryType = (id: number) =>\n-  request.get<ICategoryType>(`/category-types/${id}`);\n+export const getCategoryType = async (id: number): Promise<ICategoryType> => {\n+  return request.get(`/category-types/${id}`);\n+};\n \n // 创建分类类型\n-export const createCategoryType = (data: Partial<ICategoryType>) =>\n-  request.post<ICategoryType>(\"/category-types\", data);\n+export const createCategoryType = async (\n+  data: Partial<ICategoryType>\n+): Promise<ICategoryType> => {\n+  return request.post(\"/category-types\", data);\n+};\n \n // 更新分类类型\n-export const updateCategoryType = (id: number, data: Partial<ICategoryType>) =>\n-  request.put<ICategoryType>(`/category-types/${id}`, data);\n+export const updateCategoryType = async (\n+  id: number,\n+  data: Partial<ICategoryType>\n+): Promise<ICategoryType> => {\n+  return request.put(`/category-types/${id}`, data);\n+};\n \n // 删除分类类型\n-export const deleteCategoryType = (id: number) =>\n-  request.delete<void>(`/category-types/${id}`);\n+export const deleteCategoryType = async (id: number): Promise<null> => {\n+  return request.delete(`/category-types/${id}`);\n+};\n"
                 }
             ],
             "date": 1746088065001,

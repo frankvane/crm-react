@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 7,
+            "activePatchIndex": 9,
             "patches": [
                 {
                     "date": 1746088215680,
@@ -36,6 +36,14 @@
                 {
                     "date": 1746113130229,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -23,11 +23,9 @@\n   return request.get(`/categories/tree?typeId=${typeId}`);\r\n };\r\n \r\n // 获取单个分类\r\n-export const getCategory = async (\r\n-  id: number\r\n-): Promise<ICategory> => {\r\n+export const getCategory = async (id: number): Promise<ICategory> => {\r\n   return request.get(`/categories/${id}`);\r\n };\r\n \r\n // 创建分类\r\n"
+                },
+                {
+                    "date": 1746145492935,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,10 +2,8 @@\n   ICategory,\r\n   ICategoryListResponse,\r\n   ICategoryQueryParams,\r\n   ICategoryTreeResponse,\r\n-  ICreateCategoryParams,\r\n-  IUpdateCategoryParams,\r\n } from \"@/types/api/category\";\r\n \r\n import request from \"@/utils/request\";\r\n \r\n@@ -19,9 +17,9 @@\n // 获取分类树\r\n export const getCategoryTree = async (\r\n   typeId: number\r\n ): Promise<ICategoryTreeResponse> => {\r\n-  return request.get(`/categories/tree?typeId=${typeId}`);\r\n+  return request.get(`/categories/tree/${typeId}`);\r\n };\r\n \r\n // 获取单个分类\r\n export const getCategory = async (id: number): Promise<ICategory> => {\r\n@@ -29,17 +27,17 @@\n };\r\n \r\n // 创建分类\r\n export const createCategory = async (\r\n-  data: ICreateCategoryParams\r\n+  data: Partial<ICategory>\r\n ): Promise<ICategory> => {\r\n   return request.post(\"/categories\", data);\r\n };\r\n \r\n // 更新分类\r\n export const updateCategory = async (\r\n   id: number,\r\n-  data: IUpdateCategoryParams\r\n+  data: Partial<ICategory>\r\n ): Promise<ICategory> => {\r\n   return request.put(`/categories/${id}`, data);\r\n };\r\n \r\n"
+                },
+                {
+                    "date": 1746145841895,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -17,9 +17,9 @@\n // 获取分类树\r\n export const getCategoryTree = async (\r\n   typeId: number\r\n ): Promise<ICategoryTreeResponse> => {\r\n-  return request.get(`/categories/tree/${typeId}`);\r\n+  return request.get(\"/categories/tree\", { params: { typeId } });\r\n };\r\n \r\n // 获取单个分类\r\n export const getCategory = async (id: number): Promise<ICategory> => {\r\n"
                 }
             ],
             "date": 1746088215680,

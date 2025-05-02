@@ -1,93 +1,64 @@
 import { Form, Input, Modal, message } from "antd";
-import type {
-  ICategoryType,
-  ICreateCategoryTypeParams,
-  IUpdateCategoryTypeParams,
-} from "@/types/api/category-type";
 import {
   createCategoryType,
   updateCategoryType,
 } from "@/api/modules/category-type";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { useEffect } from "react";
-import { useMutation } from "@tanstack/react-query";
+import type { ICategoryType } from "@/types/api/category-type";
 
-interface ICategoryTypeFormProps {
+interface CategoryTypeFormProps {
   visible: boolean;
   editingCategoryType: ICategoryType | null;
   onCancel: () => void;
   onSuccess: () => void;
 }
 
-const CategoryTypeForm: React.FC<ICategoryTypeFormProps> = ({
+const CategoryTypeForm = ({
   visible,
   editingCategoryType,
   onCancel,
   onSuccess,
-}) => {
+}: CategoryTypeFormProps) => {
   const [form] = Form.useForm();
+  const queryClient = useQueryClient();
 
-  // 创建分类类型
-  const createMutation = useMutation({
-    mutationFn: (data: ICreateCategoryTypeParams) => createCategoryType(data),
+  // 创建或更新分类类型
+  const mutation = useMutation({
+    mutationFn: (values: Partial<ICategoryType>) =>
+      editingCategoryType
+        ? updateCategoryType(editingCategoryType.id, values)
+        : createCategoryType(values),
     onSuccess: () => {
-      message.success("创建成功");
+      message.success(`${editingCategoryType ? "更新" : "创建"}分类类型成功`);
+      queryClient.invalidateQueries({ queryKey: ["categoryTypes"] });
       onSuccess();
     },
   });
 
-  // 更新分类类型
-  const updateMutation = useMutation({
-    mutationFn: ({
-      id,
-      data,
-    }: {
-      id: number;
-      data: IUpdateCategoryTypeParams;
-    }) => updateCategoryType(id, data),
-    onSuccess: () => {
-      message.success("更新成功");
-      onSuccess();
-    },
-  });
-
-  // 监听表单可见性变化
-  useEffect(() => {
-    if (visible) {
-      if (editingCategoryType) {
-        form.setFieldsValue(editingCategoryType);
-      } else {
-        form.resetFields();
-      }
-    }
-  }, [visible, editingCategoryType, form]);
-
-  // 处理表单提交
-  const handleSubmit = async () => {
+  const handleOk = async () => {
     try {
       const values = await form.validateFields();
-      if (editingCategoryType) {
-        updateMutation.mutate({
-          id: editingCategoryType.id,
-          data: values,
-        });
-      } else {
-        createMutation.mutate(values);
-      }
+      mutation.mutate(values);
     } catch (error) {
-      console.error("Validate Failed:", error);
+      console.error("验证失败:", error);
     }
   };
 
   return (
     <Modal
-      title={editingCategoryType ? "编辑分类类型" : "新增分类类型"}
+      title={`${editingCategoryType ? "编辑" : "新增"}分类类型`}
       open={visible}
-      onOk={handleSubmit}
+      onOk={handleOk}
       onCancel={onCancel}
-      confirmLoading={createMutation.isPending || updateMutation.isPending}
+      confirmLoading={mutation.isPending}
+      destroyOnClose
     >
-      <Form form={form} layout="vertical">
+      <Form
+        form={form}
+        initialValues={editingCategoryType || {}}
+        preserve={false}
+      >
         <Form.Item
           name="name"
           label="类型名称"
@@ -95,13 +66,15 @@ const CategoryTypeForm: React.FC<ICategoryTypeFormProps> = ({
         >
           <Input placeholder="请输入类型名称" />
         </Form.Item>
-
         <Form.Item
           name="code"
           label="类型编码"
           rules={[{ required: true, message: "请输入类型编码" }]}
         >
           <Input placeholder="请输入类型编码" />
+        </Form.Item>
+        <Form.Item name="description" label="描述">
+          <Input.TextArea placeholder="请输入描述" />
         </Form.Item>
       </Form>
     </Modal>

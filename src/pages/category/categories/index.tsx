@@ -30,22 +30,34 @@ const Categories = () => {
   const [activeTypeId, setActiveTypeId] = useState<number>();
 
   // 获取所有分类类型
-  const { data: categoryTypes } = useQuery<ICategoryType[]>({
+  const { data: categoryTypes = [] } = useQuery<ICategoryType[]>({
     queryKey: ["categoryTypes"],
-    queryFn: getAllCategoryTypes,
+    queryFn: async () => {
+      const response = await getAllCategoryTypes();
+      if (!response) {
+        throw new Error("Failed to fetch category types");
+      }
+      return response;
+    },
   });
 
   // 设置默认选中的分类类型
   useMemo(() => {
-    if (categoryTypes?.length && !activeTypeId) {
+    if (categoryTypes && categoryTypes.length && !activeTypeId) {
       setActiveTypeId(categoryTypes[0].id);
     }
   }, [categoryTypes, activeTypeId]);
 
   // 获取指定类型的分类树
-  const { data: categoryTreeResponse } = useQuery<ICategoryTreeResponse>({
+  const { data: categoryTreeResponse = [] } = useQuery<ICategoryTreeResponse>({
     queryKey: ["categoryTree", activeTypeId],
-    queryFn: () => getCategoryTree(activeTypeId as number),
+    queryFn: async () => {
+      const response = await getCategoryTree(activeTypeId as number);
+      if (!response) {
+        throw new Error("Failed to fetch category tree");
+      }
+      return response;
+    },
     enabled: !!activeTypeId,
   });
 
@@ -190,9 +202,11 @@ const Categories = () => {
         width={600}
       >
         <CategoryForm
+          visible={modal.visible}
           id={modal.type === "edit" ? modal.categoryId : undefined}
           parentId={modal.type === "addSub" ? modal.categoryId : undefined}
           typeId={activeTypeId}
+          onCancel={() => setModal({ visible: false, type: "add" })}
           onSuccess={() => {
             setModal({ visible: false, type: "add" });
             queryClient.invalidateQueries({

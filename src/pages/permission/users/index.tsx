@@ -14,6 +14,7 @@ import type { IUser, IUserQueryParams } from "@/types/api/user";
 import { deleteUser, getUsers, toggleUserStatus } from "@/api/modules/user";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
+import AssignRoles from "./components/AssignRoles";
 import type { IUserListResponse } from "@/types/api/user";
 import UserForm from "./components/UserForm";
 import styles from "./style.module.less";
@@ -25,6 +26,7 @@ const Users = () => {
   const queryClient = useQueryClient();
   const [form] = Form.useForm<IUserQueryParams>();
   const [modalVisible, setModalVisible] = useState(false);
+  const [assignRolesVisible, setAssignRolesVisible] = useState(false);
   const [editingUser, setEditingUser] = useState<IUser | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -133,7 +135,20 @@ const Users = () => {
           >
             编辑
           </Button>
-          <Button type="link" onClick={() => handleToggleStatus(record.id)}>
+          <Button
+            type="link"
+            onClick={() => {
+              setEditingUser(record);
+              setAssignRolesVisible(true);
+            }}
+          >
+            分配角色
+          </Button>
+          <Button
+            type="link"
+            onClick={() => handleToggleStatus(record.id)}
+            loading={toggleStatusMutation.isPending}
+          >
             {record.status === 1 ? "禁用" : "启用"}
           </Button>
           <Button type="link" danger onClick={() => handleDelete(record.id)}>
@@ -232,6 +247,16 @@ const Users = () => {
           setModalVisible(false);
           setEditingUser(null);
           queryClient.invalidateQueries({ queryKey: ["users"] });
+        }}
+      />
+
+      <AssignRoles
+        visible={assignRolesVisible}
+        userId={editingUser?.id}
+        currentRoles={editingUser?.roles?.map((role) => role.id)}
+        onCancel={() => {
+          setAssignRolesVisible(false);
+          setEditingUser(null);
         }}
       />
     </div>

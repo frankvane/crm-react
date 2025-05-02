@@ -1,141 +1,126 @@
-import { Button, Form, Input, Space, message } from "antd";
+import { Form, Input, Modal, Select, message } from "antd";
 import {
   createCategory,
   getCategory,
   updateCategory,
 } from "@/api/modules/category";
+import { useEffect, useState } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
-import type { ICategoryType } from "@/types/api/category-type";
-import type { ICreateCategoryParams } from "@/types/api/category";
+import type { ICategory } from "@/types/api/category";
 import { getAllCategoryTypes } from "@/api/modules/category-type";
-import { useQuery } from "@tanstack/react-query";
 
 interface CategoryFormProps {
+  visible: boolean;
   id?: number;
   parentId?: number;
   typeId?: number;
-  onSuccess?: () => void;
+  onCancel: () => void;
+  onSuccess: () => void;
 }
 
 const CategoryForm = ({
+  visible,
   id,
   parentId,
   typeId,
+  onCancel,
   onSuccess,
 }: CategoryFormProps) => {
-  const [form] = Form.useForm<ICreateCategoryParams>();
+  const [form] = Form.useForm();
+  const [initialValues, setInitialValues] = useState<Partial<ICategory>>({});
 
+  // 获取分类类型列表
+  const { data: categoryTypes = [] } = useQuery({
+    queryKey: ["allCategoryTypes"],
+    queryFn: getAllCategoryTypes,
+  });
+
+  // 获取分类详情
   const { data: categoryData } = useQuery({
     queryKey: ["category", id],
-    queryFn: () => getCategory(Number(id)),
+    queryFn: () => getCategory(id as number),
     enabled: !!id,
   });
 
-  // 获取父级分类信息
-  // 如果是编辑模式，使用 categoryData 中的 parentId
-  // 如果是新增子分类模式，使用传入的 parentId
-  const effectiveParentId = id ? categoryData?.parentId : parentId;
-
-  const { data: parentCategory } = useQuery({
-    queryKey: ["category", effectiveParentId],
-    queryFn: () => getCategory(Number(effectiveParentId)),
-    enabled: !!effectiveParentId,
+  // 创建或更新分类
+  const mutation = useMutation({
+    mutationFn: (values: Partial<ICategory>) =>
+      id ? updateCategory(id, values) : createCategory(values),
+    onSuccess: () => {
+      message.success(`${id ? "更新" : "创建"}分类成功`);
+      onSuccess();
+    },
   });
 
-  const { data: categoryTypes } = useQuery<ICategoryType[]>({
-    queryKey: ["categoryTypes"],
-    queryFn: () => getAllCategoryTypes().then((response) => response.data),
-  });
-
-  const currentType = categoryTypes?.find((type) => type.id === typeId);
-
-  const handleSubmit = async (values: ICreateCategoryParams) => {
-    try {
-      const submitData = {
-        ...values,
-        typeId: typeId as number,
-        parentId: effectiveParentId || undefined,
-      };
-
-      if (id) {
-        await updateCategory(id, submitData);
-        message.success("更新成功");
+  // 设置初始值
+  useEffect(() => {
+    if (visible) {
+      if (categoryData) {
+        setInitialValues(categoryData);
       } else {
-        await createCategory(submitData);
-        message.success("创建成功");
+        setInitialValues({
+          parentId,
+          typeId,
+        });
       }
-      onSuccess?.();
-    } catch (err) {
-      message.error(id ? "更新失败" : "创建失败");
-      console.error(err);
+    }
+  }, [visible, categoryData, parentId, typeId]);
+
+  useEffect(() => {
+    if (visible) {
+      form.setFieldsValue(initialValues);
+    }
+  }, [visible, initialValues, form]);
+
+  const handleOk = async () => {
+    try {
+      const values = await form.validateFields();
+      mutation.mutate(values);
+    } catch (error) {
+      console.error("验证失败:", error);
     }
   };
 
   return (
-    <Form
-      form={form}
-      layout="vertical"
-      onFinish={handleSubmit}
-      initialValues={
-        id && categoryData
-          ? {
-              name: categoryData.name,
-              code: categoryData.code,
-              description: categoryData.description,
-              sort: categoryData.sort,
-            }
-          : {
-              sort: 0,
-            }
-      }
+    <Modal
+      title={`${id ? "编辑" : "新增"}分类`}
+      open={visible}
+      onOk={handleOk}
+      onCancel={onCancel}
+      confirmLoading={mutation.isPending}
+      destroyOnClose
     >
-      <Form.Item
-        label="分类名称"
-        name="name"
-        rules={[{ required: true, message: "请输入分类名称" }]}
-      >
-        <Input placeholder="请输入分类名称" />
-      </Form.Item>
-
-      <Form.Item
-        label="分类编码"
-        name="code"
-        rules={[{ required: true, message: "请输入分类编码" }]}
-      >
-        <Input placeholder="请输入分类编码" />
-      </Form.Item>
-
-      <Form.Item label="分类类型">
-        <Input value={currentType?.name} disabled />
-      </Form.Item>
-
-      <Form.Item label="父级分类">
-        <Input
-          value={parentCategory ? parentCategory.name : "无（顶级分类）"}
-          disabled
-        />
-      </Form.Item>
-
-      <Form.Item label="描述" name="description">
-        <Input.TextArea placeholder="请输入描述" />
-      </Form.Item>
-
-      <Form.Item
-        label="排序"
-        name="sort"
-        rules={[{ required: true, message: "请输入排序" }]}
-      >
-        <Input type="number" placeholder="请输入排序" />
-      </Form.Item>
-
-      <Form.Item>
-        <Space>
-          <Button type="primary" htmlType="submit">
-            {id ? "更新" : "创建"}
-          </Button>
-        </Space>
-      </Form.Item>
-    </Form>
+      <Form form={form} preserve={false}>
+        <Form.Item
+          name="name"
+          label="分类名称"
+          rules={[{ required: true, message: "请输入分类名称" }]}
+        >
+          <Input placeholder="请输入分类名称" />
+        </Form.Item>
+        <Form.Item
+          name="typeId"
+          label="分类类型"
+          rules={[{ required: true, message: "请选择分类类型" }]}
+        >
+          <Select
+            placeholder="请选择分类类型"
+            options={categoryTypes.map((type) => ({
+              label: type.name,
+              value: type.id,
+            }))}
+            disabled={!!typeId}
+          />
+        </Form.Item>
+        <Form.Item name="description" label="描述">
+          <Input.TextArea placeholder="请输入描述" />
+        </Form.Item>
+        <Form.Item name="parentId" hidden>
+          <Input />
+        </Form.Item>
+      </Form>
+    </Modal>
   );
 };
 
