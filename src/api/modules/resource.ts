@@ -52,31 +52,41 @@ export const toggleResourceStatus = async (id: number): Promise<IResource> => {
   return request.patch(`/resources/${id}/toggle-status`);
 };
 
-export const getResourceActions = (resourceId: number) => {
-  return request.get<IResourceAction[]>(`/resources/${resourceId}/actions`);
+export const getResourceActions = async (
+  resourceId: number
+): Promise<IResourceAction[]> => {
+  const response = await request.get<IResourceAction[]>(
+    `/resources/${resourceId}/actions`
+  );
+  return response.data;
 };
 
-export const createResourceAction = (
+export const createResourceAction = async (
   resourceId: number,
   data: Partial<IResourceAction>
-) => {
-  return request.post<IResourceAction>(
+): Promise<IResourceAction> => {
+  const response = await request.post<IResourceAction>(
     `/resources/${resourceId}/actions`,
     data
   );
+  return response.data;
 };
 
-export const updateResourceAction = (
+export const updateResourceAction = async (
   resourceId: number,
   actionId: number,
   data: Partial<IResourceAction>
-) => {
-  return request.put<IResourceAction>(
+): Promise<IResourceAction> => {
+  const response = await request.put<IResourceAction>(
     `/resources/${resourceId}/actions/${actionId}`,
     data
   );
+  return response.data;
 };
 
-export const deleteResourceAction = (resourceId: number, actionId: number) => {
-  return request.delete(`/resources/${resourceId}/actions/${actionId}`);
+export const deleteResourceAction = async (
+  resourceId: number,
+  actionId: number
+): Promise<void> => {
+  await request.delete(`/resources/${resourceId}/actions/${actionId}`);
 };

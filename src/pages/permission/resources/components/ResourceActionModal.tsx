@@ -1,22 +1,23 @@
 import {
-  Modal,
-  Table,
   Button,
   Form,
   Input,
-  Switch,
+  Modal,
   Space,
+  Switch,
+  Table,
   message,
 } from "antd";
-import { useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { IResourceAction, IResource } from "@/types/api/resource";
+import type { IResource, IResourceAction } from "@/types/api/resource";
 import {
-  getResourceActions,
   createResourceAction,
-  updateResourceAction,
   deleteResourceAction,
+  getResourceActions,
+  updateResourceAction,
 } from "@/api/modules/resource";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+
+import { useState } from "react";
 
 interface ResourceActionModalProps {
   visible: boolean;
@@ -41,6 +42,8 @@ const ResourceActionModal: React.FC<ResourceActionModalProps> = ({
     queryFn: () => getResourceActions(resource!.id),
     enabled: visible && !!resource,
   });
+
+  console.log(actions);
 
   // 创建/更新资源操作
   const actionMutation = useMutation({
@@ -95,7 +98,7 @@ const ResourceActionModal: React.FC<ResourceActionModalProps> = ({
     {
       title: "操作",
       width: 120,
-      render: (_: any, record: IResourceAction) => (
+      render: (_: unknown, record: IResourceAction) => (
         <Space>
           <Button
             type="link"
