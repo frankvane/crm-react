@@ -12,6 +12,7 @@ import type { IResource, IResourceAction } from "@/types/api/resource";
 import {
   createResourceAction,
   deleteResourceAction,
+  getResourceAction,
   getResourceActions,
   updateResourceAction,
 } from "@/api/modules/resource";
@@ -34,16 +35,20 @@ const ResourceActionModal: React.FC<ResourceActionModalProps> = ({
   const [editingAction, setEditingAction] = useState<IResourceAction | null>(
     null
   );
+  const [isEditLoading, setIsEditLoading] = useState(false);
   const queryClient = useQueryClient();
 
-  // 获取资源操作列表
-  const { data: actions = [] } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["resourceActions", resource?.id],
-    queryFn: () => getResourceActions(resource!.id),
-    enabled: visible && !!resource,
+    queryFn: async () => {
+      if (!resource?.id) return null;
+      const response = await getResourceActions(resource.id);
+      return response;
+    },
+    enabled: visible && !!resource?.id,
   });
 
-  console.log(actions);
+  const actions = (data as any)?.list ?? [];
 
   // 创建/更新资源操作
   const actionMutation = useMutation({
@@ -85,28 +90,44 @@ const ResourceActionModal: React.FC<ResourceActionModalProps> = ({
     });
   };
 
+  const handleEdit = async (record: IResourceAction) => {
+    try {
+      setIsEditLoading(true);
+      // 获取最新的资源操作数据
+      const response = await getResourceAction(resource!.id, record.id);
+      setEditingAction(response);
+      form.setFieldsValue(response);
+    } catch (error: unknown) {
+      console.error("Failed to fetch resource action:", error);
+      message.error("获取资源操作详情失败");
+    } finally {
+      setIsEditLoading(false);
+    }
+  };
+
+  const handleCancel = () => {
+    form.resetFields();
+    setEditingAction(null);
+    onCancel();
+  };
+
   const columns = [
-    { title: "操作名称", dataIndex: "name", width: 150 },
-    { title: "操作编码", dataIndex: "code", width: 150 },
-    { title: "描述", dataIndex: "description", ellipsis: true },
     {
-      title: "需要确认",
-      dataIndex: "needConfirm",
-      width: 100,
-      render: (value: boolean) => (value ? "是" : "否"),
+      title: "操作名称",
+      dataIndex: "name",
+      key: "name",
+    },
+    {
+      title: "操作编码",
+      dataIndex: "code",
+      key: "code",
     },
     {
       title: "操作",
-      width: 120,
+      key: "action",
       render: (_: unknown, record: IResourceAction) => (
         <Space>
-          <Button
-            type="link"
-            onClick={() => {
-              setEditingAction(record);
-              form.setFieldsValue(record);
-            }}
-          >
+          <Button type="link" onClick={() => handleEdit(record)}>
             编辑
           </Button>
           <Button type="link" danger onClick={() => handleDelete(record.id)}>
@@ -121,50 +142,66 @@ const ResourceActionModal: React.FC<ResourceActionModalProps> = ({
     <Modal
       title={`资源操作管理 - ${resource?.name || ""}`}
       open={visible}
-      onCancel={() => {
-        onCancel();
-        form.resetFields();
-        setEditingAction(null);
-      }}
+      onCancel={handleCancel}
       width={800}
       footer={null}
     >
       <Form
         form={form}
-        layout="inline"
         onFinish={(values) => actionMutation.mutate(values)}
-        style={{ marginBottom: 16 }}
+        layout="vertical"
+        disabled={isEditLoading}
       >
-        <Form.Item name="name" label="操作名称" rules={[{ required: true }]}>
-          <Input placeholder="请输入操作名称" />
-        </Form.Item>
-        <Form.Item name="code" label="操作编码" rules={[{ required: true }]}>
-          <Input placeholder="请输入操作编码" />
-        </Form.Item>
-        <Form.Item name="description" label="描述">
-          <Input placeholder="请输入描述" />
-        </Form.Item>
-        <Form.Item name="needConfirm" label="需要确认" valuePropName="checked">
-          <Switch />
-        </Form.Item>
-        <Form.Item
-          name="confirmMessage"
-          label="确认信息"
-          dependencies={["needConfirm"]}
-          rules={[
-            ({ getFieldValue }) => ({
-              required: getFieldValue("needConfirm"),
-              message: "启用确认时，确认信息为必填",
-            }),
-          ]}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+          }}
         >
-          <Input placeholder="请输入确认信息" />
-        </Form.Item>
-        <Form.Item>
+          <Form.Item
+            name="name"
+            label="操作名称"
+            rules={[{ required: true, message: "请输入操作名称" }]}
+          >
+            <Input placeholder="请输入操作名称" />
+          </Form.Item>
+          <Form.Item
+            name="code"
+            label="操作编码"
+            rules={[{ required: true, message: "请输入操作编码" }]}
+          >
+            <Input placeholder="请输入操作编码" />
+          </Form.Item>
+          <Form.Item
+            name="description"
+            label="描述"
+            style={{ gridColumn: "span 2" }}
+          >
+            <Input.TextArea placeholder="请输入描述" />
+          </Form.Item>
+          <Form.Item
+            name="needConfirm"
+            label="需要确认"
+            valuePropName="checked"
+          >
+            <Switch />
+          </Form.Item>
+          <Form.Item
+            name="confirmMessage"
+            label="确认信息"
+            dependencies={["needConfirm"]}
+            rules={[
+              ({ getFieldValue }) => ({
+                required: getFieldValue("needConfirm"),
+                message: "启用确认时，确认信息为必填",
+              }),
+            ]}
+          >
+            <Input placeholder="请输入确认信息" />
+          </Form.Item>
+        </div>
+        <Form.Item style={{ marginBottom: 24, textAlign: "right" }}>
           <Space>
-            <Button type="primary" htmlType="submit">
-              {editingAction ? "更新" : "添加"}
-            </Button>
             {editingAction && (
               <Button
                 onClick={() => {
@@ -175,6 +212,9 @@ const ResourceActionModal: React.FC<ResourceActionModalProps> = ({
                 取消
               </Button>
             )}
+            <Button type="primary" htmlType="submit">
+              {editingAction ? "更新" : "添加"}
+            </Button>
           </Space>
         </Form.Item>
       </Form>
@@ -183,7 +223,7 @@ const ResourceActionModal: React.FC<ResourceActionModalProps> = ({
         columns={columns}
         dataSource={actions}
         rowKey="id"
-        pagination={false}
+        loading={isLoading || isEditLoading}
       />
     </Modal>
   );

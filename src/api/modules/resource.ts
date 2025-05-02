@@ -8,6 +8,7 @@ import type {
   IUpdateResourceParams,
 } from "@/types/api/resource";
 
+import type { IPaginationResponse } from "@/types/api/common";
 import request from "@/utils/request";
 
 // 获取资源列表
@@ -52,41 +53,39 @@ export const toggleResourceStatus = async (id: number): Promise<IResource> => {
   return request.patch(`/resources/${id}/toggle-status`);
 };
 
-export const getResourceActions = async (
-  resourceId: number
-): Promise<IResourceAction[]> => {
-  const response = await request.get<IResourceAction[]>(
+export const getResourceActions = (resourceId: number) => {
+  return request.get<IPaginationResponse<IResourceAction>>(
     `/resources/${resourceId}/actions`
   );
-  return response.data;
 };
 
-export const createResourceAction = async (
+export const getResourceAction = (resourceId: number, actionId: number) => {
+  return request.get<IResourceAction>(
+    `/resources/${resourceId}/actions/${actionId}`
+  );
+};
+
+export const createResourceAction = (
   resourceId: number,
   data: Partial<IResourceAction>
-): Promise<IResourceAction> => {
-  const response = await request.post<IResourceAction>(
+) => {
+  return request.post<IResourceAction>(
     `/resources/${resourceId}/actions`,
     data
   );
-  return response.data;
 };
 
-export const updateResourceAction = async (
+export const updateResourceAction = (
   resourceId: number,
   actionId: number,
   data: Partial<IResourceAction>
-): Promise<IResourceAction> => {
-  const response = await request.put<IResourceAction>(
+) => {
+  return request.put<IResourceAction>(
     `/resources/${resourceId}/actions/${actionId}`,
     data
   );
-  return response.data;
 };
 
-export const deleteResourceAction = async (
-  resourceId: number,
-  actionId: number
-): Promise<void> => {
-  await request.delete(`/resources/${resourceId}/actions/${actionId}`);
+export const deleteResourceAction = (resourceId: number, actionId: number) => {
+  return request.delete(`/resources/${resourceId}/actions/${actionId}`);
 };

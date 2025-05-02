@@ -22,11 +22,15 @@ import type {
   IResource,
   IUpdateResourceParams,
 } from "@/types/api/resource";
-import { createResource, updateResource } from "@/api/modules/resource";
+import {
+  createResource,
+  getResource,
+  updateResource,
+} from "@/api/modules/resource";
+import { useEffect, useState } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 import { ResourceType } from "@/types/api/resource";
-import { useEffect } from "react";
-import { useMutation } from "@tanstack/react-query";
 
 // 定义常用的图标列表
 const ICON_OPTIONS = [
@@ -66,6 +70,14 @@ const ResourceForm: React.FC<IResourceFormProps> = ({
   onSuccess,
 }) => {
   const [form] = Form.useForm<ICreateResourceParams>();
+  const [parentId, setParentId] = useState<number | null>(null);
+
+  // 获取父级菜单信息
+  const { data: parentResource } = useQuery({
+    queryKey: ["resource", parentId],
+    queryFn: () => (parentId ? getResource(parentId) : null),
+    enabled: !!parentId,
+  });
 
   // 创建资源
   const createMutation = useMutation({
@@ -76,6 +88,7 @@ const ResourceForm: React.FC<IResourceFormProps> = ({
       }),
     onSuccess: () => {
       message.success("创建成功");
+      form.resetFields(); // 重置表单
       onSuccess();
     },
   });
@@ -89,6 +102,7 @@ const ResourceForm: React.FC<IResourceFormProps> = ({
       }),
     onSuccess: () => {
       message.success("更新成功");
+      form.resetFields(); // 重置表单
       onSuccess();
     },
   });
@@ -98,8 +112,19 @@ const ResourceForm: React.FC<IResourceFormProps> = ({
     if (visible) {
       if (editingResource) {
         form.setFieldsValue(editingResource);
+        // 如果是编辑子菜单，设置父级ID
+        if (editingResource.parentId) {
+          setParentId(editingResource.parentId);
+        }
       } else {
         form.resetFields();
+        // 如果是新增子菜单，设置父级ID
+        if (editingResource?.parentId) {
+          setParentId(editingResource.parentId);
+          form.setFieldValue("parentId", editingResource.parentId);
+        } else {
+          setParentId(null);
+        }
       }
     }
   }, [visible, editingResource, form]);
@@ -122,11 +147,17 @@ const ResourceForm: React.FC<IResourceFormProps> = ({
     }
   };
 
+  // 处理取消
+  const handleCancel = () => {
+    form.resetFields(); // 重置表单
+    onCancel();
+  };
+
   return (
     <Modal
       title={editingResource ? "编辑菜单" : "新增菜单"}
       open={visible}
-      onCancel={onCancel}
+      onCancel={handleCancel}
       onOk={handleSubmit}
       confirmLoading={createMutation.isPending || updateMutation.isPending}
     >
@@ -173,18 +204,12 @@ const ResourceForm: React.FC<IResourceFormProps> = ({
           />
         </Form.Item>
 
-        {editingResource?.parentId ? (
-          <Form.Item label="父级菜单">
-            <Input value={editingResource.name} disabled />
-            <Form.Item name="parentId" hidden>
-              <Input />
-            </Form.Item>
+        <Form.Item label="父级菜单">
+          <Input value={parentResource?.name || "无"} disabled />
+          <Form.Item name="parentId" hidden>
+            <Input />
           </Form.Item>
-        ) : (
-          <Form.Item label="父级菜单">
-            <Input value="无" disabled />
-          </Form.Item>
-        )}
+        </Form.Item>
 
         <Form.Item name="sort" label="排序">
           <Input type="number" placeholder="请输入排序" />

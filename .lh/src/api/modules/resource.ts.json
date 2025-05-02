@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 10,
+            "activePatchIndex": 11,
             "patches": [
                 {
                     "date": 1746087876214,
@@ -48,6 +48,10 @@
                 {
                     "date": 1746152043824,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -60,28 +60,33 @@\n   );\r\n   return response.data;\r\n };\r\n \r\n-export const createResourceAction = (\r\n+export const createResourceAction = async (\r\n   resourceId: number,\r\n   data: Partial<IResourceAction>\r\n-) => {\r\n-  return request.post<IResourceAction>(\r\n+): Promise<IResourceAction> => {\r\n+  const response = await request.post<IResourceAction>(\r\n     `/resources/${resourceId}/actions`,\r\n     data\r\n   );\r\n+  return response.data;\r\n };\r\n \r\n-export const updateResourceAction = (\r\n+export const updateResourceAction = async (\r\n   resourceId: number,\r\n   actionId: number,\r\n   data: Partial<IResourceAction>\r\n-) => {\r\n-  return request.put<IResourceAction>(\r\n+): Promise<IResourceAction> => {\r\n+  const response = await request.put<IResourceAction>(\r\n     `/resources/${resourceId}/actions/${actionId}`,\r\n     data\r\n   );\r\n+  return response.data;\r\n };\r\n \r\n-export const deleteResourceAction = (resourceId: number, actionId: number) => {\r\n-  return request.delete(`/resources/${resourceId}/actions/${actionId}`);\r\n+export const deleteResourceAction = async (\r\n+  resourceId: number,\r\n+  actionId: number\r\n+): Promise<void> => {\r\n+  await request.delete(`/resources/${resourceId}/actions/${actionId}`);\r\n };\r\n"
+                },
+                {
+                    "date": 1746152075173,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -51,42 +51,32 @@\n export const toggleResourceStatus = async (id: number): Promise<IResource> => {\r\n   return request.patch(`/resources/${id}/toggle-status`);\r\n };\r\n \r\n-export const getResourceActions = async (\r\n-  resourceId: number\r\n-): Promise<IResourceAction[]> => {\r\n-  const response = await request.get<IResourceAction[]>(\r\n-    `/resources/${resourceId}/actions`\r\n-  );\r\n-  return response.data;\r\n+export const getResourceActions = (resourceId: number) => {\r\n+  return request.get<IResourceAction[]>(`/resources/${resourceId}/actions`);\r\n };\r\n \r\n-export const createResourceAction = async (\r\n+export const createResourceAction = (\r\n   resourceId: number,\r\n   data: Partial<IResourceAction>\r\n-): Promise<IResourceAction> => {\r\n-  const response = await request.post<IResourceAction>(\r\n+) => {\r\n+  return request.post<IResourceAction>(\r\n     `/resources/${resourceId}/actions`,\r\n     data\r\n   );\r\n-  return response.data;\r\n };\r\n \r\n-export const updateResourceAction = async (\r\n+export const updateResourceAction = (\r\n   resourceId: number,\r\n   actionId: number,\r\n   data: Partial<IResourceAction>\r\n-): Promise<IResourceAction> => {\r\n-  const response = await request.put<IResourceAction>(\r\n+) => {\r\n+  return request.put<IResourceAction>(\r\n     `/resources/${resourceId}/actions/${actionId}`,\r\n     data\r\n   );\r\n-  return response.data;\r\n };\r\n \r\n-export const deleteResourceAction = async (\r\n-  resourceId: number,\r\n-  actionId: number\r\n-): Promise<void> => {\r\n-  await request.delete(`/resources/${resourceId}/actions/${actionId}`);\r\n+export const deleteResourceAction = (resourceId: number, actionId: number) => {\r\n+  return request.delete(`/resources/${resourceId}/actions/${actionId}`);\r\n };\r\n"
                 }
             ],
             "date": 1746087876214,
