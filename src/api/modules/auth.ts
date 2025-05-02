@@ -11,12 +11,16 @@ export const authApi = {
   login: (data: ILoginParams): Promise<ILoginResult> =>
     request.post("/auth/login", data),
 
-  logout: () => request.post("/auth/logout"),
+  // logout需要传递refreshToken
+  logout: (refreshToken: string) =>
+    request.post("/auth/logout", {
+      refreshToken,
+    }),
 
   refreshToken: (refreshToken: string): Promise<IRefreshTokenResult> =>
     request.post("/auth/refresh", {
       refreshToken,
     }),
 
-  getCurrentUser: () => request.get("/auth/current-user"),
+  getCurrentUser: () => request.get("/users/me"),
 };

@@ -39,9 +39,9 @@ const BasicLayout: React.FC = () => {
     });
   }, [location, addTab]);
 
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
+  const handleLogout = async () => {
+    await logout();
+    navigate("/user/login", { replace: true });
   };
 
   return (

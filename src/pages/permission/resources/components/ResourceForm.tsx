@@ -180,6 +180,14 @@ const ResourceForm: React.FC<IResourceFormProps> = ({
         </Form.Item>
 
         <Form.Item
+          name="component"
+          label="组件路径"
+          rules={[{ required: true, message: "请输入组件路径" }]}
+        >
+          <Input placeholder="如：views/dashboard/index 或 @/views/dashboard/index" />
+        </Form.Item>
+
+        <Form.Item
           name="icon"
           label="图标"
           rules={[{ required: true, message: "请选择图标" }]}

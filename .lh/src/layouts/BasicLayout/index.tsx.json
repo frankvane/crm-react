@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 8,
+            "activePatchIndex": 9,
             "patches": [
                 {
                     "date": 1746086966685,
@@ -40,6 +40,10 @@
                 {
                     "date": 1746090517365,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -3,23 +3,43 @@\n   LogoutOutlined,\r\n   MenuFoldOutlined,\r\n   MenuUnfoldOutlined,\r\n } from \"@ant-design/icons\";\r\n-import { Outlet, useNavigate } from \"react-router-dom\";\r\n-import React, { useState } from \"react\";\r\n+import { Outlet, useLocation, useNavigate } from \"react-router-dom\";\r\n+import React, { useEffect, useState } from \"react\";\r\n \r\n import Sidebar from \"@/components/Sidebar\";\r\n import TabBar from \"@/components/TabBar\";\r\n import styles from \"./style.module.less\";\r\n import { useAuthStore } from \"@/store/modules/auth\";\r\n+import { useTabStore } from \"@/store/modules/tab\";\r\n \r\n const { Header, Content } = Layout;\r\n \r\n+const menuMap: Record<string, string> = {\r\n+  \"/dashboard\": \"仪表盘\",\r\n+  \"/permission/roles\": \"角色管理\",\r\n+  \"/permission/resources\": \"资源管理\",\r\n+  \"/permission/users\": \"用户管理\",\r\n+  \"/category/category-types\": \"分类类型管理\",\r\n+  \"/category/categories\": \"分类管理\",\r\n+};\r\n+\r\n const BasicLayout: React.FC = () => {\r\n   const [collapsed, setCollapsed] = useState(false);\r\n   const navigate = useNavigate();\r\n+  const location = useLocation();\r\n   const { logout } = useAuthStore();\r\n+  const { addTab } = useTabStore();\r\n \r\n+  useEffect(() => {\r\n+    const { pathname } = location;\r\n+    addTab({\r\n+      key: pathname,\r\n+      label: menuMap[pathname] || \"未知页面\",\r\n+    });\r\n+  }, [location, addTab]);\r\n+\r\n   const handleLogout = () => {\r\n     logout();\r\n     navigate(\"/login\");\r\n   };\r\n"
+                },
+                {
+                    "date": 1746200467782,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -38,11 +38,11 @@\n       label: menuMap[pathname] || \"未知页面\",\r\n     });\r\n   }, [location, addTab]);\r\n \r\n-  const handleLogout = () => {\r\n-    logout();\r\n-    navigate(\"/login\");\r\n+  const handleLogout = async () => {\r\n+    await logout();\r\n+    navigate(\"/user/login\", { replace: true });\r\n   };\r\n \r\n   return (\r\n     <Layout className={styles.layout}>\r\n"
                 }
             ],
             "date": 1746086966685,

@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 4,
+            "activePatchIndex": 6,
             "patches": [
                 {
                     "date": 1746086855915,
@@ -24,6 +24,14 @@
                 {
                     "date": 1746096796878,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,5 @@\n-import type { ILoginParams, ILoginResult, IResponse } from \"@/types/api/common\";\r\n+import type { ILoginParams, ILoginResult } from \"@/types/api/common\";\r\n \r\n import request from \"@/utils/request\";\r\n \r\n interface IRefreshTokenResult {\r\n@@ -7,17 +7,16 @@\n   refreshToken: string;\r\n }\r\n \r\n export const authApi = {\r\n-  login: (data: ILoginParams) =>\r\n-    request.post<IResponse<ILoginResult>>(\"/auth/login\", data),\r\n+  login: (data: ILoginParams): Promise<ILoginResult> =>\r\n+    request.post(\"/auth/login\", data),\r\n \r\n-  logout: () => request.post<IResponse<null>>(\"/auth/logout\"),\r\n+  logout: () => request.post(\"/auth/logout\"),\r\n \r\n-  refreshToken: (refreshToken: string) =>\r\n-    request.post<IResponse<IRefreshTokenResult>>(\"/auth/refresh\", {\r\n+  refreshToken: (refreshToken: string): Promise<IRefreshTokenResult> =>\r\n+    request.post(\"/auth/refresh\", {\r\n       refreshToken,\r\n     }),\r\n \r\n-  getCurrentUser: () =>\r\n-    request.get<IResponse<ILoginResult[\"user\"]>>(\"/auth/current-user\"),\r\n+  getCurrentUser: () => request.get(\"/auth/current-user\"),\r\n };\r\n"
+                },
+                {
+                    "date": 1746198813492,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -17,6 +17,6 @@\n     request.post(\"/auth/refresh\", {\r\n       refreshToken,\r\n     }),\r\n \r\n-  getCurrentUser: () => request.get(\"/auth/current-user\"),\r\n+  getCurrentUser: () => request.get(\"/users/me\"),\r\n };\r\n"
+                },
+                {
+                    "date": 1746200070682,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -10,9 +10,13 @@\n export const authApi = {\r\n   login: (data: ILoginParams): Promise<ILoginResult> =>\r\n     request.post(\"/auth/login\", data),\r\n \r\n-  logout: () => request.post(\"/auth/logout\"),\r\n+  // logout需要传递refreshToken\r\n+  logout: (refreshToken: string) =>\r\n+    request.post(\"/auth/logout\", {\r\n+      refreshToken,\r\n+    }),\r\n \r\n   refreshToken: (refreshToken: string): Promise<IRefreshTokenResult> =>\r\n     request.post(\"/auth/refresh\", {\r\n       refreshToken,\r\n"
                 }
             ],
             "date": 1746086855915,
