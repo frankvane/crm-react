@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 import styles from "./style.module.less";
 import { useAuthStore } from "@/store/modules/auth";
+import { useRef } from "react";
 import { useState } from "react";
 
 interface LoginParams {
@@ -16,6 +17,7 @@ const Login = () => {
   const location = useLocation();
   const login = useAuthStore((state) => state.login);
   const [loading, setLoading] = useState(false);
+  const formRef = useRef<any>(null);
 
   const handleSubmit = async (values: LoginParams) => {
     setLoading(true);
@@ -36,8 +38,31 @@ const Login = () => {
     }
   };
 
+  // 一键切换用户
+  const quickLogin = (username: string, password: string) => {
+    if (formRef.current) {
+      formRef.current.setFieldsValue({ username, password });
+      formRef.current.submit();
+    }
+  };
+
   return (
     <div className={styles.container}>
+      {/* 快捷切换用户按钮 */}
+      <div
+        style={{
+          marginBottom: 24,
+          display: "flex",
+          gap: 8,
+          justifyContent: "center",
+        }}
+      >
+        <Button onClick={() => quickLogin("admin", "admin123")}>Admin</Button>
+        <Button onClick={() => quickLogin("manager", "manager123")}>
+          Manager
+        </Button>
+        <Button onClick={() => quickLogin("user", "user123")}>User</Button>
+      </div>
       <Form<LoginParams>
         name="login"
         onFinish={handleSubmit}
@@ -47,6 +72,7 @@ const Login = () => {
           username: "admin",
           password: "admin123",
         }}
+        ref={formRef}
       >
         <Form.Item
           name="username"

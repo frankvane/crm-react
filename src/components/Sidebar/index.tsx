@@ -1,16 +1,11 @@
-import {
-  AppstoreOutlined,
-  DashboardOutlined,
-  KeyOutlined,
-  TagOutlined,
-  UnorderedListOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
+import * as Icons from "@ant-design/icons";
+
 import { Layout, Menu } from "antd";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import type { MenuProps } from "antd";
+import { ReactNode } from "react";
 import styles from "./style.module.less";
+import { useAuthStore } from "@/store/modules/auth";
 
 const { Sider } = Layout;
 
@@ -18,59 +13,53 @@ interface SidebarProps {
   collapsed: boolean;
 }
 
+// 动态获取 icon 组件
+function getIconByName(name?: string): ReactNode {
+  if (!name) return null;
+  const IconComponent = (Icons as any)[name];
+  return IconComponent ? <IconComponent /> : null;
+}
+
+function buildMenuItems(resources: any[], parentPath = "/app"): any[] {
+  return (resources || [])
+    .filter((item: any) => item.type.toLowerCase() === "menu")
+    .map((item: any) => {
+      const fullPath = item.path.startsWith("/")
+        ? item.path
+        : `${parentPath}/${item.path}`;
+      const children = item.children
+        ? buildMenuItems(item.children, fullPath)
+        : undefined;
+      return {
+        key: fullPath,
+        icon: getIconByName(item.icon),
+        label: item.name,
+        ...(children && children.length > 0 ? { children } : {}),
+      };
+    });
+}
+
 const Sidebar = ({ collapsed }: SidebarProps) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const resources = useAuthStore((state) => state.resources);
 
-  const menuItems: MenuProps["items"] = [
-    {
-      key: "/app/dashboard",
-      icon: <DashboardOutlined />,
-      label: "仪表盘",
-    },
-    {
-      key: "permission",
-      icon: <KeyOutlined />,
-      label: "权限管理",
-      children: [
-        {
-          key: "/app/permission/roles",
-          icon: <AppstoreOutlined />,
-          label: "角色管理",
-        },
-        {
-          key: "/app/permission/resources",
-          icon: <UnorderedListOutlined />,
-          label: "资源管理",
-        },
-        {
-          key: "/app/permission/users",
-          icon: <UserOutlined />,
-          label: "用户管理",
-        },
-      ],
-    },
-    {
-      key: "category",
-      icon: <TagOutlined />,
-      label: "分类管理",
-      children: [
-        {
-          key: "/app/category/category-types",
-          icon: <AppstoreOutlined />,
-          label: "分类类型管理",
-        },
-        {
-          key: "/app/category/categories",
-          icon: <UnorderedListOutlined />,
-          label: "分类管理",
-        },
-      ],
-    },
-  ];
+  const menuItems = buildMenuItems(resources || []);
 
-  const handleMenuClick: MenuProps["onClick"] = ({ key }) => {
+  const handleMenuClick = ({ key }: { key: string }) => {
     navigate(key);
+  };
+
+  // 展开所有父级菜单
+  const getOpenKeys = (pathname: string) => {
+    const parts = pathname.split("/").filter(Boolean);
+    const keys: string[] = [];
+    let current = "";
+    for (const part of parts) {
+      current += "/" + part;
+      keys.push(current);
+    }
+    return keys;
   };
 
   return (
@@ -88,7 +77,7 @@ const Sidebar = ({ collapsed }: SidebarProps) => {
         theme="dark"
         mode="inline"
         selectedKeys={[location.pathname]}
-        defaultOpenKeys={["permission", "category"]}
+        defaultOpenKeys={getOpenKeys(location.pathname)}
         items={menuItems}
         onClick={handleMenuClick}
       />

@@ -36,7 +36,7 @@ const lazyLoad = (componentPath: string) => {
 export function generateRoutes(routeTree: any[]): RouteObject[] {
   // 过滤顶级路由
   return routeTree
-    .filter((item) => item.type === "menu")
+    .filter((item) => item.type.toLowerCase() === "menu")
     .map((item) => {
       // 处理当前路由
       const { path, component, children } = item;
@@ -48,7 +48,7 @@ export function generateRoutes(routeTree: any[]): RouteObject[] {
       const childRoutes =
         children?.length > 0
           ? children
-              .filter((child) => child.type === "menu")
+              .filter((child) => child.type.toLowerCase() === "menu")
               .map((child) => {
                 // 规范化子路由路径
                 const childPath = child.path.startsWith("/")
