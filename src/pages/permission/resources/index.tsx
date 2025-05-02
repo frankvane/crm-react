@@ -6,22 +6,34 @@ import {
   Modal,
   Select,
   Space,
-  Table,
   Tag,
+  Tree,
   message,
 } from "antd";
-import type { IResource, IResourceQueryParams } from "@/types/api/resource";
+import {
+  DeleteOutlined,
+  EditOutlined,
+  PlusOutlined,
+  SubnodeOutlined,
+} from "@ant-design/icons";
+import type {
+  IResource,
+  IResourceQueryParams,
+  IResourceTreeNode,
+  IResourceTreeResponse,
+} from "@/types/api/resource";
 import {
   deleteResource,
-  getResources,
+  getResourceTree,
   toggleResourceStatus,
 } from "@/api/modules/resource";
+import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
+import type { DataNode } from "antd/es/tree";
 import ResourceForm from "./components/ResourceForm";
 import { ResourceType } from "@/types/api/resource";
 import styles from "./style.module.less";
-import { useState } from "react";
 
 const { confirm } = Modal;
 
@@ -32,21 +44,14 @@ const Resources = () => {
   const [editingResource, setEditingResource] = useState<IResource | null>(
     null
   );
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
   const [searchValues, setSearchValues] = useState<
     Partial<IResourceQueryParams>
   >({});
 
-  // 获取资源列表
-  const { data: resourcesData, isLoading } = useQuery({
-    queryKey: ["resources", currentPage, pageSize, searchValues],
-    queryFn: () =>
-      getResources({
-        page: currentPage,
-        pageSize,
-        ...searchValues,
-      }),
+  // 获取资源树
+  const { data: resourceTreeData = [] } = useQuery<IResourceTreeResponse>({
+    queryKey: ["resourceTree", searchValues],
+    queryFn: getResourceTree,
   });
 
   // 删除资源
@@ -54,7 +59,7 @@ const Resources = () => {
     mutationFn: deleteResource,
     onSuccess: () => {
       message.success("删除成功");
-      queryClient.invalidateQueries({ queryKey: ["resources"] });
+      queryClient.invalidateQueries({ queryKey: ["resourceTree"] });
     },
   });
 
@@ -63,7 +68,7 @@ const Resources = () => {
     mutationFn: toggleResourceStatus,
     onSuccess: () => {
       message.success("状态更新成功");
-      queryClient.invalidateQueries({ queryKey: ["resources"] });
+      queryClient.invalidateQueries({ queryKey: ["resourceTree"] });
     },
   });
 
@@ -83,91 +88,101 @@ const Resources = () => {
     toggleStatusMutation.mutate(id);
   };
 
-  // 表格列配置
-  const columns = [
-    {
-      title: "资源名称",
-      dataIndex: "name",
-      key: "name",
-    },
-    {
-      title: "资源编码",
-      dataIndex: "code",
-      key: "code",
-    },
-    {
-      title: "资源类型",
-      dataIndex: "type",
-      key: "type",
-      render: (type: ResourceType) => {
-        const typeMap = {
-          [ResourceType.MENU]: { color: "blue", text: "菜单" },
-          [ResourceType.BUTTON]: { color: "green", text: "按钮" },
-          [ResourceType.API]: { color: "purple", text: "接口" },
-        };
-        return <Tag color={typeMap[type].color}>{typeMap[type].text}</Tag>;
-      },
-    },
-    {
-      title: "路径",
-      dataIndex: "path",
-      key: "path",
-    },
-    {
-      title: "排序",
-      dataIndex: "sort",
-      key: "sort",
-    },
-    {
-      title: "状态",
-      dataIndex: "status",
-      key: "status",
-      render: (status: number) => (
-        <Tag color={status === 1 ? "success" : "error"}>
-          {status === 1 ? "启用" : "禁用"}
-        </Tag>
-      ),
-    },
-    {
-      title: "创建时间",
-      dataIndex: "createdAt",
-      key: "createdAt",
-    },
-    {
-      title: "操作",
-      key: "action",
-      render: (_: unknown, record: IResource) => (
-        <Space size="middle">
-          <Button
-            type="link"
-            onClick={() => {
-              setEditingResource(record);
-              setModalVisible(true);
+  // 转换资源数据为树形结构
+  const treeData = useMemo(() => {
+    const transformToTreeNode = (
+      resources: IResourceTreeNode[]
+    ): DataNode[] => {
+      return resources.map((resource) => ({
+        key: resource.id,
+        title: (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              width: "100%",
             }}
           >
-            编辑
-          </Button>
-          <Button type="link" onClick={() => handleToggleStatus(record.id)}>
-            {record.status === 1 ? "禁用" : "启用"}
-          </Button>
-          <Button type="link" danger onClick={() => handleDelete(record.id)}>
-            删除
-          </Button>
-        </Space>
-      ),
-    },
-  ];
+            <Space>
+              <span>{resource.name}</span>
+              <Tag
+                color={
+                  resource.type === ResourceType.MENU
+                    ? "blue"
+                    : resource.type === ResourceType.BUTTON
+                    ? "green"
+                    : "purple"
+                }
+              >
+                {resource.type === ResourceType.MENU
+                  ? "菜单"
+                  : resource.type === ResourceType.BUTTON
+                  ? "按钮"
+                  : "接口"}
+              </Tag>
+              <Tag color={resource.status === 1 ? "success" : "error"}>
+                {resource.status === 1 ? "启用" : "禁用"}
+              </Tag>
+              {resource.path && <span>({resource.path})</span>}
+            </Space>
+            <Space>
+              <Button
+                type="text"
+                icon={<SubnodeOutlined />}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setEditingResource({ parentId: resource.id } as IResource);
+                  setModalVisible(true);
+                }}
+              />
+              <Button
+                type="text"
+                icon={<EditOutlined />}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setEditingResource(resource);
+                  setModalVisible(true);
+                }}
+              />
+              <Button
+                type="text"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleToggleStatus(resource.id);
+                }}
+              >
+                {resource.status === 1 ? "禁用" : "启用"}
+              </Button>
+              <Button
+                type="text"
+                danger
+                icon={<DeleteOutlined />}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDelete(resource.id);
+                }}
+              />
+            </Space>
+          </div>
+        ),
+        children: resource.children
+          ? transformToTreeNode(resource.children)
+          : undefined,
+      }));
+    };
+
+    return transformToTreeNode(resourceTreeData);
+  }, [resourceTreeData]);
 
   // 处理搜索
   const handleSearch = (values: Partial<IResourceQueryParams>) => {
-    setCurrentPage(1);
     setSearchValues(values);
   };
 
   // 处理重置
   const handleReset = () => {
     form.resetFields();
-    setCurrentPage(1);
     setSearchValues({});
   };
 
@@ -220,6 +235,7 @@ const Resources = () => {
         <div className={styles.tableHeader}>
           <Button
             type="primary"
+            icon={<PlusOutlined />}
             onClick={() => {
               setEditingResource(null);
               setModalVisible(true);
@@ -229,20 +245,11 @@ const Resources = () => {
           </Button>
         </div>
 
-        <Table
-          columns={columns}
-          dataSource={resourcesData?.data.list}
-          rowKey="id"
-          loading={isLoading}
-          pagination={{
-            current: currentPage,
-            pageSize,
-            total: resourcesData?.data.pagination?.total || 0,
-            onChange: (page, size) => {
-              setCurrentPage(page);
-              setPageSize(size);
-            },
-          }}
+        <Tree
+          treeData={treeData}
+          defaultExpandAll
+          showLine={{ showLeafIcon: false }}
+          blockNode
         />
       </Card>
 
@@ -256,7 +263,7 @@ const Resources = () => {
         onSuccess={() => {
           setModalVisible(false);
           setEditingResource(null);
-          queryClient.invalidateQueries({ queryKey: ["resources"] });
+          queryClient.invalidateQueries({ queryKey: ["resourceTree"] });
         }}
       />
     </div>
