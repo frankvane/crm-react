@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 9,
+            "activePatchIndex": 13,
             "patches": [
                 {
                     "date": 1746086966685,
@@ -44,6 +44,22 @@
                 {
                     "date": 1746200467782,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -38,11 +38,11 @@\n       label: menuMap[pathname] || \"未知页面\",\r\n     });\r\n   }, [location, addTab]);\r\n \r\n-  const handleLogout = () => {\r\n-    logout();\r\n-    navigate(\"/login\");\r\n+  const handleLogout = async () => {\r\n+    await logout();\r\n+    navigate(\"/user/login\", { replace: true });\r\n   };\r\n \r\n   return (\r\n     <Layout className={styles.layout}>\r\n"
+                },
+                {
+                    "date": 1746207582520,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -69,11 +69,8 @@\n           </div>\r\n         </Header>\r\n         <div className={styles.mainContent}>\r\n           <TabBar />\r\n-          <Content className={styles.content}>\r\n-            <Outlet />\r\n-          </Content>\r\n         </div>\r\n       </Layout>\r\n     </Layout>\r\n   );\r\n"
+                },
+                {
+                    "date": 1746207593919,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -69,8 +69,11 @@\n           </div>\r\n         </Header>\r\n         <div className={styles.mainContent}>\r\n           <TabBar />\r\n+          <Content className={styles.content}>\r\n+            <Outlet />\r\n+          </Content>\r\n         </div>\r\n       </Layout>\r\n     </Layout>\r\n   );\r\n"
+                },
+                {
+                    "date": 1746225322478,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -69,11 +69,9 @@\n           </div>\r\n         </Header>\r\n         <div className={styles.mainContent}>\r\n           <TabBar />\r\n-          <Content className={styles.content}>\r\n-            <Outlet />\r\n-          </Content>\r\n+          <Content className={styles.content}></Content>\r\n         </div>\r\n       </Layout>\r\n     </Layout>\r\n   );\r\n"
+                },
+                {
+                    "date": 1746225333784,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -69,9 +69,11 @@\n           </div>\r\n         </Header>\r\n         <div className={styles.mainContent}>\r\n           <TabBar />\r\n-          <Content className={styles.content}></Content>\r\n+          <Content className={styles.content}>\r\n+            <Outlet />\r\n+          </Content>\r\n         </div>\r\n       </Layout>\r\n     </Layout>\r\n   );\r\n"
                 }
             ],
             "date": 1746086966685,

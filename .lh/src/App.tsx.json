@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 1,
+            "activePatchIndex": 16,
             "patches": [
                 {
                     "date": 1746086927828,
@@ -12,6 +12,66 @@
                 {
                     "date": 1746200981019,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,12 +1,43 @@\n+import { Navigate, useRoutes } from \"react-router-dom\";\n+import { Suspense, useMemo } from \"react\";\n+\n+import AuthGuard from \"@/components/AuthGuard\";\n+import BasicLayout from \"@/layouts/BasicLayout\";\n import { Spin } from \"antd\";\n-import { Suspense } from \"react\";\n-import { routes } from \"./config/routes\";\n-import { useRoutes } from \"react-router-dom\";\n+import { generateRoutes } from \"@/router/dynamicRoutes\";\n+import staticRoutes from \"@/router/staticRoutes\";\n+import { useAuthStore } from \"@/store/modules/auth\";\n \n const App = () => {\n-  const element = useRoutes(routes);\n+  const resources = useAuthStore((state) => state.resources);\n \n+  // 动态路由生成\n+  const dynamicRoutes = useMemo(\n+    () => generateRoutes(resources || []),\n+    [resources]\n+  );\n+\n+  // 合并静态、动态、任意路由\n+  const allRoutes = useMemo(\n+    () => [\n+      ...staticRoutes,\n+      {\n+        path: \"/app\",\n+        element: (\n+          <AuthGuard>\n+            <BasicLayout />\n+          </AuthGuard>\n+        ),\n+        children: dynamicRoutes,\n+      },\n+      { path: \"*\", element: <Navigate to=\"/404\" replace /> },\n+    ],\n+    [dynamicRoutes]\n+  );\n+\n+  const element = useRoutes(allRoutes);\n+\n   return (\n     <Suspense\n       fallback={\n         <div\n"
+                },
+                {
+                    "date": 1746201722031,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -16,8 +16,13 @@\n     () => generateRoutes(resources || []),\n     [resources]\n   );\n \n+  console.log(\n+    \"🚀 ~ file: App.tsx ~ line 23 ~ App ~ dynamicRoutes\",\n+    dynamicRoutes\n+  );\n+\n   // 合并静态、动态、任意路由\n   const allRoutes = useMemo(\n     () => [\n       ...staticRoutes,\n"
+                },
+                {
+                    "date": 1746202936590,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -16,13 +16,8 @@\n     () => generateRoutes(resources || []),\n     [resources]\n   );\n \n-  console.log(\n-    \"🚀 ~ file: App.tsx ~ line 23 ~ App ~ dynamicRoutes\",\n-    dynamicRoutes\n-  );\n-\n   // 合并静态、动态、任意路由\n   const allRoutes = useMemo(\n     () => [\n       ...staticRoutes,\n"
+                },
+                {
+                    "date": 1746202999683,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -27,9 +27,15 @@\n           <AuthGuard>\n             <BasicLayout />\n           </AuthGuard>\n         ),\n-        children: dynamicRoutes,\n+        children: [\n+          {\n+            path: \"\",\n+            element: <Navigate to=\"dashboard\" replace />,\n+          },\n+          ...dynamicRoutes,\n+        ],\n       },\n       { path: \"*\", element: <Navigate to=\"/404\" replace /> },\n     ],\n     [dynamicRoutes]\n"
+                },
+                {
+                    "date": 1746203596626,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -40,8 +40,9 @@\n     ],\n     [dynamicRoutes]\n   );\n \n+  console.log(allRoutes);\n   const element = useRoutes(allRoutes);\n \n   return (\n     <Suspense\n"
+                },
+                {
+                    "date": 1746204015947,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -40,9 +40,8 @@\n     ],\n     [dynamicRoutes]\n   );\n \n-  console.log(allRoutes);\n   const element = useRoutes(allRoutes);\n \n   return (\n     <Suspense\n"
+                },
+                {
+                    "date": 1746204371792,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -41,8 +41,9 @@\n     [dynamicRoutes]\n   );\n \n   const element = useRoutes(allRoutes);\n+  console.log(allRoutes);\n \n   return (\n     <Suspense\n       fallback={\n"
+                },
+                {
+                    "date": 1746204414034,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -41,9 +41,9 @@\n     [dynamicRoutes]\n   );\n \n   const element = useRoutes(allRoutes);\n-  console.log(allRoutes);\n+  console.log(element);\n \n   return (\n     <Suspense\n       fallback={\n"
+                },
+                {
+                    "date": 1746204433094,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -41,9 +41,8 @@\n     [dynamicRoutes]\n   );\n \n   const element = useRoutes(allRoutes);\n-  console.log(element);\n \n   return (\n     <Suspense\n       fallback={\n"
+                },
+                {
+                    "date": 1746205447638,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -40,8 +40,9 @@\n     ],\n     [dynamicRoutes]\n   );\n \n+  console.log(allRoutes);\n   const element = useRoutes(allRoutes);\n \n   return (\n     <Suspense\n"
+                },
+                {
+                    "date": 1746207549255,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -32,17 +32,17 @@\n           {\n             path: \"\",\n             element: <Navigate to=\"dashboard\" replace />,\n           },\n+          // 直接展平动态路由，避免嵌套问题\n           ...dynamicRoutes,\n         ],\n       },\n       { path: \"*\", element: <Navigate to=\"/404\" replace /> },\n     ],\n     [dynamicRoutes]\n   );\n \n-  console.log(allRoutes);\n   const element = useRoutes(allRoutes);\n \n   return (\n     <Suspense\n"
+                },
+                {
+                    "date": 1746225055432,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -3,8 +3,9 @@\n \n import AuthGuard from \"@/components/AuthGuard\";\n import BasicLayout from \"@/layouts/BasicLayout\";\n import { Spin } from \"antd\";\n+import anyRoutes from \"@/router/anyRoutes\";\n import { generateRoutes } from \"@/router/dynamicRoutes\";\n import staticRoutes from \"@/router/staticRoutes\";\n import { useAuthStore } from \"@/store/modules/auth\";\n \n"
+                },
+                {
+                    "date": 1746225295847,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -37,9 +37,9 @@\n           // 直接展平动态路由，避免嵌套问题\n           ...dynamicRoutes,\n         ],\n       },\n-      { path: \"*\", element: <Navigate to=\"/404\" replace /> },\n+      ...anyRoutes,\n     ],\n     [dynamicRoutes]\n   );\n \n"
+                },
+                {
+                    "date": 1746225856422,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -3,23 +3,22 @@\n \n import AuthGuard from \"@/components/AuthGuard\";\n import BasicLayout from \"@/layouts/BasicLayout\";\n import { Spin } from \"antd\";\n-import anyRoutes from \"@/router/anyRoutes\";\n import { generateRoutes } from \"@/router/dynamicRoutes\";\n import staticRoutes from \"@/router/staticRoutes\";\n import { useAuthStore } from \"@/store/modules/auth\";\n \n const App = () => {\n   const resources = useAuthStore((state) => state.resources);\n \n-  // 动态路由生成\n+  // 扁平化处理动态路由\n   const dynamicRoutes = useMemo(\n-    () => generateRoutes(resources || []),\n+    () => resources ? generateRoutes(resources) : [],\n     [resources]\n   );\n \n-  // 合并静态、动态、任意路由\n+  // 合并静态路由和动态路由\n   const allRoutes = useMemo(\n     () => [\n       ...staticRoutes,\n       {\n@@ -33,13 +32,13 @@\n           {\n             path: \"\",\n             element: <Navigate to=\"dashboard\" replace />,\n           },\n-          // 直接展平动态路由，避免嵌套问题\n+          // 扁平化路由结构\n           ...dynamicRoutes,\n         ],\n       },\n-      ...anyRoutes,\n+      { path: \"*\", element: <Navigate to=\"/404\" replace /> },\n     ],\n     [dynamicRoutes]\n   );\n \n"
+                },
+                {
+                    "date": 1746225897050,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -10,15 +10,15 @@\n \n const App = () => {\n   const resources = useAuthStore((state) => state.resources);\n \n-  // 扁平化处理动态路由\n+  // 动态路由生成\n   const dynamicRoutes = useMemo(\n-    () => (resources ? generateRoutes(resources) : []),\n+    () => generateRoutes(resources || []),\n     [resources]\n   );\n \n-  // 合并静态路由和动态路由\n+  // 合并静态、动态、任意路由\n   const allRoutes = useMemo(\n     () => [\n       ...staticRoutes,\n       {\n@@ -32,17 +32,17 @@\n           {\n             path: \"\",\n             element: <Navigate to=\"dashboard\" replace />,\n           },\n-          // 扁平化路由结构\n           ...dynamicRoutes,\n         ],\n       },\n       { path: \"*\", element: <Navigate to=\"/404\" replace /> },\n     ],\n     [dynamicRoutes]\n   );\n \n+  console.log(allRoutes);\n   const element = useRoutes(allRoutes);\n \n   return (\n     <Suspense\n"
+                },
+                {
+                    "date": 1746226758191,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -41,9 +41,8 @@\n     ],\n     [dynamicRoutes]\n   );\n \n-  console.log(allRoutes);\n   const element = useRoutes(allRoutes);\n \n   return (\n     <Suspense\n"
                 }
             ],
             "date": 1746086927828,

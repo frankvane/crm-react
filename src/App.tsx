@@ -4,6 +4,7 @@ import { Suspense, useMemo } from "react";
 import AuthGuard from "@/components/AuthGuard";
 import BasicLayout from "@/layouts/BasicLayout";
 import { Spin } from "antd";
+import anyRoutes from "@/router/anyRoutes";
 import { generateRoutes } from "@/router/dynamicRoutes";
 import staticRoutes from "@/router/staticRoutes";
 import { useAuthStore } from "@/store/modules/auth";
@@ -28,9 +29,15 @@ const App = () => {
             <BasicLayout />
           </AuthGuard>
         ),
-        children: dynamicRoutes,
+        children: [
+          {
+            path: "",
+            element: <Navigate to="dashboard" replace />,
+          },
+          ...dynamicRoutes,
+        ],
       },
-      { path: "*", element: <Navigate to="/404" replace /> },
+      ...anyRoutes,
     ],
     [dynamicRoutes]
   );

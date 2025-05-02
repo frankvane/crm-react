@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 6,
+            "activePatchIndex": 10,
             "patches": [
                 {
                     "date": 1746088652079,
@@ -32,6 +32,22 @@
                 {
                     "date": 1746090752470,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -3,8 +3,9 @@\n import CategoryTypes from \"@/pages/category/category-types\";\r\n import Dashboard from \"@/pages/dashboard\";\r\n import Login from \"@/pages/user/Login\";\r\n import { Navigate } from \"react-router-dom\";\r\n+import NotFound from \"@/pages/404\";\r\n import React from \"react\";\r\n import Resources from \"@/pages/permission/resources\";\r\n import Roles from \"@/pages/permission/roles\";\r\n import type { RouteObject } from \"react-router-dom\";\r\n@@ -77,8 +78,12 @@\n       },\r\n     ],\r\n   },\r\n   {\r\n+    path: \"/404\",\r\n+    element: <NotFound />,\r\n+  },\r\n+  {\r\n     path: \"*\",\r\n     element: <Navigate to=\"/404\" replace />,\r\n   },\r\n ];\r\n"
+                },
+                {
+                    "date": 1746201918797,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -29,8 +29,9 @@\n     ),\r\n     children: [\r\n       {\r\n         path: \"\",\r\n+        name: \"dashboard\",\r\n         element: <Navigate to=\"dashboard\" replace />,\r\n       },\r\n       {\r\n         path: \"dashboard\",\r\n"
+                },
+                {
+                    "date": 1746201933163,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -29,12 +29,12 @@\n     ),\r\n     children: [\r\n       {\r\n         path: \"\",\r\n-        name: \"dashboard\",\r\n         element: <Navigate to=\"dashboard\" replace />,\r\n       },\r\n       {\r\n+        name: \"仪表盘\",\r\n         path: \"dashboard\",\r\n         element: <Dashboard />,\r\n       },\r\n       {\r\n"
+                },
+                {
+                    "date": 1746201942515,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -37,8 +37,9 @@\n         path: \"dashboard\",\r\n         element: <Dashboard />,\r\n       },\r\n       {\r\n+        name: \"权限管理\",\r\n         path: \"permission\",\r\n         children: [\r\n           {\r\n             path: \"roles\",\r\n"
+                },
+                {
+                    "date": 1746201999327,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -32,14 +32,12 @@\n         path: \"\",\r\n         element: <Navigate to=\"dashboard\" replace />,\r\n       },\r\n       {\r\n-        name: \"仪表盘\",\r\n         path: \"dashboard\",\r\n         element: <Dashboard />,\r\n       },\r\n       {\r\n-        name: \"权限管理\",\r\n         path: \"permission\",\r\n         children: [\r\n           {\r\n             path: \"roles\",\r\n"
                 }
             ],
             "date": 1746088652079,

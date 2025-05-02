@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 1,
+            "activePatchIndex": 3,
             "patches": [
                 {
                     "date": 1746088577405,
@@ -12,6 +12,14 @@
                 {
                     "date": 1746088927329,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -19,5 +19,5 @@\n     </Layout>\r\n   );\r\n };\r\n \r\n-export default UserLayout; \n\\ No newline at end of file\n+export default UserLayout;\r\n"
+                },
+                {
+                    "date": 1746225375674,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -11,11 +11,9 @@\n             <h1>CRM Admin</h1>\r\n           </div>\r\n           <div className={styles.desc}>企业级客户关系管理系统</div>\r\n         </div>\r\n-        <div className={styles.main}>\r\n-          <Outlet />\r\n-        </div>\r\n+        <div className={styles.main}></div>\r\n       </div>\r\n     </Layout>\r\n   );\r\n };\r\n"
+                },
+                {
+                    "date": 1746225384425,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -11,9 +11,11 @@\n             <h1>CRM Admin</h1>\r\n           </div>\r\n           <div className={styles.desc}>企业级客户关系管理系统</div>\r\n         </div>\r\n-        <div className={styles.main}></div>\r\n+        <div className={styles.main}>\r\n+          <Outlet />\r\n+        </div>\r\n       </div>\r\n     </Layout>\r\n   );\r\n };\r\n"
                 }
             ],
             "date": 1746088577405,
