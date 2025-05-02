@@ -65,10 +65,12 @@ const RoleResourceModal = ({
   const mutation = useMutation({
     mutationFn: async () => {
       // 组装提交数据
-      await assignResources({
+      const data = {
         roleId: roleId!,
         resourceIds: checkedKeys as number[],
-      });
+        permissionIds: Object.values(actionChecked).flat(),
+      };
+      await assignResources(data);
     },
     onSuccess: () => {
       message.success("分配资源成功");

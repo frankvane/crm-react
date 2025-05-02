@@ -38,4 +38,5 @@ export type IRoleListResponse = IPaginationResponse<IRole>;
 export interface IAssignResourcesParams {
   roleId: number;
   resourceIds: number[];
+  permissionIds: number[];
 }

@@ -55,6 +55,7 @@ export const assignResources = async (
 ): Promise<IRole> => {
   return request.post(`/roles/${data.roleId}/resources`, {
     resourceIds: data.resourceIds,
+    permissionIds: data.permissionIds,
   });
 };
 
