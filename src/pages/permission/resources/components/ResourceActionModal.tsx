@@ -95,7 +95,7 @@ const ResourceActionModal: React.FC<ResourceActionModalProps> = ({
       setIsEditLoading(true);
       // 获取最新的资源操作数据
       const response = await getResourceAction(resource!.id, record.id);
-      setEditingAction(response);
+      setEditingAction(response as unknown as IResourceAction);
       form.setFieldsValue(response);
     } catch (error: unknown) {
       console.error("Failed to fetch resource action:", error);

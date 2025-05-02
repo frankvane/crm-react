@@ -112,19 +112,12 @@ const ResourceForm: React.FC<IResourceFormProps> = ({
     if (visible) {
       if (editingResource) {
         form.setFieldsValue(editingResource);
-        // 如果是编辑子菜单，设置父级ID
-        if (editingResource.parentId) {
+        if (typeof editingResource.parentId === "number") {
           setParentId(editingResource.parentId);
         }
       } else {
         form.resetFields();
-        // 如果是新增子菜单，设置父级ID
-        if (editingResource?.parentId) {
-          setParentId(editingResource.parentId);
-          form.setFieldValue("parentId", editingResource.parentId);
-        } else {
-          setParentId(null);
-        }
+        setParentId(null);
       }
     }
   }, [visible, editingResource, form]);
