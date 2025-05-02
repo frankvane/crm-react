@@ -5,10 +5,9 @@ import type {
   IUpdateRoleParams,
 } from "@/types/api/role";
 import { createRole, updateRole } from "@/api/modules/role";
-import { useMutation, useQuery } from "@tanstack/react-query";
 
-import { getResources } from "@/api/modules/resource";
 import { useEffect } from "react";
+import { useMutation } from "@tanstack/react-query";
 
 interface IRoleFormProps {
   visible: boolean;
@@ -24,12 +23,6 @@ const RoleForm: React.FC<IRoleFormProps> = ({
   onSuccess,
 }) => {
   const [form] = Form.useForm<ICreateRoleParams>();
-
-  // 获取资源列表
-  const { data: resourcesData } = useQuery({
-    queryKey: ["resources"],
-    queryFn: () => getResources({ page: 1, pageSize: 100 }),
-  });
 
   // 创建角色
   const createMutation = useMutation({
@@ -114,21 +107,6 @@ const RoleForm: React.FC<IRoleFormProps> = ({
           rules={[{ required: true, message: "请输入描述" }]}
         >
           <Input.TextArea placeholder="请输入描述" rows={4} />
-        </Form.Item>
-
-        <Form.Item
-          name="resourceIds"
-          label="资源权限"
-          rules={[{ required: true, message: "请选择资源权限" }]}
-        >
-          <Select
-            mode="multiple"
-            placeholder="请选择资源权限"
-            options={resourcesData?.list?.map((resource) => ({
-              label: resource.name,
-              value: resource.id,
-            }))}
-          />
         </Form.Item>
 
         <Form.Item

@@ -15,6 +15,7 @@ import { deleteRole, getRoles, toggleRoleStatus } from "@/api/modules/role";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import RoleForm from "./components/RoleForm";
+import RoleResourceModal from "./components/RoleResourceModal";
 import styles from "./style.module.less";
 import { useState } from "react";
 
@@ -30,6 +31,10 @@ const Roles = () => {
   const [searchValues, setSearchValues] = useState<Partial<IRoleQueryParams>>(
     {}
   );
+  const [resourceModal, setResourceModal] = useState<{
+    visible: boolean;
+    roleId?: number;
+  }>({ visible: false });
 
   // 获取角色列表
   const { data: rolesData, isLoading } = useQuery({
@@ -128,6 +133,14 @@ const Roles = () => {
           <Button type="link" danger onClick={() => handleDelete(record.id)}>
             删除
           </Button>
+          <Button
+            type="link"
+            onClick={() =>
+              setResourceModal({ visible: true, roleId: record.id })
+            }
+          >
+            分配资源
+          </Button>
         </Space>
       ),
     },
@@ -221,6 +234,16 @@ const Roles = () => {
           setModalVisible(false);
           setEditingRole(null);
           queryClient.invalidateQueries({ queryKey: ["roles"] });
+        }}
+      />
+
+      <RoleResourceModal
+        visible={resourceModal.visible}
+        roleId={resourceModal.roleId}
+        onCancel={() => setResourceModal({ visible: false })}
+        onSuccess={() => {
+          setResourceModal({ visible: false });
+          // 可选：刷新角色列表或资源分配信息
         }}
       />
     </div>

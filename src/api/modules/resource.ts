@@ -23,6 +23,11 @@ export const getResourceTree = async (): Promise<IResourceTreeResponse> => {
   return request.get("/resources/tree");
 };
 
+// 获取带操作的资源树
+export const getResourceTreeWithActions = async () => {
+  return request.get("/resources/tree-with-actions");
+};
+
 // 获取单个资源
 export const getResource = async (id: number): Promise<IResource> => {
   return request.get(`/resources/${id}`);

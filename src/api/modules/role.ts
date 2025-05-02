@@ -57,3 +57,8 @@ export const assignResources = async (
     resourceIds: data.resourceIds,
   });
 };
+
+// 获取角色已分配资源及操作
+export const getRoleResources = async (roleId: number) => {
+  return request.get(`/roles/${roleId}/resources`);
+};
