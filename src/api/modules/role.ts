@@ -7,11 +7,10 @@ import type {
   IUpdateRoleParams,
 } from "@/types/api/role";
 
-import type { IResponse } from "@/types/api/common";
 import request from "@/utils/request";
 
 // 获取所有角色（不分页）
-export const getAllRoles = async (): Promise<IResponse<IRole[]>> => {
+export const getAllRoles = async (): Promise<IRole[]> => {
   return request.get("/roles/all");
 };
 

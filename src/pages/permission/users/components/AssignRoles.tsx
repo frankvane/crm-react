@@ -1,7 +1,6 @@
 import { Form, Modal, Select, message } from "antd";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import type { IResponse } from "@/types/api/common";
 import type { IRole } from "@/types/api/role";
 import { assignRoles } from "@/api/modules/user";
 import { getAllRoles } from "@/api/modules/role";
@@ -23,18 +22,10 @@ const AssignRoles = ({
   const queryClient = useQueryClient();
 
   // 获取所有角色
-  const { data: rolesResponse } = useQuery<IResponse<IRole[]>>({
+  const { data: roles = [] } = useQuery<IRole[]>({
     queryKey: ["allRoles"],
-    queryFn: async () => {
-      const response = await getAllRoles();
-      if (!response) {
-        throw new Error("Failed to fetch roles");
-      }
-      return response;
-    },
+    queryFn: getAllRoles,
   });
-
-  const roles = rolesResponse || [];
 
   // 分配角色
   const assignRolesMutation = useMutation({

@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 13,
+            "activePatchIndex": 17,
             "patches": [
                 {
                     "date": 1746144125568,
@@ -60,6 +60,22 @@
                 {
                     "date": 1746146495772,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -33,9 +33,9 @@\n       return response;\r\n     },\r\n   });\r\n \r\n-  const roles = rolesResponse?.data || [];\r\n+  const roles = rolesResponse || [];\r\n \r\n   // 分配角色\r\n   const assignRolesMutation = useMutation({\r\n     mutationFn: (values: { roleIds: number[] }) =>\r\n"
+                },
+                {
+                    "date": 1746147165194,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -33,9 +33,9 @@\n       return response;\r\n     },\r\n   });\r\n \r\n-  const roles = rolesResponse || [];\r\n+  const roles = rolesResponse?.data || [];\r\n \r\n   // 分配角色\r\n   const assignRolesMutation = useMutation({\r\n     mutationFn: (values: { roleIds: number[] }) =>\r\n"
+                },
+                {
+                    "date": 1746147192361,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -33,9 +33,9 @@\n       return response;\r\n     },\r\n   });\r\n \r\n-  const roles = rolesResponse?.data || [];\r\n+  const roles = rolesResponse || [];\r\n \r\n   // 分配角色\r\n   const assignRolesMutation = useMutation({\r\n     mutationFn: (values: { roleIds: number[] }) =>\r\n"
+                },
+                {
+                    "date": 1746147242247,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,7 @@\n import { Form, Modal, Select, message } from \"antd\";\r\n import { useMutation, useQuery, useQueryClient } from \"@tanstack/react-query\";\r\n \r\n-import type { IResponse } from \"@/types/api/common\";\r\n import type { IRole } from \"@/types/api/role\";\r\n import { assignRoles } from \"@/api/modules/user\";\r\n import { getAllRoles } from \"@/api/modules/role\";\r\n \r\n@@ -22,9 +21,9 @@\n   const [form] = Form.useForm();\r\n   const queryClient = useQueryClient();\r\n \r\n   // 获取所有角色\r\n-  const { data: rolesResponse } = useQuery<IResponse<IRole[]>>({\r\n+  const { data: roles = [] } = useQuery<IRole[]>({\r\n     queryKey: [\"allRoles\"],\r\n     queryFn: async () => {\r\n       const response = await getAllRoles();\r\n       if (!response) {\r\n@@ -33,10 +32,8 @@\n       return response;\r\n     },\r\n   });\r\n \r\n-  const roles = rolesResponse || [];\r\n-\r\n   // 分配角色\r\n   const assignRolesMutation = useMutation({\r\n     mutationFn: (values: { roleIds: number[] }) =>\r\n       assignRoles(userId as number, values),\r\n"
+                },
+                {
+                    "date": 1746147277735,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -23,15 +23,9 @@\n \r\n   // 获取所有角色\r\n   const { data: roles = [] } = useQuery<IRole[]>({\r\n     queryKey: [\"allRoles\"],\r\n-    queryFn: async () => {\r\n-      const response = await getAllRoles();\r\n-      if (!response) {\r\n-        throw new Error(\"Failed to fetch roles\");\r\n-      }\r\n-      return response;\r\n-    },\r\n+    queryFn: getAllRoles,\r\n   });\r\n \r\n   // 分配角色\r\n   const assignRolesMutation = useMutation({\r\n"
                 }
             ],
             "date": 1746144125568,

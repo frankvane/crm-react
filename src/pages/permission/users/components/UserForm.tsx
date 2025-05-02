@@ -1,14 +1,13 @@
 import { Form, Input, Modal, Select, message } from "antd";
 import type {
   ICreateUserParams,
-  IRole,
   IUpdateUserParams,
   IUser,
 } from "@/types/api/user";
 import { createUser, updateUser } from "@/api/modules/user";
-import { useMutation, useQuery } from "@tanstack/react-query";
 
 import { useEffect } from "react";
+import { useMutation } from "@tanstack/react-query";
 
 interface IUserFormProps {
   visible: boolean;

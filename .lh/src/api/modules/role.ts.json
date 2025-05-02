@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 5,
+            "activePatchIndex": 7,
             "patches": [
                 {
                     "date": 1746087726156,
@@ -28,6 +28,14 @@
                 {
                     "date": 1746144897208,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,14 +1,14 @@\n import type {\r\n   IAssignResourcesParams,\r\n   ICreateRoleParams,\r\n-  IResponse,\r\n   IRole,\r\n   IRoleListResponse,\r\n   IRoleQueryParams,\r\n   IUpdateRoleParams,\r\n } from \"@/types/api/role\";\r\n \r\n+import type { IResponse } from \"@/types/api/common\";\r\n import request from \"@/utils/request\";\r\n \r\n // 获取所有角色（不分页）\r\n export const getAllRoles = async (): Promise<IResponse<IRole[]>> => {\r\n"
+                },
+                {
+                    "date": 1746147261118,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -10,9 +10,9 @@\n import type { IResponse } from \"@/types/api/common\";\r\n import request from \"@/utils/request\";\r\n \r\n // 获取所有角色（不分页）\r\n-export const getAllRoles = async (): Promise<IResponse<IRole[]>> => {\r\n+export const getAllRoles = async (): Promise<IRole[]> => {\r\n   return request.get(\"/roles/all\");\r\n };\r\n \r\n // 获取角色列表\r\n"
+                },
+                {
+                    "date": 1746147306437,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,9 +6,8 @@\n   IRoleQueryParams,\r\n   IUpdateRoleParams,\r\n } from \"@/types/api/role\";\r\n \r\n-import type { IResponse } from \"@/types/api/common\";\r\n import request from \"@/utils/request\";\r\n \r\n // 获取所有角色（不分页）\r\n export const getAllRoles = async (): Promise<IRole[]> => {\r\n"
                 }
             ],
             "date": 1746087726156,
