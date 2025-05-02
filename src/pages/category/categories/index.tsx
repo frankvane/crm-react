@@ -142,19 +142,6 @@ const Categories = () => {
     }
   };
 
-  const getModalTitle = () => {
-    switch (modal.type) {
-      case "add":
-        return "新增分类";
-      case "edit":
-        return "编辑分类";
-      case "addSub":
-        return "新增子分类";
-      default:
-        return "";
-    }
-  };
-
   return (
     <>
       <Card title="分类列表">
@@ -193,28 +180,19 @@ const Categories = () => {
         />
       </Card>
 
-      <Modal
-        title={getModalTitle()}
-        open={modal.visible}
+      <CategoryForm
+        visible={modal.visible}
+        id={modal.type === "edit" ? modal.categoryId : undefined}
+        parentId={modal.type === "addSub" ? modal.categoryId : undefined}
+        typeId={activeTypeId}
         onCancel={() => setModal({ visible: false, type: "add" })}
-        footer={null}
-        destroyOnClose
-        width={600}
-      >
-        <CategoryForm
-          visible={modal.visible}
-          id={modal.type === "edit" ? modal.categoryId : undefined}
-          parentId={modal.type === "addSub" ? modal.categoryId : undefined}
-          typeId={activeTypeId}
-          onCancel={() => setModal({ visible: false, type: "add" })}
-          onSuccess={() => {
-            setModal({ visible: false, type: "add" });
-            queryClient.invalidateQueries({
-              queryKey: ["categoryTree", activeTypeId],
-            });
-          }}
-        />
-      </Modal>
+        onSuccess={() => {
+          setModal({ visible: false, type: "add" });
+          queryClient.invalidateQueries({
+            queryKey: ["categoryTree", activeTypeId],
+          });
+        }}
+      />
     </>
   );
 };

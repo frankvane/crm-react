@@ -1,14 +1,15 @@
-import { Form, Input, Modal, Select, message } from "antd";
+import { Form, Input, Modal, message } from "antd";
 import {
   createCategory,
   getCategory,
+  getCategoryTree,
   updateCategory,
 } from "@/api/modules/category";
-import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
 import type { ICategory } from "@/types/api/category";
 import { getAllCategoryTypes } from "@/api/modules/category-type";
+import { useEffect } from "react";
 
 interface CategoryFormProps {
   visible: boolean;
@@ -28,7 +29,6 @@ const CategoryForm = ({
   onSuccess,
 }: CategoryFormProps) => {
   const [form] = Form.useForm();
-  const [initialValues, setInitialValues] = useState<Partial<ICategory>>({});
 
   // 获取分类类型列表
   const { data: categoryTypes = [] } = useQuery({
@@ -36,14 +36,38 @@ const CategoryForm = ({
     queryFn: getAllCategoryTypes,
   });
 
-  // 获取分类详情
+  // 获取分类详情（编辑时）
   const { data: categoryData } = useQuery({
     queryKey: ["category", id],
     queryFn: () => getCategory(id as number),
     enabled: !!id,
   });
 
-  // 创建或更新分类
+  // 获取同类型下的分类树
+  const { data: categoryTree = [] } = useQuery({
+    queryKey: ["categoryTree", typeId],
+    queryFn: () => getCategoryTree(typeId!),
+    enabled: !!typeId,
+  });
+
+  // 计算上级分类名称
+  const parentName =
+    categoryTree.find((cat) => cat.id === parentId)?.name ||
+    (parentId ? parentId : "无");
+  // 计算分类类型名称
+  const typeName =
+    categoryTypes.find((type) => type.id === typeId)?.name || "无";
+
+  useEffect(() => {
+    if (visible) {
+      if (categoryData) {
+        form.setFieldsValue(categoryData);
+      } else {
+        form.resetFields();
+      }
+    }
+  }, [visible, categoryData, form]);
+
   const mutation = useMutation({
     mutationFn: (values: Partial<ICategory>) =>
       id ? updateCategory(id, values) : createCategory(values),
@@ -53,30 +77,16 @@ const CategoryForm = ({
     },
   });
 
-  // 设置初始值
-  useEffect(() => {
-    if (visible) {
-      if (categoryData) {
-        setInitialValues(categoryData);
-      } else {
-        setInitialValues({
-          parentId,
-          typeId,
-        });
-      }
-    }
-  }, [visible, categoryData, parentId, typeId]);
-
-  useEffect(() => {
-    if (visible) {
-      form.setFieldsValue(initialValues);
-    }
-  }, [visible, initialValues, form]);
-
   const handleOk = async () => {
     try {
       const values = await form.validateFields();
-      mutation.mutate(values);
+      // 合并 typeId 和 parentId 字段
+      const submitData = {
+        ...values,
+        typeId,
+        parentId,
+      };
+      mutation.mutate(submitData);
     } catch (error) {
       console.error("验证失败:", error);
     }
@@ -100,24 +110,20 @@ const CategoryForm = ({
           <Input placeholder="请输入分类名称" />
         </Form.Item>
         <Form.Item
-          name="typeId"
-          label="分类类型"
-          rules={[{ required: true, message: "请选择分类类型" }]}
+          name="code"
+          label="分类编码"
+          rules={[{ required: true, message: "请输入分类编码" }]}
         >
-          <Select
-            placeholder="请选择分类类型"
-            options={categoryTypes.map((type) => ({
-              label: type.name,
-              value: type.id,
-            }))}
-            disabled={!!typeId}
-          />
+          <Input placeholder="请输入分类编码" />
+        </Form.Item>
+        <Form.Item label="分类类型">
+          <Input value={typeName} disabled />
+        </Form.Item>
+        <Form.Item label="上级分类">
+          <Input value={parentName} disabled />
         </Form.Item>
         <Form.Item name="description" label="描述">
           <Input.TextArea placeholder="请输入描述" />
-        </Form.Item>
-        <Form.Item name="parentId" hidden>
-          <Input />
         </Form.Item>
       </Form>
     </Modal>
