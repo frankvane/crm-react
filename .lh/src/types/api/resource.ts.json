@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 2,
+            "activePatchIndex": 3,
             "patches": [
                 {
                     "date": 1746087860111,
@@ -16,6 +16,10 @@
                 {
                     "date": 1746097680628,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -17,9 +17,9 @@\n   method?: string;\r\n   icon?: string;\r\n   parentId?: number;\r\n   sort: number;\r\n-  status: boolean;\r\n+  status: number;\r\n   createdAt: string;\r\n   updatedAt: string;\r\n }\r\n \r\n@@ -32,9 +32,9 @@\n   method?: string;\r\n   icon?: string;\r\n   parentId?: number;\r\n   sort: number;\r\n-  status: boolean;\r\n+  status: number;\r\n }\r\n \r\n // 更新资源参数\r\n export type IUpdateResourceParams = ICreateResourceParams;\r\n@@ -43,9 +43,9 @@\n export interface IResourceQueryParams extends IPaginationParams {\r\n   name?: string;\r\n   code?: string;\r\n   type?: ResourceType;\r\n-  status?: boolean;\r\n+  status?: number;\r\n }\r\n \r\n // 资源列表响应\r\n export type IResourceListResponse = IPaginationResponse<IResource>;\r\n"
+                },
+                {
+                    "date": 1746150020243,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -17,9 +17,8 @@\n   method?: string;\r\n   icon?: string;\r\n   parentId?: number;\r\n   sort: number;\r\n-  status: number;\r\n   createdAt: string;\r\n   updatedAt: string;\r\n }\r\n \r\n@@ -32,9 +31,8 @@\n   method?: string;\r\n   icon?: string;\r\n   parentId?: number;\r\n   sort: number;\r\n-  status: number;\r\n }\r\n \r\n // 更新资源参数\r\n export type IUpdateResourceParams = ICreateResourceParams;\r\n@@ -43,9 +41,8 @@\n export interface IResourceQueryParams extends IPaginationParams {\r\n   name?: string;\r\n   code?: string;\r\n   type?: ResourceType;\r\n-  status?: number;\r\n }\r\n \r\n // 资源列表响应\r\n export type IResourceListResponse = IPaginationResponse<IResource>;\r\n"
                 }
             ],
             "date": 1746087860111,

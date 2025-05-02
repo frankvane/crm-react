@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 6,
+            "activePatchIndex": 8,
             "patches": [
                 {
                     "date": 1746087949853,
@@ -32,6 +32,14 @@
                 {
                     "date": 1746097806146,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,12 +2,12 @@\n import type {\r\n   ICreateResourceParams,\r\n   IResource,\r\n   IUpdateResourceParams,\r\n-  ResourceType,\r\n } from \"@/types/api/resource\";\r\n import { createResource, updateResource } from \"@/api/modules/resource\";\r\n \r\n+import { ResourceType } from \"@/types/api/resource\";\r\n import { useEffect } from \"react\";\r\n import { useMutation } from \"@tanstack/react-query\";\r\n \r\n interface IResourceFormProps {\r\n"
+                },
+                {
+                    "date": 1746150033214,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -162,22 +162,8 @@\n \r\n         <Form.Item name=\"sort\" label=\"排序\">\r\n           <InputNumber placeholder=\"请输入排序\" style={{ width: \"100%\" }} />\r\n         </Form.Item>\r\n-\r\n-        <Form.Item\r\n-          name=\"status\"\r\n-          label=\"状态\"\r\n-          rules={[{ required: true, message: \"请选择状态\" }]}\r\n-        >\r\n-          <Select\r\n-            placeholder=\"请选择状态\"\r\n-            options={[\r\n-              { label: \"启用\", value: 1 },\r\n-              { label: \"禁用\", value: 0 },\r\n-            ]}\r\n-          />\r\n-        </Form.Item>\r\n       </Form>\r\n     </Modal>\r\n   );\r\n };\r\n"
+                },
+                {
+                    "date": 1746150042873,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -83,9 +83,8 @@\n     >\r\n       <Form<ICreateResourceParams>\r\n         form={form}\r\n         layout=\"vertical\"\r\n-        initialValues={{ status: 1 }}\r\n       >\r\n         <Form.Item\r\n           name=\"name\"\r\n           label=\"资源名称\"\r\n"
                 }
             ],
             "date": 1746087949853,

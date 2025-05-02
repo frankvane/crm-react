@@ -81,11 +81,7 @@ const ResourceForm: React.FC<IResourceFormProps> = ({
       onOk={handleSubmit}
       confirmLoading={createMutation.isPending || updateMutation.isPending}
     >
-      <Form<ICreateResourceParams>
-        form={form}
-        layout="vertical"
-        initialValues={{ status: 1 }}
-      >
+      <Form<ICreateResourceParams> form={form} layout="vertical">
         <Form.Item
           name="name"
           label="资源名称"
@@ -162,20 +158,6 @@ const ResourceForm: React.FC<IResourceFormProps> = ({
 
         <Form.Item name="sort" label="排序">
           <InputNumber placeholder="请输入排序" style={{ width: "100%" }} />
-        </Form.Item>
-
-        <Form.Item
-          name="status"
-          label="状态"
-          rules={[{ required: true, message: "请选择状态" }]}
-        >
-          <Select
-            placeholder="请选择状态"
-            options={[
-              { label: "启用", value: 1 },
-              { label: "禁用", value: 0 },
-            ]}
-          />
         </Form.Item>
       </Form>
     </Modal>

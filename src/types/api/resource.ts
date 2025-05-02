@@ -18,7 +18,6 @@ export interface IResource {
   icon?: string;
   parentId?: number;
   sort: number;
-  status: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -33,7 +32,6 @@ export interface ICreateResourceParams {
   icon?: string;
   parentId?: number;
   sort: number;
-  status: number;
 }
 
 // 更新资源参数
@@ -44,7 +42,6 @@ export interface IResourceQueryParams extends IPaginationParams {
   name?: string;
   code?: string;
   type?: ResourceType;
-  status?: number;
 }
 
 // 资源列表响应

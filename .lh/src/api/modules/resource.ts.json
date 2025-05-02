@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 2,
+            "activePatchIndex": 6,
             "patches": [
                 {
                     "date": 1746087876214,
@@ -16,6 +16,22 @@
                 {
                     "date": 1746098769854,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,54 +6,47 @@\n   IResourceTreeResponse,\r\n   IUpdateResourceParams,\r\n } from \"@/types/api/resource\";\r\n \r\n-import type { IResponse } from \"@/types/api/common\";\r\n import request from \"@/utils/request\";\r\n \r\n // 获取资源列表\r\n export const getResources = async (\r\n   params: IResourceQueryParams\r\n-): Promise<IResponse<IResourceListResponse>> => {\r\n+): Promise<IResourceListResponse> => {\r\n   return request.get(\"/resources\", { params });\r\n };\r\n \r\n // 获取资源树\r\n-export const getResourceTree = async (): Promise<\r\n-  IResponse<IResourceTreeResponse>\r\n-> => {\r\n+export const getResourceTree = async (): Promise<IResourceTreeResponse> => {\r\n   return request.get(\"/resources/tree\");\r\n };\r\n \r\n // 获取单个资源\r\n-export const getResource = async (\r\n-  id: number\r\n-): Promise<IResponse<IResource>> => {\r\n+export const getResource = async (id: number): Promise<IResource> => {\r\n   return request.get(`/resources/${id}`);\r\n };\r\n \r\n // 创建资源\r\n export const createResource = async (\r\n   data: ICreateResourceParams\r\n-): Promise<IResponse<IResource>> => {\r\n+): Promise<IResource> => {\r\n   return request.post(\"/resources\", data);\r\n };\r\n \r\n // 更新资源\r\n export const updateResource = async (\r\n   id: number,\r\n   data: IUpdateResourceParams\r\n-): Promise<IResponse<IResource>> => {\r\n+): Promise<IResource> => {\r\n   return request.put(`/resources/${id}`, data);\r\n };\r\n \r\n // 删除资源\r\n-export const deleteResource = async (id: number): Promise<IResponse<null>> => {\r\n+export const deleteResource = async (id: number): Promise<null> => {\r\n   return request.delete(`/resources/${id}`);\r\n };\r\n \r\n // 切换资源状态\r\n-export const toggleResourceStatus = async (\r\n-  id: number\r\n-): Promise<IResponse<IResource>> => {\r\n+export const toggleResourceStatus = async (id: number): Promise<IResource> => {\r\n   return request.patch(`/resources/${id}/toggle-status`);\r\n };\r\n"
+                },
+                {
+                    "date": 1746149388707,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -17,9 +17,9 @@\n };\r\n \r\n // 获取资源树\r\n export const getResourceTree = async (): Promise<IResourceTreeResponse> => {\r\n-  return request.get(\"/resources/tree\");\r\n+  return request.get(\"/resources\");\r\n };\r\n \r\n // 获取单个资源\r\n export const getResource = async (id: number): Promise<IResource> => {\r\n"
+                },
+                {
+                    "date": 1746149447620,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -17,9 +17,9 @@\n };\r\n \r\n // 获取资源树\r\n export const getResourceTree = async (): Promise<IResourceTreeResponse> => {\r\n-  return request.get(\"/resources\");\r\n+  return request.get(\"/resources/tree\");\r\n };\r\n \r\n // 获取单个资源\r\n export const getResource = async (id: number): Promise<IResource> => {\r\n"
+                },
+                {
+                    "date": 1746149614259,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -17,9 +17,9 @@\n };\r\n \r\n // 获取资源树\r\n export const getResourceTree = async (): Promise<IResourceTreeResponse> => {\r\n-  return request.get(\"/resources/tree\");\r\n+  return request.get(\"/resources\");\r\n };\r\n \r\n // 获取单个资源\r\n export const getResource = async (id: number): Promise<IResource> => {\r\n"
+                },
+                {
+                    "date": 1746149802183,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -17,9 +17,9 @@\n };\r\n \r\n // 获取资源树\r\n export const getResourceTree = async (): Promise<IResourceTreeResponse> => {\r\n-  return request.get(\"/resources\");\r\n+  return request.get(\"/resources/tree\");\r\n };\r\n \r\n // 获取单个资源\r\n export const getResource = async (id: number): Promise<IResource> => {\r\n"
                 }
             ],
             "date": 1746087876214,
