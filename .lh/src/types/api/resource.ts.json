@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 3,
+            "activePatchIndex": 5,
             "patches": [
                 {
                     "date": 1746087860111,
@@ -20,6 +20,14 @@
                 {
                     "date": 1746150020243,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -17,9 +17,8 @@\n   method?: string;\r\n   icon?: string;\r\n   parentId?: number;\r\n   sort: number;\r\n-  status: number;\r\n   createdAt: string;\r\n   updatedAt: string;\r\n }\r\n \r\n@@ -32,9 +31,8 @@\n   method?: string;\r\n   icon?: string;\r\n   parentId?: number;\r\n   sort: number;\r\n-  status: number;\r\n }\r\n \r\n // 更新资源参数\r\n export type IUpdateResourceParams = ICreateResourceParams;\r\n@@ -43,9 +41,8 @@\n export interface IResourceQueryParams extends IPaginationParams {\r\n   name?: string;\r\n   code?: string;\r\n   type?: ResourceType;\r\n-  status?: number;\r\n }\r\n \r\n // 资源列表响应\r\n export type IResourceListResponse = IPaginationResponse<IResource>;\r\n"
+                },
+                {
+                    "date": 1746151179817,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -19,8 +19,9 @@\n   parentId?: number;\r\n   sort: number;\r\n   createdAt: string;\r\n   updatedAt: string;\r\n+  actions?: IResourceAction[];\r\n }\r\n \r\n // 创建资源参数\r\n export interface ICreateResourceParams {\r\n@@ -53,4 +54,16 @@\n }\r\n \r\n // 资源树响应\r\n export type IResourceTreeResponse = IResourceTreeNode[];\r\n+\r\n+export interface IResourceAction {\r\n+  id: number;\r\n+  name: string;\r\n+  code: string;\r\n+  description?: string;\r\n+  icon?: string;\r\n+  sort?: number;\r\n+  needConfirm: boolean;\r\n+  confirmMessage?: string;\r\n+  resourceId: number;\r\n+}\r\n"
+                },
+                {
+                    "date": 1746151304121,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -17,8 +17,9 @@\n   method?: string;\r\n   icon?: string;\r\n   parentId?: number;\r\n   sort: number;\r\n+  status: number;\r\n   createdAt: string;\r\n   updatedAt: string;\r\n   actions?: IResourceAction[];\r\n }\r\n"
                 }
             ],
             "date": 1746087860111,

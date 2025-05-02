@@ -1,6 +1,7 @@
 import type {
   ICreateResourceParams,
   IResource,
+  IResourceAction,
   IResourceListResponse,
   IResourceQueryParams,
   IResourceTreeResponse,
@@ -49,4 +50,33 @@ export const deleteResource = async (id: number): Promise<null> => {
 // 切换资源状态
 export const toggleResourceStatus = async (id: number): Promise<IResource> => {
   return request.patch(`/resources/${id}/toggle-status`);
+};
+
+export const getResourceActions = (resourceId: number) => {
+  return request.get<IResourceAction[]>(`/resources/${resourceId}/actions`);
+};
+
+export const createResourceAction = (
+  resourceId: number,
+  data: Partial<IResourceAction>
+) => {
+  return request.post<IResourceAction>(
+    `/resources/${resourceId}/actions`,
+    data
+  );
+};
+
+export const updateResourceAction = (
+  resourceId: number,
+  actionId: number,
+  data: Partial<IResourceAction>
+) => {
+  return request.put<IResourceAction>(
+    `/resources/${resourceId}/actions/${actionId}`,
+    data
+  );
+};
+
+export const deleteResourceAction = (resourceId: number, actionId: number) => {
+  return request.delete(`/resources/${resourceId}/actions/${actionId}`);
 };

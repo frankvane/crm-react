@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 6,
+            "activePatchIndex": 8,
             "patches": [
                 {
                     "date": 1746087876214,
@@ -32,6 +32,14 @@
                 {
                     "date": 1746149802183,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -17,9 +17,9 @@\n };\r\n \r\n // 获取资源树\r\n export const getResourceTree = async (): Promise<IResourceTreeResponse> => {\r\n-  return request.get(\"/resources\");\r\n+  return request.get(\"/resources/tree\");\r\n };\r\n \r\n // 获取单个资源\r\n export const getResource = async (id: number): Promise<IResource> => {\r\n"
+                },
+                {
+                    "date": 1746151192330,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -49,4 +49,33 @@\n // 切换资源状态\r\n export const toggleResourceStatus = async (id: number): Promise<IResource> => {\r\n   return request.patch(`/resources/${id}/toggle-status`);\r\n };\r\n+\r\n+export const getResourceActions = (resourceId: number) => {\r\n+  return request.get<IResourceAction[]>(`/resources/${resourceId}/actions`);\r\n+};\r\n+\r\n+export const createResourceAction = (\r\n+  resourceId: number,\r\n+  data: Partial<IResourceAction>\r\n+) => {\r\n+  return request.post<IResourceAction>(\r\n+    `/resources/${resourceId}/actions`,\r\n+    data\r\n+  );\r\n+};\r\n+\r\n+export const updateResourceAction = (\r\n+  resourceId: number,\r\n+  actionId: number,\r\n+  data: Partial<IResourceAction>\r\n+) => {\r\n+  return request.put<IResourceAction>(\r\n+    `/resources/${resourceId}/actions/${actionId}`,\r\n+    data\r\n+  );\r\n+};\r\n+\r\n+export const deleteResourceAction = (resourceId: number, actionId: number) => {\r\n+  return request.delete(`/resources/${resourceId}/actions/${actionId}`);\r\n+};\r\n"
+                },
+                {
+                    "date": 1746151203037,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,8 @@\n import type {\r\n   ICreateResourceParams,\r\n   IResource,\r\n+  IResourceAction,\r\n   IResourceListResponse,\r\n   IResourceQueryParams,\r\n   IResourceTreeResponse,\r\n   IUpdateResourceParams,\r\n"
                 }
             ],
             "date": 1746087876214,

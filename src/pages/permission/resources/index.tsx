@@ -1,4 +1,5 @@
 import {
+  Badge,
   Button,
   Card,
   Form,
@@ -15,6 +16,7 @@ import {
   EditOutlined,
   PlusOutlined,
   SubnodeOutlined,
+  ToolOutlined,
 } from "@ant-design/icons";
 import type {
   IResource,
@@ -31,6 +33,7 @@ import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import type { DataNode } from "antd/es/tree";
+import ResourceActionModal from "./components/ResourceActionModal";
 import ResourceForm from "./components/ResourceForm";
 import { ResourceType } from "@/types/api/resource";
 import styles from "./style.module.less";
@@ -41,7 +44,11 @@ const Resources = () => {
   const queryClient = useQueryClient();
   const [form] = Form.useForm<IResourceQueryParams>();
   const [modalVisible, setModalVisible] = useState(false);
+  const [actionModalVisible, setActionModalVisible] = useState(false);
   const [editingResource, setEditingResource] = useState<IResource | null>(
+    null
+  );
+  const [currentResource, setCurrentResource] = useState<IResource | null>(
     null
   );
   const [searchValues, setSearchValues] = useState<
@@ -106,6 +113,12 @@ const Resources = () => {
           >
             <Space>
               <span>{resource.name}</span>
+              {resource.actions && resource.actions.length > 0 && (
+                <Badge
+                  count={resource.actions.length}
+                  style={{ marginLeft: 8 }}
+                />
+              )}
               <Tag
                 color={
                   resource.type === ResourceType.MENU
@@ -136,6 +149,17 @@ const Resources = () => {
                   setModalVisible(true);
                 }}
               />
+              <Button
+                type="text"
+                icon={<ToolOutlined />}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setActionModalVisible(true);
+                  setCurrentResource(resource);
+                }}
+              >
+                操作管理
+              </Button>
               <Button
                 type="text"
                 icon={<EditOutlined />}
@@ -264,6 +288,15 @@ const Resources = () => {
           setModalVisible(false);
           setEditingResource(null);
           queryClient.invalidateQueries({ queryKey: ["resourceTree"] });
+        }}
+      />
+
+      <ResourceActionModal
+        visible={actionModalVisible}
+        resource={currentResource}
+        onCancel={() => {
+          setActionModalVisible(false);
+          setCurrentResource(null);
         }}
       />
     </div>
