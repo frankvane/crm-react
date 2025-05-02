@@ -24,8 +24,9 @@ export const getResourceTree = async (): Promise<IResourceTreeResponse> => {
 };
 
 // 获取带操作的资源树
-export const getResourceTreeWithActions = async () => {
-  return request.get("/resources/tree-with-actions");
+export const getResourceTreeWithActions = async (): Promise<any[]> => {
+  const res = await request.get("/resources/tree-with-actions");
+  return Array.isArray(res) ? res : res?.data ?? [];
 };
 
 // 获取单个资源
