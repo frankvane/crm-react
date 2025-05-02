@@ -30,13 +30,16 @@ const lazyLoad = (componentPath: string) => {
 };
 
 /**
- * 根据后台返回的路由资源生成React Router路由配置
- * @param routeTree 后台返回的路由资源树
+ * 递归处理路由树，支持任意层级的嵌套
+ * @param routes 路由数据
  */
-export function generateRoutes(routeTree: any[]): RouteObject[] {
-  // 过滤顶级路由
-  return routeTree
-    .filter((item) => item.type.toLowerCase() === "menu")
+const processRoutes = (routes: any[]): RouteObject[] => {
+  return routes
+    .filter((item) => {
+      // 使用大小写不敏感的匹配来判断是否为菜单类型
+      const type = (item.type || "").toLowerCase();
+      return type === "menu";
+    })
     .map((item) => {
       // 处理当前路由
       const { path, component, children } = item;
@@ -44,25 +47,8 @@ export function generateRoutes(routeTree: any[]): RouteObject[] {
       // 规范化路径
       const normalizedPath = path.startsWith("/") ? path.substring(1) : path;
 
-      // 处理子路由
-      const childRoutes =
-        children?.length > 0
-          ? children
-              .filter((child) => child.type.toLowerCase() === "menu")
-              .map((child) => {
-                // 规范化子路由路径
-                const childPath = child.path.startsWith("/")
-                  ? child.path.substring(1)
-                  : child.path;
-
-                // 创建子路由对象
-                return {
-                  path: childPath,
-                  element: child.component ? lazyLoad(child.component) : null,
-                  children: [], // 目前限制只处理二级嵌套
-                };
-              })
-          : [];
+      // 递归处理子路由
+      const childRoutes = children?.length > 0 ? processRoutes(children) : [];
 
       // 添加默认重定向（如果有子路由）
       const redirect =
@@ -75,19 +61,44 @@ export function generateRoutes(routeTree: any[]): RouteObject[] {
             ]
           : [];
 
+      // 确定要渲染的元素
+      let element;
+
+      if (component) {
+        // 使用大小写不敏感的匹配来判断是否为布局组件
+        const componentLower = component.toLowerCase();
+        if (
+          componentLower.includes("basiclayout") ||
+          componentLower.includes("layout")
+        ) {
+          element = <Outlet />;
+        } else {
+          // 否则加载实际组件
+          element = lazyLoad(component);
+        }
+      } else if (childRoutes.length > 0) {
+        // 如果没有组件但有子路由，使用 Outlet
+        element = <Outlet />;
+      } else {
+        // 既没有组件也没有子路由，返回 null（这种情况不应该出现）
+        element = null;
+      }
+
       // 创建路由对象
       return {
         path: normalizedPath,
-        element: component ? (
-          component.endsWith("BasicLayout") ? (
-            <Outlet />
-          ) : (
-            lazyLoad(component)
-          )
-        ) : (
-          <Outlet />
-        ),
-        children: [...redirect, ...childRoutes],
+        element,
+        children:
+          childRoutes.length > 0 ? [...redirect, ...childRoutes] : undefined,
       };
-    });
+    })
+    .filter(Boolean); // 过滤掉无效路由
+};
+
+/**
+ * 根据后台返回的路由资源生成React Router路由配置
+ * @param routeTree 后台返回的路由资源树
+ */
+export function generateRoutes(routeTree: any[]): RouteObject[] {
+  return processRoutes(routeTree);
 }
