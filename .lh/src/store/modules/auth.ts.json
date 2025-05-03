@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 27,
+            "activePatchIndex": 28,
             "patches": [
                 {
                     "date": 1746086874861,
@@ -116,6 +116,10 @@
                 {
                     "date": 1746246476007,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -17,8 +17,9 @@\n   setTokens: (accessToken: string, refreshToken: string) => void;\r\n   setUser: (user: IUserInfo) => void;\r\n   setRoles: (roles: any[]) => void;\r\n   setResources: (resources: any[]) => void;\r\n+  setIsAuthenticated: (isAuthenticated: boolean) => void;\r\n   login: (username: string, password: string) => Promise<void>;\r\n   logout: () => Promise<void>;\r\n   refreshTokens: () => Promise<void>;\r\n   fetchCurrentUser: () => Promise<void>;\r\n@@ -54,8 +55,12 @@\n       setResources: (resources: any[]) => {\r\n         set({ resources });\r\n       },\r\n \r\n+      setIsAuthenticated: (isAuthenticated: boolean) => {\r\n+        set({ isAuthenticated });\r\n+      },\r\n+\r\n       login: async (username: string, password: string) => {\r\n         try {\r\n           // 登录前清除所有标签页\r\n           useTabStore.getState().removeAllTabs();\r\n@@ -64,10 +69,14 @@\n             username,\r\n             password,\r\n           });\r\n \r\n+          // 先设置 token\r\n           get().setTokens(accessToken, refreshToken);\r\n+          // 再设置用户信息\r\n           get().setUser(user);\r\n+          // 最后设置认证状态为 true\r\n+          get().setIsAuthenticated(true);\r\n           // 登录后拉取用户信息\r\n           await get().fetchCurrentUser();\r\n         } catch (error) {\r\n           // 清除可能存在的旧 token\r\n"
+                },
+                {
+                    "date": 1746271104514,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -17,9 +17,8 @@\n   setTokens: (accessToken: string, refreshToken: string) => void;\r\n   setUser: (user: IUserInfo) => void;\r\n   setRoles: (roles: any[]) => void;\r\n   setResources: (resources: any[]) => void;\r\n-  setIsAuthenticated: (isAuthenticated: boolean) => void;\r\n   login: (username: string, password: string) => Promise<void>;\r\n   logout: () => Promise<void>;\r\n   refreshTokens: () => Promise<void>;\r\n   fetchCurrentUser: () => Promise<void>;\r\n@@ -55,12 +54,8 @@\n       setResources: (resources: any[]) => {\r\n         set({ resources });\r\n       },\r\n \r\n-      setIsAuthenticated: (isAuthenticated: boolean) => {\r\n-        set({ isAuthenticated });\r\n-      },\r\n-\r\n       login: async (username: string, password: string) => {\r\n         try {\r\n           // 登录前清除所有标签页\r\n           useTabStore.getState().removeAllTabs();\r\n@@ -68,15 +63,10 @@\n           const { accessToken, refreshToken, user } = await authApi.login({\r\n             username,\r\n             password,\r\n           });\r\n-\r\n-          // 先设置 token\r\n           get().setTokens(accessToken, refreshToken);\r\n-          // 再设置用户信息\r\n           get().setUser(user);\r\n-          // 最后设置认证状态为 true\r\n-          get().setIsAuthenticated(true);\r\n           // 登录后拉取用户信息\r\n           await get().fetchCurrentUser();\r\n         } catch (error) {\r\n           // 清除可能存在的旧 token\r\n@@ -127,8 +117,9 @@\n \r\n       fetchCurrentUser: async () => {\r\n         try {\r\n           const response = await authApi.getCurrentUser();\r\n+          // @ts-ignore\r\n           const { user, roles, resources } = response;\r\n           set({ user, roles, resources, isAuthenticated: true });\r\n         } catch {\r\n           set({ user: null, roles: [], resources: [], isAuthenticated: false });\r\n"
                 }
             ],
             "date": 1746086874861,

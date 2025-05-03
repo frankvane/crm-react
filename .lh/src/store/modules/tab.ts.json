@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 5,
+            "activePatchIndex": 6,
             "patches": [
                 {
                     "date": 1746088704323,
@@ -28,6 +28,10 @@
                 {
                     "date": 1746241373054,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -43,12 +43,12 @@\n       const newActiveTab =\r\n         state.activeTab === key\r\n           ? newTabs[newTabs.length - 1].key\r\n           : state.activeTab;\r\n-          console.log({\r\n-            tabs: newTabs,\r\n-            activeTab: newActiveTab,\r\n-          })\r\n+      console.log({\r\n+        tabs: newTabs,\r\n+        activeTab: newActiveTab,\r\n+      });\r\n       return {\r\n         tabs: newTabs,\r\n         activeTab: newActiveTab,\r\n       };\r\n"
+                },
+                {
+                    "date": 1746270701999,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -39,13 +39,20 @@\n         return state;\r\n       }\r\n \r\n       const newTabs = state.tabs.filter((tab) => tab.key !== key);\r\n-      const newActiveTab =\r\n+      let newActiveTab =\r\n         state.activeTab === key\r\n           ? newTabs[newTabs.length - 1].key\r\n           : state.activeTab;\r\n \r\n+      if (key === state.activeTab) {\r\n+        newActiveTab =\r\n+          newTabs[newTabs.length - 1]?.key ||\r\n+          newTabs[newTabs.length - 2]?.key ||\r\n+          newTabs[0].key;\r\n+      }\r\n+\r\n       return {\r\n         tabs: newTabs,\r\n         activeTab: newActiveTab,\r\n       };\r\n"
                 }
             ],
             "date": 1746088704323,

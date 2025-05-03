@@ -5,7 +5,6 @@ import Dashboard from "@/pages/dashboard";
 import Login from "@/pages/user/Login";
 import { Navigate } from "react-router-dom";
 import NotFound from "@/pages/404";
-import React from "react";
 import Resources from "@/pages/permission/resources";
 import Roles from "@/pages/permission/roles";
 import type { RouteObject } from "react-router-dom";

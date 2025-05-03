@@ -118,6 +118,7 @@ export const useAuthStore = create<IAuthState & IAuthActions>()(
       fetchCurrentUser: async () => {
         try {
           const response = await authApi.getCurrentUser();
+          // @ts-ignore
           const { user, roles, resources } = response;
           set({ user, roles, resources, isAuthenticated: true });
         } catch {

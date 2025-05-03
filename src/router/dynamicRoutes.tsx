@@ -56,7 +56,7 @@ const processRoutes = (routes: any[]): RouteObject[] => {
           ? [
               {
                 path: "",
-                element: <Navigate to={childRoutes[0].path} replace />,
+                element: <Navigate to={childRoutes[0]?.path || ""} replace />,
               },
             ]
           : [];
