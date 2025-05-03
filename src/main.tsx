@@ -7,7 +7,6 @@ import { BrowserRouter } from "react-router-dom";
 import { ConfigProvider } from "antd";
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import zhCN from "antd/locale/zh_CN";
 
 const queryClient = new QueryClient({
@@ -27,7 +26,6 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
           <App />
         </BrowserRouter>
       </ConfigProvider>
-      <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   </React.StrictMode>
 );

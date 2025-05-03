@@ -3,11 +3,15 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 0,
+            "activePatchIndex": 1,
             "patches": [
                 {
                     "date": 1746086915750,
                     "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1746279157785,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,9 +6,8 @@\n import { BrowserRouter } from \"react-router-dom\";\n import { ConfigProvider } from \"antd\";\n import React from \"react\";\n import ReactDOM from \"react-dom/client\";\n-import { ReactQueryDevtools } from \"@tanstack/react-query-devtools\";\n import zhCN from \"antd/locale/zh_CN\";\n \n const queryClient = new QueryClient({\n   defaultOptions: {\n@@ -26,8 +25,7 @@\n         <BrowserRouter>\n           <App />\n         </BrowserRouter>\n       </ConfigProvider>\n-      <ReactQueryDevtools initialIsOpen={false} />\n     </QueryClientProvider>\n   </React.StrictMode>\n );\n"
                 }
             ],
             "date": 1746086915750,

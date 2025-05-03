@@ -23,7 +23,6 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^7.5.3",
-    "vite-plugin-external": "^6.2.1",
     "zustand": "^5.0.3"
   },
   "devDependencies": {
@@ -40,6 +39,6 @@
     "typescript-eslint": "^8.0.1",
     "vite": "^5.4.1",
     "vite-plugin-cdn-import": "^1.0.1",
-    "vite-plugin-html": "^3.2.2"
+    "vite-plugin-compression": "^0.5.1"
   }
 }
