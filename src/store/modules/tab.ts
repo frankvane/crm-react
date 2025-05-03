@@ -44,6 +44,7 @@ export const useTabStore = create<TabState>((set) => ({
         state.activeTab === key
           ? newTabs[newTabs.length - 1].key
           : state.activeTab;
+
       return {
         tabs: newTabs,
         activeTab: newActiveTab,

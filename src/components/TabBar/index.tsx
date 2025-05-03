@@ -31,6 +31,15 @@ const TabBar: React.FC = () => {
   const resources = useAuthStore((state) => state.resources);
   const user = useAuthStore((state) => state.user);
   const prevUserId = useRef(user?.id);
+  const tabsRef = useRef(tabs);
+
+  // 订阅 tabs 变化
+  useEffect(() => {
+    const unsubscribe = useTabStore.subscribe((state) => {
+      tabsRef.current = state.tabs;
+    });
+    return () => unsubscribe();
+  }, []);
 
   // 动态生成 menuMap
   const menuMap = useMemo(() => buildMenuMap(resources || []), [resources]);
@@ -48,17 +57,6 @@ const TabBar: React.FC = () => {
     navigate(key);
   };
 
-  // 关闭标签页
-  const onEdit = (targetKey: string, action: "add" | "remove") => {
-    if (action === "remove") {
-      removeTab(targetKey);
-      // 如果关闭的是当前标签，跳转到dashboard
-      if (targetKey === activeTab) {
-        navigate("/app/dashboard");
-      }
-    }
-  };
-
   // 自动添加当前路由到TabBar
   useEffect(() => {
     // 移除 /app 前缀
@@ -68,14 +66,34 @@ const TabBar: React.FC = () => {
       ? currentPath
       : `/${currentPath}`;
 
-    if (!tabs.find((tab) => tab.key === location.pathname)) {
+    // 如果当前路径不是 dashboard 且不在 tabs 中，则添加
+    if (
+      location.pathname !== "/app/dashboard" &&
+      !tabsRef.current.find((tab) => tab.key === location.pathname)
+    ) {
       const routeName = menuMap[normalizedPath];
       addTab({
         key: location.pathname, // 保持原始路径（带 /app 前缀）作为 key
         label: routeName || normalizedPath,
       });
     }
-  }, [location.pathname, addTab, tabs, menuMap]);
+  }, [location.pathname, addTab, menuMap]);
+
+  // 关闭标签页
+  const onEdit = (targetKey: string, action: "add" | "remove") => {
+    if (action === "remove") {
+      // 如果是 dashboard 标签，不允许关闭
+      if (targetKey === "/app/dashboard") {
+        return;
+      }
+
+      removeTab(targetKey);
+      // 如果关闭的是当前标签，跳转到dashboard
+      if (targetKey === activeTab) {
+        navigate("/app/dashboard");
+      }
+    }
+  };
 
   const refreshPage = () => {
     window.location.reload();
