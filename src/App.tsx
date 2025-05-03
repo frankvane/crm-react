@@ -42,6 +42,8 @@ const App = () => {
     [dynamicRoutes]
   );
 
+  console.log("allRoutes", allRoutes);
+
   const element = useRoutes(allRoutes);
 
   return (

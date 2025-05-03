@@ -12,9 +12,14 @@ const NotFound: React.FC = () => {
       title="404"
       subTitle="抱歉，您访问的页面不存在。"
       extra={
-        <Button type="primary" onClick={() => navigate("/app/dashboard")}>
-          返回首页
-        </Button>
+        <>
+          <Button type="primary" onClick={() => navigate("/user/login")}>
+            返回登录
+          </Button>
+          <Button type="primary" onClick={() => navigate("/app/dashboard")}>
+            返回首页
+          </Button>
+        </>
       }
     />
   );

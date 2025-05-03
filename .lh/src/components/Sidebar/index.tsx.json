@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 7,
+            "activePatchIndex": 8,
             "patches": [
                 {
                     "date": 1746088401865,
@@ -36,6 +36,10 @@
                 {
                     "date": 1746229176915,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -21,9 +21,9 @@\n }\r\n \r\n function buildMenuItems(resources: any[], parentPath = \"/app\"): any[] {\r\n   return (resources || [])\r\n-    .filter((item: any) => item.type === \"menu\")\r\n+    .filter((item: any) => item.type.toLowerCase() === \"menu\")\r\n     .map((item: any) => {\r\n       const fullPath = item.path.startsWith(\"/\")\r\n         ? item.path\r\n         : `${parentPath}/${item.path}`;\r\n"
+                },
+                {
+                    "date": 1746244551260,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -62,15 +62,9 @@\n     return keys;\r\n   };\r\n \r\n   return (\r\n-    <Sider\r\n-      className={styles.sidebar}\r\n-      width={200}\r\n-      collapsed={collapsed}\r\n-      collapsible\r\n-      trigger={null}\r\n-    >\r\n+    <Sider width={200} collapsed={collapsed} collapsible trigger={null}>\r\n       <div className={styles.logo}>\r\n         <h1>{collapsed ? \"CRM\" : \"CRM Admin\"}</h1>\r\n       </div>\r\n       <Menu\r\n"
                 }
             ],
             "date": 1746088401865,

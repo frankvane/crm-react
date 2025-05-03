@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 4,
+            "activePatchIndex": 5,
             "patches": [
                 {
                     "date": 1746088704323,
@@ -24,6 +24,10 @@
                 {
                     "date": 1746141664392,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -53,14 +53,14 @@\n   removeOtherTabs: (key) =>\r\n     set((state) => {\r\n       const targetTab = state.tabs.find((tab) => tab.key === key);\r\n       if (!targetTab) return state;\r\n-      \r\n+\r\n       const newTabs = [DEFAULT_TAB];\r\n       if (key !== DEFAULT_TAB.key) {\r\n         newTabs.push(targetTab);\r\n       }\r\n-      \r\n+\r\n       return {\r\n         tabs: newTabs,\r\n         activeTab: key,\r\n       };\r\n@@ -71,9 +71,9 @@\n       const index = state.tabs.findIndex((tab) => tab.key === key);\r\n       if (index === -1) return state;\r\n \r\n       const remainingTabs = state.tabs.slice(index);\r\n-      const newTabs = remainingTabs.some(tab => tab.key === DEFAULT_TAB.key)\r\n+      const newTabs = remainingTabs.some((tab) => tab.key === DEFAULT_TAB.key)\r\n         ? remainingTabs\r\n         : [DEFAULT_TAB, ...remainingTabs];\r\n \r\n       return {\r\n@@ -87,11 +87,14 @@\n       const index = state.tabs.findIndex((tab) => tab.key === key);\r\n       if (index === -1) return state;\r\n \r\n       const remainingTabs = state.tabs.slice(0, index + 1);\r\n-      const newTabs = remainingTabs.some(tab => tab.key === DEFAULT_TAB.key)\r\n+      const newTabs = remainingTabs.some((tab) => tab.key === DEFAULT_TAB.key)\r\n         ? remainingTabs\r\n-        : [DEFAULT_TAB, ...remainingTabs.filter(tab => tab.key !== DEFAULT_TAB.key)];\r\n+        : [\r\n+            DEFAULT_TAB,\r\n+            ...remainingTabs.filter((tab) => tab.key !== DEFAULT_TAB.key),\r\n+          ];\r\n \r\n       return {\r\n         tabs: newTabs,\r\n         activeTab: key,\r\n"
+                },
+                {
+                    "date": 1746241373054,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -43,12 +43,12 @@\n       const newActiveTab =\r\n         state.activeTab === key\r\n           ? newTabs[newTabs.length - 1].key\r\n           : state.activeTab;\r\n-          console.log({\r\n-            tabs: newTabs,\r\n-            activeTab: newActiveTab,\r\n-          })\r\n+      console.log({\r\n+        tabs: newTabs,\r\n+        activeTab: newActiveTab,\r\n+      });\r\n       return {\r\n         tabs: newTabs,\r\n         activeTab: newActiveTab,\r\n       };\r\n"
                 }
             ],
             "date": 1746088704323,

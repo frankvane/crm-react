@@ -10,6 +10,8 @@ const AuthGuard = ({ children }: AuthGuardProps) => {
   const location = useLocation();
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
+  console.log("isAuthenticated", isAuthenticated);
+
   if (!isAuthenticated) {
     // 保存用户尝试访问的路径，登录后可以重定向回去
     return <Navigate to="/user/login" state={{ from: location }} replace />;

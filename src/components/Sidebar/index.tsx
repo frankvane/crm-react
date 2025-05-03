@@ -63,13 +63,7 @@ const Sidebar = ({ collapsed }: SidebarProps) => {
   };
 
   return (
-    <Sider
-      className={styles.sidebar}
-      width={200}
-      collapsed={collapsed}
-      collapsible
-      trigger={null}
-    >
+    <Sider width={200} collapsed={collapsed} collapsible trigger={null}>
       <div className={styles.logo}>
         <h1>{collapsed ? "CRM" : "CRM Admin"}</h1>
       </div>
