@@ -11,6 +11,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import CategoryTypeForm from "./components/CategoryTypeForm";
 import type { ICategoryTypeListResponse } from "@/types/api/category-type";
+import Permission from "@/components/Permission";
 import dayjs from "dayjs";
 import styles from "./style.module.less";
 import { useState } from "react";
@@ -109,18 +110,22 @@ const CategoryTypes = () => {
       key: "action",
       render: (_: unknown, record: ICategoryType) => (
         <Space size="middle">
-          <Button
-            type="link"
-            onClick={() => {
-              setEditingCategoryType(record);
-              setModalVisible(true);
-            }}
-          >
-            编辑
-          </Button>
-          <Button type="link" danger onClick={() => handleDelete(record.id)}>
-            删除
-          </Button>
+          <Permission permission="category:category-types:edit">
+            <Button
+              type="link"
+              onClick={() => {
+                setEditingCategoryType(record);
+                setModalVisible(true);
+              }}
+            >
+              编辑
+            </Button>
+          </Permission>
+          <Permission permission="category:category-types:delete">
+            <Button type="link" danger onClick={() => handleDelete(record.id)}>
+              删除
+            </Button>
+          </Permission>
         </Space>
       ),
     },
@@ -179,15 +184,17 @@ const CategoryTypes = () => {
         </Form>
 
         <div className={styles.tableHeader}>
-          <Button
-            type="primary"
-            onClick={() => {
-              setEditingCategoryType(null);
-              setModalVisible(true);
-            }}
-          >
-            新增分类类型
-          </Button>
+          <Permission permission="category:category-types:add">
+            <Button
+              type="primary"
+              onClick={() => {
+                setEditingCategoryType(null);
+                setModalVisible(true);
+              }}
+            >
+              新增分类类型
+            </Button>
+          </Permission>
         </div>
 
         <Table
