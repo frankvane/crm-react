@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 19,
+            "activePatchIndex": 26,
             "patches": [
                 {
                     "date": 1746086622179,
@@ -84,6 +84,34 @@
                 {
                     "date": 1746277287761,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -9,10 +9,8 @@\n   '<script src=\"https://cdn.jsdelivr.net/npm/react@18/umd/react.production.min.js\"></script>',\n   '<script src=\"https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js\"></script>',\n   '<script src=\"https://cdn.jsdelivr.net/npm/lodash@4/lodash.min.js\"></script>',\n   '<script src=\"https://cdn.jsdelivr.net/npm/axios@1/dist/axios.min.js\"></script>',\n-  '<script src=\"https://cdn.jsdelivr.net/npm/antd@5.x/dist/antd.min.js\"></script>',\n-  '<link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/antd@5.x/dist/reset.css\">',\n ].join(\"\\n\");\n \n // https://vitejs.dev/config/\n export default defineConfig({\n@@ -28,21 +26,20 @@\n   ],\n   ...(isProd\n     ? {\n         optimizeDeps: {\n-          exclude: [\"react\", \"react-dom\", \"lodash\", \"axios\", \"antd\"],\n+          exclude: [\"react\", \"react-dom\", \"lodash\", \"axios\"],\n           include: [\"dayjs\"],\n         },\n         build: {\n           rollupOptions: {\n-            external: [\"react\", \"react-dom\", \"lodash\", \"axios\", \"antd\"],\n+            external: [\"react\", \"react-dom\", \"lodash\", \"axios\"],\n             output: {\n               globals: {\n                 react: \"React\",\n                 \"react-dom\": \"ReactDOM\",\n                 lodash: \"_\",\n                 axios: \"axios\",\n-                antd: \"antd\",\n               },\n               format: \"iife\",\n             },\n           },\n"
+                },
+                {
+                    "date": 1746277602725,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,5 @@\n-import { createHtmlPlugin } from \"vite-plugin-html\";\n+import cdnImport from \"vite-plugin-cdn-import\";\n import { defineConfig } from \"vite\";\n import path from \"path\";\n import react from \"@vitejs/plugin-react-swc\";\n \n@@ -15,14 +15,21 @@\n // https://vitejs.dev/config/\n export default defineConfig({\n   plugins: [\n     react(),\n-    createHtmlPlugin({\n-      inject: {\n-        data: {\n-          cdn: isProd ? cdnScripts : \"\",\n+    cdnImport({\n+      modules: [\n+        {\n+          name: \"react\",\n+          var: \"React\",\n+          path: \"https://cdn.jsdelivr.net/npm/react@18/umd/react.production.min.js\",\n         },\n-      },\n+        {\n+          name: \"react-dom\",\n+          var: \"ReactDOM\",\n+          path: \"https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js\",\n+        },\n+      ],\n     }),\n   ],\n   ...(isProd\n     ? {\n"
+                },
+                {
+                    "date": 1746277615114,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,15 +4,8 @@\n import react from \"@vitejs/plugin-react-swc\";\n \n const isProd = process.env.NODE_ENV === \"production\";\n \n-const cdnScripts = [\n-  '<script src=\"https://cdn.jsdelivr.net/npm/react@18/umd/react.production.min.js\"></script>',\n-  '<script src=\"https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js\"></script>',\n-  '<script src=\"https://cdn.jsdelivr.net/npm/lodash@4/lodash.min.js\"></script>',\n-  '<script src=\"https://cdn.jsdelivr.net/npm/axios@1/dist/axios.min.js\"></script>',\n-].join(\"\\n\");\n-\n // https://vitejs.dev/config/\n export default defineConfig({\n   plugins: [\n     react(),\n"
+                },
+                {
+                    "date": 1746277642790,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -23,30 +23,9 @@\n         },\n       ],\n     }),\n   ],\n-  ...(isProd\n-    ? {\n-        optimizeDeps: {\n-          exclude: [\"react\", \"react-dom\", \"lodash\", \"axios\"],\n-          include: [\"dayjs\"],\n-        },\n-        build: {\n-          rollupOptions: {\n-            external: [\"react\", \"react-dom\", \"lodash\", \"axios\"],\n-            output: {\n-              globals: {\n-                react: \"React\",\n-                \"react-dom\": \"ReactDOM\",\n-                lodash: \"_\",\n-                axios: \"axios\",\n-              },\n-              format: \"iife\",\n-            },\n-          },\n-        },\n-      }\n-    : {}),\n+\n   // 别名、后缀\n   resolve: {\n     alias: {\n       \"@\": path.resolve(__dirname, \"./src\"),\n"
+                },
+                {
+                    "date": 1746277860761,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,10 +2,8 @@\n import { defineConfig } from \"vite\";\n import path from \"path\";\n import react from \"@vitejs/plugin-react-swc\";\n \n-const isProd = process.env.NODE_ENV === \"production\";\n-\n // https://vitejs.dev/config/\n export default defineConfig({\n   plugins: [\n     react(),\n@@ -23,9 +21,8 @@\n         },\n       ],\n     }),\n   ],\n-\n   // 别名、后缀\n   resolve: {\n     alias: {\n       \"@\": path.resolve(__dirname, \"./src\"),\n"
+                },
+                {
+                    "date": 1746277878573,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -7,20 +7,9 @@\n export default defineConfig({\n   plugins: [\n     react(),\n     cdnImport({\n-      modules: [\n-        {\n-          name: \"react\",\n-          var: \"React\",\n-          path: \"https://cdn.jsdelivr.net/npm/react@18/umd/react.production.min.js\",\n-        },\n-        {\n-          name: \"react-dom\",\n-          var: \"ReactDOM\",\n-          path: \"https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js\",\n-        },\n-      ],\n+      modules: [\"react\", \"react-dom\"],\n     }),\n   ],\n   // 别名、后缀\n   resolve: {\n"
+                },
+                {
+                    "date": 1746277960574,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -7,9 +7,17 @@\n export default defineConfig({\n   plugins: [\n     react(),\n     cdnImport({\n-      modules: [\"react\", \"react-dom\"],\n+      modules: [\n+        \"react\",\n+        \"react-dom\",\n+        \"lodash\",\n+        \"axios\",\n+        \"dayjs\",\n+        \"antd\",\n+        \"react-router-dom\",\n+      ],\n     }),\n   ],\n   // 别名、后缀\n   resolve: {\n"
+                },
+                {
+                    "date": 1746278036252,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -7,17 +7,9 @@\n export default defineConfig({\n   plugins: [\n     react(),\n     cdnImport({\n-      modules: [\n-        \"react\",\n-        \"react-dom\",\n-        \"lodash\",\n-        \"axios\",\n-        \"dayjs\",\n-        \"antd\",\n-        \"react-router-dom\",\n-      ],\n+      modules: [\"react\", \"react-dom\", \"lodash\", \"axios\", \"dayjs\", \"antd\"],\n     }),\n   ],\n   // 别名、后缀\n   resolve: {\n"
                 }
             ],
             "date": 1746086622179,
