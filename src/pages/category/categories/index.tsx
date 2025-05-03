@@ -13,6 +13,7 @@ import CategoryForm from "./components/CategoryForm";
 import type { DataNode } from "antd/es/tree";
 import type { ICategoryTreeResponse } from "@/types/api/category";
 import type { ICategoryType } from "@/types/api/category-type";
+import Permission from "@/components/Permission";
 import { getAllCategoryTypes } from "@/api/modules/category-type";
 
 interface ModalState {
@@ -78,43 +79,49 @@ const Categories = () => {
           >
             <span>{category.name}</span>
             <span>
-              <Button
-                type="text"
-                icon={<SubnodeOutlined />}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setModal({
-                    visible: true,
-                    type: "addSub",
-                    categoryId: category.id,
-                  });
-                }}
-              />
-              <Button
-                type="text"
-                icon={<EditOutlined />}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setModal({
-                    visible: true,
-                    type: "edit",
-                    categoryId: category.id,
-                  });
-                }}
-              />
-              <Button
-                type="text"
-                danger
-                icon={<DeleteOutlined />}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  Modal.confirm({
-                    title: "确认删除",
-                    content: "确定要删除该分类吗？",
-                    onOk: () => handleDelete(category.id),
-                  });
-                }}
-              />
+              <Permission permission="category:categories:add">
+                <Button
+                  type="text"
+                  icon={<SubnodeOutlined />}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setModal({
+                      visible: true,
+                      type: "addSub",
+                      categoryId: category.id,
+                    });
+                  }}
+                />
+              </Permission>
+              <Permission permission="category:categories:edit">
+                <Button
+                  type="text"
+                  icon={<EditOutlined />}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setModal({
+                      visible: true,
+                      type: "edit",
+                      categoryId: category.id,
+                    });
+                  }}
+                />
+              </Permission>
+              <Permission permission="category:categories:delete">
+                <Button
+                  type="text"
+                  danger
+                  icon={<DeleteOutlined />}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    Modal.confirm({
+                      title: "确认删除",
+                      content: "确定要删除该分类吗？",
+                      onOk: () => handleDelete(category.id),
+                    });
+                  }}
+                />
+              </Permission>
             </span>
           </div>
         ),
@@ -149,19 +156,21 @@ const Categories = () => {
           activeKey={activeTypeId?.toString()}
           onChange={(key) => setActiveTypeId(Number(key))}
           tabBarExtraContent={
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={() => {
-                setModal({
-                  visible: true,
-                  type: "add",
-                });
-              }}
-              disabled={!activeTypeId}
-            >
-              新增分类
-            </Button>
+            <Permission permission="category:categories:add">
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                onClick={() => {
+                  setModal({
+                    visible: true,
+                    type: "add",
+                  });
+                }}
+                disabled={!activeTypeId}
+              >
+                新增分类
+              </Button>
+            </Permission>
           }
           items={
             categoryTypes?.map((type) => ({

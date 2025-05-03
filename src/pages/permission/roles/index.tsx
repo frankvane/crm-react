@@ -14,6 +14,7 @@ import type { IRole, IRoleQueryParams } from "@/types/api/role";
 import { deleteRole, getRoles, toggleRoleStatus } from "@/api/modules/role";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
+import Permission from "@/components/Permission";
 import RoleForm from "./components/RoleForm";
 import RoleResourceModal from "./components/RoleResourceModal";
 import styles from "./style.module.less";
@@ -118,29 +119,37 @@ const Roles = () => {
       key: "action",
       render: (_: unknown, record: IRole) => (
         <Space size="middle">
-          <Button
-            type="link"
-            onClick={() => {
-              setEditingRole(record);
-              setModalVisible(true);
-            }}
-          >
-            编辑
-          </Button>
-          <Button type="link" onClick={() => handleToggleStatus(record.id)}>
-            {record.status === 1 ? "禁用" : "启用"}
-          </Button>
-          <Button type="link" danger onClick={() => handleDelete(record.id)}>
-            删除
-          </Button>
-          <Button
-            type="link"
-            onClick={() =>
-              setResourceModal({ visible: true, roleId: record.id })
-            }
-          >
-            分配资源
-          </Button>
+          <Permission permission="permission:roles:edit">
+            <Button
+              type="link"
+              onClick={() => {
+                setEditingRole(record);
+                setModalVisible(true);
+              }}
+            >
+              编辑
+            </Button>
+          </Permission>
+          <Permission permission="permission:roles:edit">
+            <Button type="link" onClick={() => handleToggleStatus(record.id)}>
+              {record.status === 1 ? "禁用" : "启用"}
+            </Button>
+          </Permission>
+          <Permission permission="permission:roles:delete">
+            <Button type="link" danger onClick={() => handleDelete(record.id)}>
+              删除
+            </Button>
+          </Permission>
+          <Permission permission="permission:roles:assign">
+            <Button
+              type="link"
+              onClick={() =>
+                setResourceModal({ visible: true, roleId: record.id })
+              }
+            >
+              分配资源
+            </Button>
+          </Permission>
         </Space>
       ),
     },
@@ -195,15 +204,17 @@ const Roles = () => {
         </Form>
 
         <div className={styles.tableHeader}>
-          <Button
-            type="primary"
-            onClick={() => {
-              setEditingRole(null);
-              setModalVisible(true);
-            }}
-          >
-            新增角色
-          </Button>
+          <Permission permission="permission:roles:add">
+            <Button
+              type="primary"
+              onClick={() => {
+                setEditingRole(null);
+                setModalVisible(true);
+              }}
+            >
+              新增角色
+            </Button>
+          </Permission>
         </div>
 
         <Table

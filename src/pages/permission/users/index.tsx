@@ -16,6 +16,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import AssignRoles from "./components/AssignRoles";
 import type { IUserListResponse } from "@/types/api/user";
+import Permission from "@/components/Permission";
 import UserForm from "./components/UserForm";
 import styles from "./style.module.less";
 import { useState } from "react";
@@ -126,34 +127,42 @@ const Users = () => {
       key: "action",
       render: (_: unknown, record: IUser) => (
         <Space size="middle">
-          <Button
-            type="link"
-            onClick={() => {
-              setEditingUser(record);
-              setModalVisible(true);
-            }}
-          >
-            编辑
-          </Button>
-          <Button
-            type="link"
-            onClick={() => {
-              setEditingUser(record);
-              setAssignRolesVisible(true);
-            }}
-          >
-            分配角色
-          </Button>
-          <Button
-            type="link"
-            onClick={() => handleToggleStatus(record.id)}
-            loading={toggleStatusMutation.isPending}
-          >
-            {record.status === 1 ? "禁用" : "启用"}
-          </Button>
-          <Button type="link" danger onClick={() => handleDelete(record.id)}>
-            删除
-          </Button>
+          <Permission permission="permission:users:edit">
+            <Button
+              type="link"
+              onClick={() => {
+                setEditingUser(record);
+                setModalVisible(true);
+              }}
+            >
+              编辑
+            </Button>
+          </Permission>
+          <Permission permission="permission:users:assign">
+            <Button
+              type="link"
+              onClick={() => {
+                setEditingUser(record);
+                setAssignRolesVisible(true);
+              }}
+            >
+              分配角色
+            </Button>
+          </Permission>
+          <Permission permission="permission:users:edit">
+            <Button
+              type="link"
+              onClick={() => handleToggleStatus(record.id)}
+              loading={toggleStatusMutation.isPending}
+            >
+              {record.status === 1 ? "禁用" : "启用"}
+            </Button>
+          </Permission>
+          <Permission permission="permission:users:delete">
+            <Button type="link" danger onClick={() => handleDelete(record.id)}>
+              删除
+            </Button>
+          </Permission>
         </Space>
       ),
     },
@@ -208,15 +217,17 @@ const Users = () => {
         </Form>
 
         <div className={styles.tableHeader}>
-          <Button
-            type="primary"
-            onClick={() => {
-              setEditingUser(null);
-              setModalVisible(true);
-            }}
-          >
-            新增用户
-          </Button>
+          <Permission permission="permission:users:add">
+            <Button
+              type="primary"
+              onClick={() => {
+                setEditingUser(null);
+                setModalVisible(true);
+              }}
+            >
+              新增用户
+            </Button>
+          </Permission>
         </div>
 
         <Table

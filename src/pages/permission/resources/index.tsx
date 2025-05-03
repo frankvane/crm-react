@@ -31,6 +31,7 @@ import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import type { DataNode } from "antd/es/tree";
+import Permission from "@/components/Permission";
 import ResourceActionModal from "./components/ResourceActionModal";
 import ResourceForm from "./components/ResourceForm";
 import styles from "./style.module.less";
@@ -122,48 +123,56 @@ const Resources = () => {
               )}
             </Space>
             <Space>
-              <Button
-                type="text"
-                icon={<SubnodeOutlined />}
-                title="添加子菜单"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setEditingResource({ parentId: resource.id } as IResource);
-                  setModalVisible(true);
-                }}
-              />
-              <Button
-                type="text"
-                icon={<ToolOutlined />}
-                title="操作管理"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setActionModalVisible(true);
-                  setCurrentResource(resource);
-                }}
-              >
-                操作管理
-              </Button>
-              <Button
-                type="text"
-                icon={<EditOutlined />}
-                title="编辑菜单"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setEditingResource(resource);
-                  setModalVisible(true);
-                }}
-              />
-              <Button
-                type="text"
-                danger
-                icon={<DeleteOutlined />}
-                title="删除菜单"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleDelete(resource.id);
-                }}
-              />
+              <Permission permission="permission:resources:add">
+                <Button
+                  type="text"
+                  icon={<SubnodeOutlined />}
+                  title="添加子菜单"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setEditingResource({ parentId: resource.id } as IResource);
+                    setModalVisible(true);
+                  }}
+                />
+              </Permission>
+              <Permission permission="permission:resources:edit">
+                <Button
+                  type="text"
+                  icon={<ToolOutlined />}
+                  title="操作管理"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActionModalVisible(true);
+                    setCurrentResource(resource);
+                  }}
+                >
+                  操作管理
+                </Button>
+              </Permission>
+              <Permission permission="permission:resources:edit">
+                <Button
+                  type="text"
+                  icon={<EditOutlined />}
+                  title="编辑菜单"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setEditingResource(resource);
+                    setModalVisible(true);
+                  }}
+                />
+              </Permission>
+              <Permission permission="permission:resources:delete">
+                <Button
+                  type="text"
+                  danger
+                  icon={<DeleteOutlined />}
+                  title="删除菜单"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDelete(resource.id);
+                  }}
+                />
+              </Permission>
             </Space>
           </div>
         ),
@@ -180,16 +189,18 @@ const Resources = () => {
     <div className={styles.container}>
       <Card>
         <div className={styles.tableHeader}>
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={() => {
-              setEditingResource(null);
-              setModalVisible(true);
-            }}
-          >
-            新增菜单
-          </Button>
+          <Permission permission="permission:resources:add">
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={() => {
+                setEditingResource(null);
+                setModalVisible(true);
+              }}
+            >
+              新增菜单
+            </Button>
+          </Permission>
         </div>
 
         <Tree
