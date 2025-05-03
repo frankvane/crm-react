@@ -102,3 +102,34 @@ const processRoutes = (routes: any[]): RouteObject[] => {
 export function generateRoutes(routeTree: any[]): RouteObject[] {
   return processRoutes(routeTree);
 }
+
+/**
+ * 递归生成 path 到菜单名的映射表
+ * @param routes 路由数据
+ * @param parentPath 父级路径
+ */
+export function buildMenuMap(
+  routes: any[],
+  parentPath = ""
+): Record<string, string> {
+  const map: Record<string, string> = {};
+  for (const item of routes) {
+    if ((item.type || "").toLowerCase() === "menu") {
+      // 规范化路径，确保与路由对象中的路径格式一致
+      const normalizedPath = item.path.startsWith("/")
+        ? item.path
+        : `/${item.path}`;
+      const fullPath = parentPath
+        ? `${parentPath}${normalizedPath}`.replace(/\/+/g, "/")
+        : normalizedPath;
+
+      // 使用路由对象中的 name 字段
+      map[fullPath] = item.name || item.label || fullPath;
+
+      if (item.children && item.children.length > 0) {
+        Object.assign(map, buildMenuMap(item.children, fullPath));
+      }
+    }
+  }
+  return map;
+}

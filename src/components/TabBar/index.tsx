@@ -7,20 +7,13 @@ import {
   VerticalLeftOutlined,
   VerticalRightOutlined,
 } from "@ant-design/icons";
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
+import { buildMenuMap } from "@/router/dynamicRoutes";
 import styles from "./style.module.less";
+import { useAuthStore } from "@/store/modules/auth";
 import { useTabStore } from "@/store/modules/tab";
-
-const menuMap: Record<string, string> = {
-  "/app/dashboard": "仪表盘",
-  "/app/permission/roles": "角色管理",
-  "/app/permission/resources": "资源管理",
-  "/app/permission/users": "用户管理",
-  "/app/category/category-types": "分类类型管理",
-  "/app/category/categories": "分类管理",
-};
 
 const TabBar: React.FC = () => {
   const navigate = useNavigate();
@@ -28,35 +21,61 @@ const TabBar: React.FC = () => {
   const {
     tabs,
     activeTab,
+    addTab,
     removeTab,
     removeOtherTabs,
     removeLeftTabs,
     removeRightTabs,
     removeAllTabs,
   } = useTabStore();
+  const resources = useAuthStore((state) => state.resources);
+  const user = useAuthStore((state) => state.user);
+  const prevUserId = useRef(user?.id);
 
-  const handleTabChange = (key: string) => {
+  // 动态生成 menuMap
+  const menuMap = useMemo(() => buildMenuMap(resources || []), [resources]);
+
+  // 用户切换时自动重置TabBar，只保留dashboard
+  useEffect(() => {
+    if (user?.id !== prevUserId.current) {
+      removeAllTabs();
+      prevUserId.current = user?.id;
+    }
+  }, [user?.id, removeAllTabs]);
+
+  // TabBar标签页切换
+  const onChange = (key: string) => {
     navigate(key);
   };
 
-  const handleTabEdit = (
-    targetKey: React.MouseEvent | React.KeyboardEvent | string,
-    action: "add" | "remove"
-  ) => {
-    if (action === "remove" && typeof targetKey === "string") {
-      const tab = tabs.find((t) => t.key === targetKey);
-      if (tab && tab.key !== "/app/dashboard") {
-        removeTab(targetKey);
-        // 如果关闭的是当前标签，导航到前一个标签
-        if (targetKey === location.pathname) {
-          const currentIndex = tabs.findIndex((t) => t.key === targetKey);
-          if (currentIndex > 0) {
-            navigate(tabs[currentIndex - 1].key);
-          }
-        }
+  // 关闭标签页
+  const onEdit = (targetKey: string, action: "add" | "remove") => {
+    if (action === "remove") {
+      removeTab(targetKey);
+      // 如果关闭的是当前标签，跳转到dashboard
+      if (targetKey === activeTab) {
+        navigate("/app/dashboard");
       }
     }
   };
+
+  // 自动添加当前路由到TabBar
+  useEffect(() => {
+    // 移除 /app 前缀
+    const currentPath = location.pathname.replace(/^\/app/, "");
+    // 确保路径格式正确
+    const normalizedPath = currentPath.startsWith("/")
+      ? currentPath
+      : `/${currentPath}`;
+
+    if (!tabs.find((tab) => tab.key === location.pathname)) {
+      const routeName = menuMap[normalizedPath];
+      addTab({
+        key: location.pathname, // 保持原始路径（带 /app 前缀）作为 key
+        label: routeName || normalizedPath,
+      });
+    }
+  }, [location.pathname, addTab, tabs, menuMap]);
 
   const refreshPage = () => {
     window.location.reload();
@@ -115,21 +134,18 @@ const TabBar: React.FC = () => {
     ),
   };
 
-  const items = tabs.map((tab) => ({
-    key: tab.key,
-    label: menuMap[tab.key] || "未知页面",
-    closable: tab.key !== "/app/dashboard" && tabs.length > 1,
-  }));
-
   return (
     <div className={styles.tabBar}>
       <Tabs
         hideAdd
         type="editable-card"
         activeKey={activeTab}
-        onChange={handleTabChange}
-        onEdit={handleTabEdit}
-        items={items}
+        onChange={onChange}
+        onEdit={onEdit as any}
+        items={tabs.map((tab) => ({
+          key: tab.key,
+          label: menuMap[tab.key.replace(/^\/app/, "")] || tab.label || tab.key,
+        }))}
         tabBarExtraContent={operations}
       />
     </div>

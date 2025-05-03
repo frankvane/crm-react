@@ -2,6 +2,7 @@ import type { IUserInfo } from "@/types/api/common";
 import { authApi } from "@/api/modules/auth";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { useTabStore } from "@/store/modules/tab";
 
 interface IAuthState {
   accessToken: string | null;
@@ -56,6 +57,9 @@ export const useAuthStore = create<IAuthState & IAuthActions>()(
 
       login: async (username: string, password: string) => {
         try {
+          // 登录前清除所有标签页
+          useTabStore.getState().removeAllTabs();
+
           const { accessToken, refreshToken, user } = await authApi.login({
             username,
             password,
