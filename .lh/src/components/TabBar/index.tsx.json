@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 18,
+            "activePatchIndex": 19,
             "patches": [
                 {
                     "date": 1746088331859,
@@ -80,6 +80,10 @@
                 {
                     "date": 1746242038673,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -34,14 +34,11 @@\n   const tabsRef = useRef(tabs);\r\n \r\n   // 订阅 tabs 变化\r\n   useEffect(() => {\r\n-    const unsubscribe = useTabStore.subscribe(\r\n-      (state) => state.tabs,\r\n-      (newTabs) => {\r\n-        tabsRef.current = newTabs;\r\n-      }\r\n-    );\r\n+    const unsubscribe = useTabStore.subscribe((state) => {\r\n+      tabsRef.current = state.tabs;\r\n+    });\r\n     return () => unsubscribe();\r\n   }, []);\r\n \r\n   // 动态生成 menuMap\r\n"
+                },
+                {
+                    "date": 1746328354805,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -78,8 +78,19 @@\n       });\r\n     }\r\n   }, [location.pathname, addTab, menuMap]);\r\n \r\n+  // 路由变化时同步 activeTab\r\n+  useEffect(() => {\r\n+    if (activeTab !== location.pathname) {\r\n+      addTab({\r\n+        key: location.pathname,\r\n+        label:\r\n+          menuMap[location.pathname.replace(/^\\/app/, \"\")] || location.pathname,\r\n+      });\r\n+    }\r\n+  }, [location.pathname, activeTab, addTab, menuMap]);\r\n+\r\n   // 关闭标签页\r\n   const onEdit = (targetKey: string, action: \"add\" | \"remove\") => {\r\n     if (action === \"remove\") {\r\n       // 如果是 dashboard 标签，不允许关闭\r\n"
                 }
             ],
             "date": 1746088331859,

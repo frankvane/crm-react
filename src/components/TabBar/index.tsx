@@ -79,6 +79,17 @@ const TabBar: React.FC = () => {
     }
   }, [location.pathname, addTab, menuMap]);
 
+  // 路由变化时同步 activeTab
+  useEffect(() => {
+    if (activeTab !== location.pathname) {
+      addTab({
+        key: location.pathname,
+        label:
+          menuMap[location.pathname.replace(/^\/app/, "")] || location.pathname,
+      });
+    }
+  }, [location.pathname, activeTab, addTab, menuMap]);
+
   // 关闭标签页
   const onEdit = (targetKey: string, action: "add" | "remove") => {
     if (action === "remove") {

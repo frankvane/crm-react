@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 1,
+            "activePatchIndex": 2,
             "patches": [
                 {
                     "date": 1746089389061,
@@ -12,6 +12,10 @@
                 {
                     "date": 1746246085042,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -16,5 +16,8 @@\n     // 保存用户尝试访问的路径，登录后可以重定向回去\r\n     return <Navigate to=\"/user/login\" state={{ from: location }} replace />;\r\n   }\r\n \r\n-  retu\n\\ No newline at end of file\n+  return <>{children}</>;\r\n+};\r\n+\r\n+export default AuthGuard;\r\n"
+                },
+                {
+                    "date": 1746285867278,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -9,10 +9,8 @@\n const AuthGuard = ({ children }: AuthGuardProps) => {\r\n   const location = useLocation();\r\n   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);\r\n \r\n-  console.log(\"isAuthenticated\", isAuthenticated);\r\n-\r\n   if (!isAuthenticated) {\r\n     // 保存用户尝试访问的路径，登录后可以重定向回去\r\n     return <Navigate to=\"/user/login\" state={{ from: location }} replace />;\r\n   }\r\n"
                 }
             ],
             "date": 1746089389061,
