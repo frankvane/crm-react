@@ -200,6 +200,7 @@ const TabBar: React.FC = () => {
         items={tabs.map((tab: any) => ({
           key: tab.key,
           label: tab.label,
+          closable: tab.closable !== false,
         }))}
         tabBarExtraContent={operations}
       />

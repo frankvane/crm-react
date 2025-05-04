@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 23,
+            "activePatchIndex": 24,
             "patches": [
                 {
                     "date": 1746088331859,
@@ -100,6 +100,10 @@
                 {
                     "date": 1746330626529,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -15,10 +15,8 @@\n import styles from \"./style.module.less\";\r\n import { useAuthStore } from \"@/store/modules/auth\";\r\n import { useTabStore } from \"@/store/modules/tab\";\r\n \r\n-// Tab 结构增加 componentPath\r\n-\r\n const TabBar: React.FC = () => {\r\n   const navigate = useNavigate();\r\n   const location = useLocation();\r\n   const {\r\n"
+                },
+                {
+                    "date": 1746331270587,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -196,11 +196,12 @@\n         type=\"editable-card\"\r\n         activeKey={activeTab}\r\n         onChange={onChange}\r\n         onEdit={onEdit as any}\r\n-        items={tabs.map((tab: any) => ({\r\n+        items={tabs.map((tab: any, idx: number) => ({\r\n           key: tab.key,\r\n           label: tab.label,\r\n+          closable: idx === 0 ? false : true,\r\n         }))}\r\n         tabBarExtraContent={operations}\r\n       />\r\n       <div className={styles.tabContent}>\r\n"
                 }
             ],
             "date": 1746088331859,

@@ -4,6 +4,7 @@ export interface Tab {
   key: string;
   label: string;
   componentPath: string;
+  closable?: boolean;
 }
 
 interface TabState {
@@ -21,6 +22,7 @@ const DEFAULT_TAB: Tab = {
   key: "/app/dashboard",
   label: "仪表盘",
   componentPath: "pages/dashboard",
+  closable: false,
 };
 
 export const useTabStore = create<TabState>((set) => ({
@@ -33,7 +35,7 @@ export const useTabStore = create<TabState>((set) => ({
         return { activeTab: tab.key };
       }
       return {
-        tabs: [...state.tabs, tab],
+        tabs: [...state.tabs, { ...tab, closable: tab.closable ?? true }],
         activeTab: tab.key,
       };
     }),
