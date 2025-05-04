@@ -1,0 +1,48 @@
+ae29efe - vane, Sun May 4 12:03:34 2025 +0800 : fix: 将仪表盘的tab项固定，去掉x操作
+0fb0279 - vane, Sun May 4 11:51:53 2025 +0800 : feat: 给Tabbar添加上keepAlive
+20d03cc - vane, Sun May 4 11:13:18 2025 +0800 : fix: 解决了BaseLayout中的menuMap
+e97526a - vane, Sat May 3 23:23:57 2025 +0800 : feat: vite打包
+8ffb845 - vane, Sat May 3 21:18:03 2025 +0800 : feat: vite-plugin-cdn-import的打包抽离应用
+13b4a44 - vane, Sat May 3 21:04:30 2025 +0800 : feat: vite的模块抽离
+da09426 - vane, Sat May 3 19:20:33 2025 +0800 : fix: 修复几个类型错误以便build打包
+09b90f4 - vane, Sat May 3 19:08:18 2025 +0800 : fix: 修复登录状态和侧边栏样式
+3fccf5e - vane, Sat May 3 19:03:49 2025 +0800 : fix: 修复登录状态和侧边栏样式
+6806adf - vane, Sat May 3 11:52:44 2025 +0800 : feat: 添加按钮权限控制到分类、资源、角色和用户管理页面
+dba75bb - vane, Sat May 3 11:15:19 2025 +0800 : fix: 修复 TabBar 组件中标签关闭后状态不同步的问题
+cecfd4d - vane, Sat May 3 10:55:34 2025 +0800 : feat: 添加分类类型页面的按钮权限控制
+8a78f48 - vane, Sat May 3 10:55:02 2025 +0800 : feat: 添加分类类型页面的按钮权限控制
+8bb2867 - vane, Sat May 3 09:33:41 2025 +0800 : fix: 修复页面刷新跳转问题 - 修改 AuthGuard 认证逻辑 - 移除重复的 Router 实例 - 优化状态管理
+1d5ff98 - vane, Sat May 3 09:22:47 2025 +0800 : feat: 优化TabBar和权限管理 - 添加动态menuMap生成 - 在登录时清除所有标签页 - 修复路由和权限同步问题
+83a3a7a - vane, Sat May 3 07:53:52 2025 +0800 : chore: 阶段性保存，动态路由与sidebar联动结构优化
+0853fe3 - vane, Sat May 3 07:44:49 2025 +0800 : fix(sidebar): 修复动态菜单key与路由path对齐，保证顶级与子级菜单正常显示和跳转
+f0e86cf - vane, Sat May 3 07:01:11 2025 +0800 : feat(router): 简单实现动态路由递归与重定向，待后续完善权限与测试
+fbd7ed7 - vane, Fri May 2 23:49:52 2025 +0800 : refactor(router): 路由结构统一迁移到router目录，支持静态/动态/任意三段式动态路由生成
+31fdc48 - vane, Fri May 2 23:45:01 2025 +0800 : feat(auth): 优化退出登录为前端路由跳转，提升SPA体验
+ee3efa4 - vane, Fri May 2 22:39:10 2025 +0800 : fix(role): 修正 assignResources 类型定义与实现，确保 permissionIds 字段一致
+d984b8f - vane, Fri May 2 22:05:58 2025 +0800 : fix(role-resource): 修正 assignResources 只需一个参数，修复类型警告
+3a1528f - vane, Fri May 2 22:04:53 2025 +0800 : fix(role-resource): 修正 assignResources 只需一个参数，修复类型警告
+e4a4400 - vane, Fri May 2 21:07:12 2025 +0800 : feat(role-resource-modal): 优化资源树按钮权限布局，修正部分类型，但分配资源功能尚未全部完善
+4ff9911 - vane, Fri May 2 19:20:04 2025 +0800 : fix(resource-form): 明确editingResource类型，修复parentId类型推断问题
+66deb28 - vane, Fri May 2 19:12:39 2025 +0800 : refactor(category-form): 优化表单逻辑，移除冗余代码，typeId/parentId 只读展示并在提交时拼接
+cbc8028 - vane, Fri May 2 18:27:39 2025 +0800 : fix(resource-action-modal): 修复 actions 类型推断及 .list 访问问题
+ef15822 - vane, Fri May 2 11:53:59 2025 +0800 : refactor(resources): 优化菜单管理功能，简化资源类型，添加图标选择
+0bf18a6 - vane, Fri May 2 10:02:04 2025 +0800 : feat: 添加资源操作管理功能 - 新增ResourceActionModal组件用于管理资源操作 - 添加资源操作相关的类型定义和API函数 - 在资源树中显示操作数量标记 - 修复类型错误
+27229db - vane, Fri May 2 09:57:55 2025 +0800 : feat: 优化资源管理页面 - 优化代码格式和导入顺序 - 调整组件结构和状态管理
+c2301c5 - vane, Fri May 2 09:01:08 2025 +0800 : feat: 优化资源管理页面 - 将资源列表改为树形结构展示 - 修复类型定义问题 - 优化代码格式
+8da6e26 - vane, Fri May 2 08:55:46 2025 +0800 : fix: 修复角色分配组件的类型问题 - 更新getAllRoles返回类型，移除IResponse包装 - 修复AssignRoles组件中的类型错误 - 优化角色列表获取逻辑
+304960f - vane, Fri May 2 08:50:48 2025 +0800 : feat: 优化用户管理功能 - 优化用户表单，移除角色字段，改为通过独立的角色分配功能管理 - 修复角色分配组件显示问题，正确展示角色名称 - 优化角色分配组件的数据获取和显示逻辑 - 修复分类和分类类型的API调用方式
+58b960a - vane, Fri May 2 07:24:52 2025 +0800 : feat: 优化标签页（TabBar）功能
+1984496 - vane, Fri May 2 07:13:13 2025 +0800 : fix: 优化API端点并恢复getAllCategoryTypes函数
+bffb5d3 - vane, Fri May 2 06:45:15 2025 +0800 : feat: 优化分类管理功能
+235bd48 - vane, Fri May 2 05:59:18 2025 +0800 : feat: 添加分类管理功能增强
+7309944 - vane, Thu May 1 23:29:10 2025 +0800 : fix: 修复分类树数据类型问题
+7dab1de - vane, Thu May 1 22:26:05 2025 +0800 : refactor: 优化分类和分类类型组件的响应结构
+2909b9f - vane, Thu May 1 20:34:44 2025 +0800 : refactor: 分类表单父级分类与类型解耦，减少无关请求
+a0f1585 - vane, Thu May 1 20:26:33 2025 +0800 : fix: 修复分类列表组件空值和类型问题，统一数据访问方式
+41c269e - vane, Thu May 1 20:11:28 2025 +0800 : fix: 响应拦截器优化，只要 message 有内容就显示 message
+6274777 - vane, Thu May 1 19:32:08 2025 +0800 : refactor: 更新分类和分类类型组件以适配新的响应结构
+0e6a067 - vane, Thu May 1 19:27:37 2025 +0800 : refactor: 优化响应拦截器和 API 返回类型
+b0da828 - vane, Thu May 1 19:03:40 2025 +0800 : fix: 更新 TypeScript 配置以支持项目引用
+245e98c - vane, Thu May 1 19:02:34 2025 +0800 : fix: 修复 TypeScript 项目配置问题
+2ad99ab - vane, Thu May 1 18:55:08 2025 +0800 : docs: 更新日志添加正确的日期
+a9b482e - vane, Thu May 1 18:54:05 2025 +0800 : fix: 修复登录失败时的错误处理问题

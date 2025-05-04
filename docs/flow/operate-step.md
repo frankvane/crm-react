@@ -481,3 +481,73 @@
 5. 资源编码规范：
    - 资源：`system:module`
    - 资源操作：`system:module:action`
+
+# 操作流程与页面/接口对应关系
+
+## 1. 用户管理流程
+
+- 入口页面：用户管理（/permission/users）
+- 主要操作：新增、编辑、删除、分配角色、重置密码
+- 主要 API：
+  - GET /api/users
+  - POST /api/users
+  - PUT /api/users/:id
+  - DELETE /api/users/:id
+  - POST /api/users/:id/reset-password
+- 页面跳转流程：
+  1. 进入用户管理页
+  2. 点击"新增用户"弹出表单
+  3. 编辑/删除/分配角色操作均在表格行操作区
+
+## 2. 角色管理流程
+
+- 入口页面：角色管理（/permission/roles）
+- 主要操作：新增、编辑、删除、分配权限
+- 主要 API：
+  - GET /api/roles
+  - POST /api/roles
+  - PUT /api/roles/:id
+  - DELETE /api/roles/:id
+  - POST /api/roles/:id/assign-permissions
+- 页面跳转流程：
+  1. 进入角色管理页
+  2. 点击"新增角色"弹出表单
+  3. 编辑/删除/分配权限操作均在表格行操作区
+
+## 3. 资源管理流程
+
+- 入口页面：资源管理（/permission/resources）
+- 主要操作：新增、编辑、删除
+- 主要 API：
+  - GET /api/resources
+  - POST /api/resources
+  - PUT /api/resources/:id
+  - DELETE /api/resources/:id
+
+## 4. 分类管理流程
+
+- 入口页面：分类类型（/category/category-types）、分类（/category/categories）
+- 主要操作：新增、编辑、删除
+- 主要 API：
+  - GET /api/category-types
+  - POST /api/category-types
+  - PUT /api/category-types/:id
+  - DELETE /api/category-types/:id
+  - GET /api/categories
+  - POST /api/categories
+  - PUT /api/categories/:id
+  - DELETE /api/categories/:id
+
+---
+
+## 典型页面跳转流程图（伪代码）
+
+```mermaid
+flowchart TD
+  A[用户管理页] -- 新增/编辑/删除 --> A
+  A -- 分配角色 --> B[角色分配弹窗]
+  B -- 完成分配 --> A
+  A -- 跳转到角色管理 --> C[角色管理页]
+  C -- 分配权限 --> D[权限分配弹窗]
+  D -- 完成分配 --> C
+```

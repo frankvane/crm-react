@@ -78,3 +78,38 @@ flowchart TD
 ---
 
 如需更详细的接口/数据结构说明，请参考 docs 目录下相关文档。
+
+# RBAC 权限管理流程与前端页面/接口对应
+
+## 1. 典型 RBAC 流程
+
+- 用户分配角色
+- 角色分配权限（资源/操作）
+- 用户通过角色获得权限
+- 前端根据权限点控制页面按钮/入口显示
+
+## 2. 主要页面与 API
+
+- 用户管理页（/permission/users）
+  - 分配角色：POST /api/users/:id/assign-roles
+- 角色管理页（/permission/roles）
+  - 分配权限：POST /api/roles/:id/assign-permissions
+- 资源管理页（/permission/resources）
+- 权限点与前端按钮/接口的对应关系见 docs/conventions.md
+
+## 3. 页面跳转与操作流程图
+
+```mermaid
+flowchart TD
+  U[用户管理] -- 分配角色 --> R[角色管理]
+  R -- 分配权限 --> P[权限分配弹窗]
+  U -- 登录后获取权限点 --> F[前端按钮/入口显示]
+  F -- 访问接口时校验权限 --> API[后端接口]
+```
+
+## 4. 权限点下发与前端控制
+
+- 登录后，后端返回当前用户所有权限点
+- 前端存储在全局状态（如 Redux/Pinia）
+- 页面/按钮通过权限点判断是否显示
+- 接口请求时无需重复传递权限点，后端自动校验
