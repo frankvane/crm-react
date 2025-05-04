@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 3,
+            "activePatchIndex": 6,
             "patches": [
                 {
                     "date": 1746086915750,
@@ -20,6 +20,18 @@
                 {
                     "date": 1746329225271,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,9 +4,8 @@\n \n import App from \"./App\";\n import { BrowserRouter } from \"react-router-dom\";\n import { ConfigProvider } from \"antd\";\n-import React from \"react\";\n import ReactDOM from \"react-dom/client\";\n import zhCN from \"antd/locale/zh_CN\";\n \n const queryClient = new QueryClient({\n"
+                },
+                {
+                    "date": 1746334992351,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -12,8 +12,9 @@\n   defaultOptions: {\n     queries: {\n       refetchOnWindowFocus: false,\n       retry: false,\n+      staleTime: 300000, // 5分钟缓存\n     },\n   },\n });\n \n"
+                },
+                {
+                    "date": 1746335611429,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -12,9 +12,9 @@\n   defaultOptions: {\n     queries: {\n       refetchOnWindowFocus: false,\n       retry: false,\n-      staleTime: 300000, // 5分钟缓存\n+      // staleTime: 300000, // 5分钟缓存\n     },\n   },\n });\n \n"
+                },
+                {
+                    "date": 1746335680011,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -12,9 +12,9 @@\n   defaultOptions: {\n     queries: {\n       refetchOnWindowFocus: false,\n       retry: false,\n-      // staleTime: 300000, // 5分钟缓存\n+      staleTime: 300000, // 5分钟缓存\n     },\n   },\n });\n \n"
                 }
             ],
             "date": 1746086915750,

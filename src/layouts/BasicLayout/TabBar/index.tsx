@@ -81,50 +81,41 @@ const TabBar: React.FC = () => {
     navigate(key);
   };
 
-  // 自动添加当前路由到TabBar
+  // 路由变化时，始终同步activeTab和tab
   useEffect(() => {
     const currentPath = location.pathname.replace(/^\/app/, "");
     const normalizedPath = currentPath.startsWith("/")
       ? currentPath
       : `/${currentPath}`;
-    if (
-      location.pathname !== "/app/dashboard" &&
-      !tabsRef.current.find((tab: any) => tab.key === location.pathname)
-    ) {
-      const routeName = menuMap[normalizedPath];
-      const componentPath = componentMap[normalizedPath];
-      addTab({
-        key: location.pathname,
-        label: routeName || normalizedPath,
-        componentPath: componentPath || "",
-      });
-    }
+    const routeName = menuMap[normalizedPath];
+    const componentPath = componentMap[normalizedPath];
+    addTab({
+      key: location.pathname,
+      label: routeName || normalizedPath,
+      componentPath: componentPath || "",
+    });
   }, [location.pathname, addTab, menuMap, componentMap]);
-
-  // 路由变化时同步 activeTab
-  useEffect(() => {
-    if (activeTab !== location.pathname) {
-      const currentPath = location.pathname.replace(/^\/app/, "");
-      const normalizedPath = currentPath.startsWith("/")
-        ? currentPath
-        : `/${currentPath}`;
-      addTab({
-        key: location.pathname,
-        label: menuMap[normalizedPath] || location.pathname,
-        componentPath: componentMap[normalizedPath] || "",
-      });
-    }
-  }, [location.pathname, activeTab, addTab, menuMap, componentMap]);
 
   // 关闭标签页
   const onEdit = (targetKey: string, action: "add" | "remove") => {
-    if (action === "remove") {
-      if (targetKey === "/app/dashboard") {
-        return;
+    if (action === "remove" && targetKey !== "/app/dashboard") {
+      // 关闭前先计算下一个要跳转的 tab
+      const currentTabs = tabsRef.current;
+      const idx = currentTabs.findIndex((tab) => tab.key === targetKey);
+      let nextTabKey = "/app/dashboard";
+      if (idx > -1) {
+        if (idx > 0) {
+          nextTabKey = currentTabs[idx - 1].key;
+        } else if (currentTabs.length > 1) {
+          nextTabKey = currentTabs[1].key;
+        }
       }
-      removeTab(targetKey);
       if (targetKey === activeTab) {
-        navigate("/app/dashboard");
+        // 先跳转再异步移除，避免副作用
+        navigate(nextTabKey);
+        setTimeout(() => removeTab(targetKey), 0);
+      } else {
+        removeTab(targetKey);
       }
     }
   };
