@@ -6,6 +6,7 @@ import {
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import type { ICategoryType } from "@/types/api/category-type";
+import { useEffect } from "react";
 
 interface CategoryTypeFormProps {
   visible: boolean;
@@ -22,6 +23,13 @@ const CategoryTypeForm = ({
 }: CategoryTypeFormProps) => {
   const [form] = Form.useForm();
   const queryClient = useQueryClient();
+
+  // 监听 editingCategoryType 变化，及时更新表单值
+  useEffect(() => {
+    if (visible && editingCategoryType) {
+      form.setFieldsValue(editingCategoryType);
+    }
+  }, [visible, editingCategoryType, form]);
 
   // 创建或更新分类类型
   const mutation = useMutation({
@@ -54,11 +62,7 @@ const CategoryTypeForm = ({
       confirmLoading={mutation.isPending}
       destroyOnClose
     >
-      <Form
-        form={form}
-        initialValues={editingCategoryType || {}}
-        preserve={false}
-      >
+      <Form form={form} preserve={false}>
         <Form.Item
           name="name"
           label="类型名称"
