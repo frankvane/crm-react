@@ -99,7 +99,6 @@ const TabBar: React.FC = () => {
   // 关闭标签页
   const onEdit = (targetKey: string, action: "add" | "remove") => {
     if (action === "remove" && targetKey !== "/app/dashboard") {
-      // 关闭前先计算下一个要跳转的 tab
       const currentTabs = tabsRef.current;
       const idx = currentTabs.findIndex((tab) => tab.key === targetKey);
       let nextTabKey = "/app/dashboard";
@@ -110,13 +109,10 @@ const TabBar: React.FC = () => {
           nextTabKey = currentTabs[1].key;
         }
       }
-      if (targetKey === activeTab) {
-        // 先跳转再异步移除，避免副作用
+      removeTab(targetKey);
+      setTimeout(() => {
         navigate(nextTabKey);
-        setTimeout(() => removeTab(targetKey), 0);
-      } else {
-        removeTab(targetKey);
-      }
+      }, 0);
     }
   };
 
