@@ -8,6 +8,10 @@
 git log --pretty=format:"%h - %an, %ad : %s" > commit_messages.txt
 ```
 
+```bash
+npx @agentdeskai/browser-tools-server@1.2.0
+```
+
 ### 新增
 
 - TabBar 标签页功能，支持多标签浏览、关闭、切换、批量管理

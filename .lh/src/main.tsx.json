@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 6,
+            "activePatchIndex": 9,
             "patches": [
                 {
                     "date": 1746086915750,
@@ -32,6 +32,18 @@
                 {
                     "date": 1746335680011,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -12,9 +12,9 @@\n   defaultOptions: {\n     queries: {\n       refetchOnWindowFocus: false,\n       retry: false,\n-      // staleTime: 300000, // 5分钟缓存\n+      staleTime: 300000, // 5分钟缓存\n     },\n   },\n });\n \n"
+                },
+                {
+                    "date": 1746364875470,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -20,10 +20,8 @@\n \n ReactDOM.createRoot(document.getElementById(\"root\")!).render(\n   <QueryClientProvider client={queryClient}>\n     <ConfigProvider locale={zhCN}>\n-      <BrowserRouter>\n-        <App />\n-      </BrowserRouter>\n+      <BrowserRouter></BrowserRouter>\n     </ConfigProvider>\n   </QueryClientProvider>\n );\n"
+                },
+                {
+                    "date": 1746364890171,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -20,8 +20,10 @@\n \n ReactDOM.createRoot(document.getElementById(\"root\")!).render(\n   <QueryClientProvider client={queryClient}>\n     <ConfigProvider locale={zhCN}>\n-      <BrowserRouter></BrowserRouter>\n+      <BrowserRouter>\n+        <App1 />\n+      </BrowserRouter>\n     </ConfigProvider>\n   </QueryClientProvider>\n );\n"
+                },
+                {
+                    "date": 1746364966939,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -21,9 +21,9 @@\n ReactDOM.createRoot(document.getElementById(\"root\")!).render(\n   <QueryClientProvider client={queryClient}>\n     <ConfigProvider locale={zhCN}>\n       <BrowserRouter>\n-        <App1 />\n+        <App />\n       </BrowserRouter>\n     </ConfigProvider>\n   </QueryClientProvider>\n );\n"
                 }
             ],
             "date": 1746086915750,
