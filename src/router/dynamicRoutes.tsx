@@ -10,7 +10,7 @@ const modules = import.meta.glob("/src/**/*.tsx");
  * 动态加载组件
  * @param componentPath 组件路径
  */
-const lazyLoad = (componentPath: string) => {
+export const lazyLoad = (componentPath: string) => {
   // 规范化组件路径，确保正确加载
   const cleanPath = componentPath.replace(/^\//, "");
   let fullPath = `/src/${cleanPath}`;

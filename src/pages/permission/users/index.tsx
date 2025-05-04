@@ -12,6 +12,7 @@ import {
 } from "antd";
 import type { IUser, IUserQueryParams } from "@/types/api/user";
 import { deleteUser, getUsers, toggleUserStatus } from "@/api/modules/user";
+import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import AssignRoles from "./components/AssignRoles";
@@ -19,11 +20,17 @@ import type { IUserListResponse } from "@/types/api/user";
 import Permission from "@/components/Permission";
 import UserForm from "./components/UserForm";
 import styles from "./style.module.less";
-import { useState } from "react";
 
 const { confirm } = Modal;
 
 const Users = () => {
+  useEffect(() => {
+    console.log("用户管理页面挂载");
+    return () => {
+      console.log("用户管理页面卸载");
+    };
+  }, []);
+
   const queryClient = useQueryClient();
   const [form] = Form.useForm<IUserQueryParams>();
   const [modalVisible, setModalVisible] = useState(false);

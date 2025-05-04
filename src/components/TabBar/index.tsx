@@ -8,9 +8,10 @@ import {
   VerticalRightOutlined,
 } from "@ant-design/icons";
 import React, { useEffect, useMemo, useRef } from "react";
+import { buildMenuMap, lazyLoad } from "@/router/dynamicRoutes";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { buildMenuMap } from "@/router/dynamicRoutes";
+import { KeepAlive } from "keepalive-for-react";
 import styles from "./style.module.less";
 import { useAuthStore } from "@/store/modules/auth";
 import { useTabStore } from "@/store/modules/tab";
@@ -33,6 +34,32 @@ const TabBar: React.FC = () => {
   const prevUserId = useRef(user?.id);
   const tabsRef = useRef(tabs);
 
+  // 动态生成 menuMap 和 path->componentPath 映射
+  const menuMap = useMemo(() => buildMenuMap(resources || []), [resources]);
+  const componentMap = useMemo(() => {
+    const map: Record<string, string> = {};
+    function walk(routes: any[], parentPath = "") {
+      for (const item of routes) {
+        if ((item.type || "").toLowerCase() === "menu") {
+          const normalizedPath = item.path.startsWith("/")
+            ? item.path
+            : `/${item.path}`;
+          const fullPath = parentPath
+            ? `${parentPath}${normalizedPath}`.replace(/\/+/g, "/")
+            : normalizedPath;
+          if (item.component) {
+            map[fullPath] = item.component;
+          }
+          if (item.children && item.children.length > 0) {
+            walk(item.children, fullPath);
+          }
+        }
+      }
+    }
+    walk(resources || []);
+    return map;
+  }, [resources]);
+
   // 订阅 tabs 变化
   useEffect(() => {
     const unsubscribe = useTabStore.subscribe((state) => {
@@ -40,9 +67,6 @@ const TabBar: React.FC = () => {
     });
     return () => unsubscribe();
   }, []);
-
-  // 动态生成 menuMap
-  const menuMap = useMemo(() => buildMenuMap(resources || []), [resources]);
 
   // 用户切换时自动重置TabBar，只保留dashboard
   useEffect(() => {
@@ -59,47 +83,46 @@ const TabBar: React.FC = () => {
 
   // 自动添加当前路由到TabBar
   useEffect(() => {
-    // 移除 /app 前缀
     const currentPath = location.pathname.replace(/^\/app/, "");
-    // 确保路径格式正确
     const normalizedPath = currentPath.startsWith("/")
       ? currentPath
       : `/${currentPath}`;
-
-    // 如果当前路径不是 dashboard 且不在 tabs 中，则添加
     if (
       location.pathname !== "/app/dashboard" &&
-      !tabsRef.current.find((tab) => tab.key === location.pathname)
+      !tabsRef.current.find((tab: any) => tab.key === location.pathname)
     ) {
       const routeName = menuMap[normalizedPath];
+      const componentPath = componentMap[normalizedPath];
       addTab({
-        key: location.pathname, // 保持原始路径（带 /app 前缀）作为 key
+        key: location.pathname,
         label: routeName || normalizedPath,
+        componentPath: componentPath || "",
       });
     }
-  }, [location.pathname, addTab, menuMap]);
+  }, [location.pathname, addTab, menuMap, componentMap]);
 
   // 路由变化时同步 activeTab
   useEffect(() => {
     if (activeTab !== location.pathname) {
+      const currentPath = location.pathname.replace(/^\/app/, "");
+      const normalizedPath = currentPath.startsWith("/")
+        ? currentPath
+        : `/${currentPath}`;
       addTab({
         key: location.pathname,
-        label:
-          menuMap[location.pathname.replace(/^\/app/, "")] || location.pathname,
+        label: menuMap[normalizedPath] || location.pathname,
+        componentPath: componentMap[normalizedPath] || "",
       });
     }
-  }, [location.pathname, activeTab, addTab, menuMap]);
+  }, [location.pathname, activeTab, addTab, menuMap, componentMap]);
 
   // 关闭标签页
   const onEdit = (targetKey: string, action: "add" | "remove") => {
     if (action === "remove") {
-      // 如果是 dashboard 标签，不允许关闭
       if (targetKey === "/app/dashboard") {
         return;
       }
-
       removeTab(targetKey);
-      // 如果关闭的是当前标签，跳转到dashboard
       if (targetKey === activeTab) {
         navigate("/app/dashboard");
       }
@@ -163,6 +186,9 @@ const TabBar: React.FC = () => {
     ),
   };
 
+  // 当前激活 tab
+  const currentTab = tabs.find((tab: any) => tab.key === activeTab);
+
   return (
     <div className={styles.tabBar}>
       <Tabs
@@ -171,12 +197,19 @@ const TabBar: React.FC = () => {
         activeKey={activeTab}
         onChange={onChange}
         onEdit={onEdit as any}
-        items={tabs.map((tab) => ({
+        items={tabs.map((tab: any) => ({
           key: tab.key,
-          label: menuMap[tab.key.replace(/^\/app/, "")] || tab.label || tab.key,
+          label: tab.label,
         }))}
         tabBarExtraContent={operations}
       />
+      <div className={styles.tabContent}>
+        {currentTab && currentTab.componentPath && (
+          <KeepAlive activeCacheKey={activeTab}>
+            {lazyLoad(currentTab.componentPath)}
+          </KeepAlive>
+        )}
+      </div>
     </div>
   );
 };

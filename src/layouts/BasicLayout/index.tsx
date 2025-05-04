@@ -4,15 +4,15 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
 } from "@ant-design/icons";
-import { Outlet, useNavigate } from "react-router-dom";
 import React, { useState } from "react";
 
 import Sidebar from "@/components/Sidebar";
 import TabBar from "@/components/TabBar";
 import styles from "./style.module.less";
 import { useAuthStore } from "@/store/modules/auth";
+import { useNavigate } from "react-router-dom";
 
-const { Header, Content } = Layout;
+const { Header } = Layout;
 
 const BasicLayout: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
@@ -50,9 +50,6 @@ const BasicLayout: React.FC = () => {
         </Header>
         <div className={styles.mainContent}>
           <TabBar />
-          <Content className={styles.content}>
-            <Outlet />
-          </Content>
         </div>
       </Layout>
     </Layout>

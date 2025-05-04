@@ -1,8 +1,9 @@
 import { create } from "zustand";
 
-interface Tab {
+export interface Tab {
   key: string;
   label: string;
+  componentPath: string;
 }
 
 interface TabState {
@@ -16,7 +17,11 @@ interface TabState {
   removeAllTabs: () => void;
 }
 
-const DEFAULT_TAB = { key: "/app/dashboard", label: "仪表盘" };
+const DEFAULT_TAB: Tab = {
+  key: "/app/dashboard",
+  label: "仪表盘",
+  componentPath: "pages/dashboard",
+};
 
 export const useTabStore = create<TabState>((set) => ({
   tabs: [DEFAULT_TAB],
