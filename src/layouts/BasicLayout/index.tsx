@@ -6,8 +6,8 @@ import {
 } from "@ant-design/icons";
 import React, { useState } from "react";
 
-import Sidebar from "@/components/Sidebar";
-import TabBar from "@/components/TabBar";
+import Sidebar from "./Sidebar";
+import TabBar from "./TabBar";
 import styles from "./style.module.less";
 import { useAuthStore } from "@/store/modules/auth";
 import { useNavigate } from "react-router-dom";

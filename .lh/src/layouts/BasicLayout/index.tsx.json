@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 26,
+            "activePatchIndex": 27,
             "patches": [
                 {
                     "date": 1746086966685,
@@ -112,6 +112,10 @@
                 {
                     "date": 1746330012503,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -11,9 +11,9 @@\n import styles from \"./style.module.less\";\n import { useAuthStore } from \"@/store/modules/auth\";\n import { useNavigate } from \"react-router-dom\";\n \n-const { Header, Content } = Layout;\n+const { Header } = Layout;\n \n const BasicLayout: React.FC = () => {\n   const [collapsed, setCollapsed] = useState(false);\n   const navigate = useNavigate();\n"
+                },
+                {
+                    "date": 1746334738945,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -5,10 +5,10 @@\n   MenuUnfoldOutlined,\n } from \"@ant-design/icons\";\n import React, { useState } from \"react\";\n \n-import Sidebar from \"@/components/Sidebar\";\n-import TabBar from \"@/components/TabBar\";\n+import Sidebar from \"./Sidebar\";\n+import TabBar from \"./TabBar\";\n import styles from \"./style.module.less\";\n import { useAuthStore } from \"@/store/modules/auth\";\n import { useNavigate } from \"react-router-dom\";\n \n"
                 }
             ],
             "date": 1746086966685,

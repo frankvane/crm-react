@@ -2,6 +2,12 @@
 
 ## [0.2.0] - 2025-05-04
 
+### Git 提交记录获取
+
+```bash
+git log --pretty=format:"%h - %an, %ad : %s" > commit_messages.txt
+```
+
 ### 新增
 
 - TabBar 标签页功能，支持多标签浏览、关闭、切换、批量管理
