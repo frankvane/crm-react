@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 14,
+            "activePatchIndex": 17,
             "patches": [
                 {
                     "date": 1746086915750,
@@ -64,6 +64,18 @@
                 {
                     "date": 1746446988733,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -25,9 +25,9 @@\n     <QueryClientProvider client={queryClient}>\n       <ConfigProvider locale={zhCN}>\n         <Router>\n           <GlobalLoading />\n-          <App1 />\n+          <App />\n         </Router>\n       </ConfigProvider>\n     </QueryClientProvider>\n   </ErrorBoundary>\n"
+                },
+                {
+                    "date": 1746452026233,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,9 +4,8 @@\n \n import App from \"./App\";\n import { ConfigProvider } from \"antd\";\n import { ErrorBoundary } from \"@/components/ErrorBoundary\";\n-import GlobalLoading from \"@/components/GlobalLoading\";\n import ReactDOM from \"react-dom/client\";\n import { BrowserRouter as Router } from \"react-router-dom\";\n import zhCN from \"antd/locale/zh_CN\";\n \n@@ -24,9 +23,8 @@\n   <ErrorBoundary>\n     <QueryClientProvider client={queryClient}>\n       <ConfigProvider locale={zhCN}>\n         <Router>\n-          <GlobalLoading />\n           <App />\n         </Router>\n       </ConfigProvider>\n     </QueryClientProvider>\n"
+                },
+                {
+                    "date": 1746452069131,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -27,5 +27,7 @@\n           <GlobalLoading />\n           <App />\n         </Router>\n       </ConfigProvider>\n-    </QueryClientProv\n\\ No newline at end of file\n+    </QueryClientProvider>\n+  </ErrorBoundary>\n+);\n"
+                },
+                {
+                    "date": 1746452117834,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,8 +4,9 @@\n \n import App from \"./App\";\n import { ConfigProvider } from \"antd\";\n import { ErrorBoundary } from \"@/components/ErrorBoundary\";\n+import GlobalLoading from \"@/components/GlobalLoading\";\n import ReactDOM from \"react-dom/client\";\n import { BrowserRouter as Router } from \"react-router-dom\";\n import zhCN from \"antd/locale/zh_CN\";\n \n@@ -23,8 +24,9 @@\n   <ErrorBoundary>\n     <QueryClientProvider client={queryClient}>\n       <ConfigProvider locale={zhCN}>\n         <Router>\n+          <GlobalLoading />\n           <App />\n         </Router>\n       </ConfigProvider>\n     </QueryClientProvider>\n"
                 }
             ],
             "date": 1746086915750,

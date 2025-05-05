@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 3,
+            "activePatchIndex": 4,
             "patches": [
                 {
                     "date": 1746088577405,
@@ -20,6 +20,10 @@
                 {
                     "date": 1746225384425,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -11,9 +11,11 @@\n             <h1>CRM Admin</h1>\r\n           </div>\r\n           <div className={styles.desc}>企业级客户关系管理系统</div>\r\n         </div>\r\n-        <div className={styles.main}></div>\r\n+        <div className={styles.main}>\r\n+          <Outlet />\r\n+        </div>\r\n       </div>\r\n     </Layout>\r\n   );\r\n };\r\n"
+                },
+                {
+                    "date": 1746453708240,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,23 +0,0 @@\n-import { Layout } from \"antd\";\r\n-import { Outlet } from \"react-router-dom\";\r\n-import styles from \"./style.module.less\";\r\n-\r\n-const UserLayout = () => {\r\n-  return (\r\n-    <Layout className={styles.layout}>\r\n-      <div className={styles.content}>\r\n-        <div className={styles.top}>\r\n-          <div className={styles.header}>\r\n-            <h1>CRM Admin</h1>\r\n-          </div>\r\n-          <div className={styles.desc}>企业级客户关系管理系统</div>\r\n-        </div>\r\n-        <div className={styles.main}>\r\n-          <Outlet />\r\n-        </div>\r\n-      </div>\r\n-    </Layout>\r\n-  );\r\n-};\r\n-\r\n-export default UserLayout;\r\n\\ No newline at end of file\n"
                 }
             ],
             "date": 1746088577405,

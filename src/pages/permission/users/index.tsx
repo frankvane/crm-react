@@ -24,13 +24,6 @@ import styles from "./style.module.less";
 const { confirm } = Modal;
 
 const Users = () => {
-  useEffect(() => {
-    console.log("用户管理页面挂载");
-    return () => {
-      console.log("用户管理页面卸载");
-    };
-  }, []);
-
   const queryClient = useQueryClient();
   const [form] = Form.useForm<IUserQueryParams>();
   const [modalVisible, setModalVisible] = useState(false);

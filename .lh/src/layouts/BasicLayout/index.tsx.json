@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 28,
+            "activePatchIndex": 30,
             "patches": [
                 {
                     "date": 1746086966685,
@@ -120,6 +120,14 @@
                 {
                     "date": 1746442893774,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -20,9 +20,9 @@\n   const { logout } = useAuthStore();\n \n   const handleLogout = async () => {\n     await logout();\n-    navigate(\"/user/login\", { replace: true });\n+    navigate(\"/login\", { replace: true });\n   };\n \n   return (\n     <Layout className={styles.layout}>\n"
+                },
+                {
+                    "date": 1746452074586,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -5,8 +5,9 @@\n   MenuUnfoldOutlined,\n } from \"@ant-design/icons\";\n import React, { useState } from \"react\";\n \n+import GlobalLoading from \"@/components/GlobalLoading\";\n import Sidebar from \"./Sidebar\";\n import TabBar from \"./TabBar\";\n import styles from \"./style.module.less\";\n import { useAuthStore } from \"@/store/modules/auth\";\n@@ -48,8 +49,10 @@\n             </div>\n           </div>\n         </Header>\n         <div className={styles.mainContent}>\n+          <GlobalLoading />\n+\n           <TabBar />\n         </div>\n       </Layout>\n     </Layout>\n"
+                },
+                {
+                    "date": 1746452109841,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -5,9 +5,8 @@\n   MenuUnfoldOutlined,\n } from \"@ant-design/icons\";\n import React, { useState } from \"react\";\n \n-import GlobalLoading from \"@/components/GlobalLoading\";\n import Sidebar from \"./Sidebar\";\n import TabBar from \"./TabBar\";\n import styles from \"./style.module.less\";\n import { useAuthStore } from \"@/store/modules/auth\";\n@@ -49,10 +48,8 @@\n             </div>\n           </div>\n         </Header>\n         <div className={styles.mainContent}>\n-          <GlobalLoading />\n-\n           <TabBar />\n         </div>\n       </Layout>\n     </Layout>\n"
                 }
             ],
             "date": 1746086966685,
