@@ -8,6 +8,7 @@ import type {
 import axios from "axios";
 import createAuthRefreshInterceptor from "axios-auth-refresh";
 import { message } from "antd";
+import { useGlobalLoading } from "@/store/globalLoading";
 
 // 配置全局消息提示
 message.config({
@@ -49,9 +50,12 @@ request.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
     }
 
+    // 开启全局 loading
+    useGlobalLoading.getState().setLoading(true);
     return config;
   },
   (error: AxiosError) => {
+    useGlobalLoading.getState().setLoading(false);
     message.error("请求发送失败");
     return Promise.reject(error);
   }
@@ -60,18 +64,25 @@ request.interceptors.request.use(
 // 响应拦截器
 request.interceptors.response.use(
   (response: AxiosResponse) => {
+    useGlobalLoading.getState().setLoading(false);
     const { data } = response;
     // 处理业务状态码
     if (data.code !== 200) {
+      // 统一业务错误提示
+      message.error(data.message || "请求失败");
       return Promise.reject(new Error(data.message || "请求失败"));
     }
     return data.data;
   },
   (error: AxiosError) => {
+    useGlobalLoading.getState().setLoading(false);
     if (error.response) {
       const { status, data } = error.response as any;
       const apiMessage = data && data.message;
       switch (status) {
+        case 401:
+          // 401 由 axios-auth-refresh 处理
+          break;
         case 403:
           message.error(apiMessage || "拒绝访问");
           break;
@@ -88,6 +99,11 @@ request.interceptors.response.use(
       message.error("网络连接失败，请检查网络");
     } else {
       message.error("请求失败");
+    }
+    // 开发环境统一 log
+    if (import.meta.env.DEV) {
+      // eslint-disable-next-line no-console
+      console.error("Axios Error:", error);
     }
     return Promise.reject(error);
   }
@@ -126,10 +142,12 @@ const refreshAuthLogic = (failedRequest: {
       return Promise.resolve();
     })
     .catch(() => {
-      // 刷新 token 失败，清除本地存储并跳转到登录页
+      // 刷新 token 失败，清除本地存储并跳转到登录页（带 redirect）
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
-      window.location.href = "/user/login";
+      window.location.href =
+        "/user/login?redirect=" +
+        encodeURIComponent(window.location.pathname + window.location.search);
       return Promise.reject(failedRequest);
     });
 };

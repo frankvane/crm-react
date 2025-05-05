@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 9,
+            "activePatchIndex": 12,
             "patches": [
                 {
                     "date": 1746086915750,
@@ -44,6 +44,18 @@
                 {
                     "date": 1746364966939,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -21,9 +21,9 @@\n ReactDOM.createRoot(document.getElementById(\"root\")!).render(\n   <QueryClientProvider client={queryClient}>\n     <ConfigProvider locale={zhCN}>\n       <BrowserRouter>\n-        <App1 />\n+        <App />\n       </BrowserRouter>\n     </ConfigProvider>\n   </QueryClientProvider>\n );\n"
+                },
+                {
+                    "date": 1746415882249,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,11 +2,11 @@\n \n import { QueryClient, QueryClientProvider } from \"@tanstack/react-query\";\n \n import App from \"./App\";\n-import { BrowserRouter } from \"react-router-dom\";\n import { ConfigProvider } from \"antd\";\n import ReactDOM from \"react-dom/client\";\n+import { HashRouter as Router } from \"react-router-dom\";\n import zhCN from \"antd/locale/zh_CN\";\n \n const queryClient = new QueryClient({\n   defaultOptions: {\n@@ -20,10 +20,10 @@\n \n ReactDOM.createRoot(document.getElementById(\"root\")!).render(\n   <QueryClientProvider client={queryClient}>\n     <ConfigProvider locale={zhCN}>\n-      <BrowserRouter>\n+      <Router>\n         <App />\n-      </BrowserRouter>\n+      </Router>\n     </ConfigProvider>\n   </QueryClientProvider>\n );\n"
+                },
+                {
+                    "date": 1746415933946,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,9 +4,9 @@\n \n import App from \"./App\";\n import { ConfigProvider } from \"antd\";\n import ReactDOM from \"react-dom/client\";\n-import { HashRouter as Router } from \"react-router-dom\";\n+import { BrowserRouter as Router } from \"react-router-dom\";\n import zhCN from \"antd/locale/zh_CN\";\n \n const queryClient = new QueryClient({\n   defaultOptions: {\n"
+                },
+                {
+                    "date": 1746441135989,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -3,8 +3,10 @@\n import { QueryClient, QueryClientProvider } from \"@tanstack/react-query\";\n \n import App from \"./App\";\n import { ConfigProvider } from \"antd\";\n+import { ErrorBoundary } from \"@/components/ErrorBoundary\";\n+import GlobalLoading from \"@/components/GlobalLoading\";\n import ReactDOM from \"react-dom/client\";\n import { BrowserRouter as Router } from \"react-router-dom\";\n import zhCN from \"antd/locale/zh_CN\";\n \n@@ -18,12 +20,15 @@\n   },\n });\n \n ReactDOM.createRoot(document.getElementById(\"root\")!).render(\n-  <QueryClientProvider client={queryClient}>\n-    <ConfigProvider locale={zhCN}>\n-      <Router>\n-        <App />\n-      </Router>\n-    </ConfigProvider>\n-  </QueryClientProvider>\n+  <ErrorBoundary>\n+    <QueryClientProvider client={queryClient}>\n+      <ConfigProvider locale={zhCN}>\n+        <Router>\n+          <GlobalLoading />\n+          <App />\n+        </Router>\n+      </ConfigProvider>\n+    </QueryClientProvider>\n+  </ErrorBoundary>\n );\n"
                 }
             ],
             "date": 1746086915750,
