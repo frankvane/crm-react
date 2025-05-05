@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 1,
+            "activePatchIndex": 3,
             "patches": [
                 {
                     "date": 1746087011247,
@@ -12,6 +12,14 @@
                 {
                     "date": 1746089185091,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,20 +0,0 @@\n-.container {\r\n-  display: flex;\r\n-  justify-content: center;\r\n-  align-items: center;\r\n-  min-height: 100vh;\r\n-  background: #f0f2f5;\r\n-}\r\n-\r\n-.card {\r\n-  width: 100%;\r\n-  max-width: 400px;\r\n-\r\n-  :global {\r\n-    .ant-card-head-title {\r\n-      text-align: center;\r\n-      font-size: 24px;\r\n-      font-weight: bold;\r\n-    }\r\n-  }\r\n-}\r\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1746444121551,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,3 +1,17 @@\n .container {\r\n-  width: 100%;\r\n+  min-height: 100vh;\r\n+  display: flex;\r\n+  flex-direction: column;\r\n+  justify-content: center;\r\n+  align-items: center;\r\n+  background: #f5f6fa;\r\n }\r\n+\r\n+// 可选：表单卡片化美化\r\n+:global(.ant-form) {\r\n+  background: #fff;\r\n+  padding: 32px 32px 16px 32px;\r\n+  border-radius: 8px;\r\n+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);\r\n+  min-width: 320px;\r\n+}\r\n"
+                },
+                {
+                    "date": 1746444235249,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -13,5 +13,6 @@\n   padding: 32px 32px 16px 32px;\r\n   border-radius: 8px;\r\n   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);\r\n   min-width: 320px;\r\n+  border: 1px solid #e4e7ed;\r\n }\r\n"
                 }
             ],
             "date": 1746087011247,

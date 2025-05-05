@@ -1,14 +1,9 @@
 import Login from "@/pages/login";
 import { Navigate } from "react-router-dom";
 import NotFound from "@/pages/404";
-import UserLayout from "@/layouts/UserLayout";
 
 const staticRoutes = [
-  {
-    path: "/user",
-    element: <UserLayout />,
-    children: [{ path: "login", element: <Login /> }],
-  },
+  { path: "/login", element: <Login /> },
   { path: "/404", element: <NotFound /> },
   {
     path: "*",

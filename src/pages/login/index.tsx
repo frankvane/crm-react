@@ -48,21 +48,6 @@ const Login = () => {
 
   return (
     <div className={styles.container}>
-      {/* 快捷切换用户按钮 */}
-      <div
-        style={{
-          marginBottom: 24,
-          display: "flex",
-          gap: 8,
-          justifyContent: "center",
-        }}
-      >
-        <Button onClick={() => quickLogin("admin", "admin123")}>Admin</Button>
-        <Button onClick={() => quickLogin("manager", "manager123")}>
-          Manager
-        </Button>
-        <Button onClick={() => quickLogin("user", "user123")}>User</Button>
-      </div>
       <Form<LoginParams>
         name="login"
         onFinish={handleSubmit}
@@ -74,6 +59,25 @@ const Login = () => {
         }}
         ref={formRef}
       >
+        <h1>
+          <center>CRM 管理系统</center>
+        </h1>
+        {/* 快捷切换用户按钮 */}
+        <div
+          style={{
+            marginBottom: 24,
+            display: "flex",
+            gap: 8,
+            justifyContent: "center",
+          }}
+        >
+          <Button onClick={() => quickLogin("admin", "admin123")}>Admin</Button>
+          <Button onClick={() => quickLogin("manager", "manager123")}>
+            Manager
+          </Button>
+          <Button onClick={() => quickLogin("user", "user123")}>User</Button>
+        </div>
+
         <Form.Item
           name="username"
           rules={[{ required: true, message: "请输入用户名" }]}

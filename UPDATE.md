@@ -1,16 +1,14 @@
 # 更新日志
 
+## [0.2.1] - 2025-05-05
+
+### 路由与目录结构重构
+
+- 登录页路由由 `/user/login` 统一调整为 `/login`，所有相关跳转、重定向、权限守卫、request 拦截器等代码已同步更新。
+- 登录页目录由 `src/pages/user/Login` 移动为 `src/pages/login`，并删除空的 `user` 目录，import 路径已全部适配。
+- 规范了全局 loading 和错误边界组件的目录结构，提升项目可维护性。
+
 ## [0.2.0] - 2025-05-04
-
-### Git 提交记录获取
-
-```bash
-git log --pretty=format:"%h - %an, %ad : %s" > commit_messages.txt
-```
-
-```bash
-npx @agentdeskai/browser-tools-server@1.2.0
-```
 
 ### 新增
 
@@ -109,3 +107,13 @@ npx @agentdeskai/browser-tools-server@1.2.0
   - 统一错误处理
   - 简化数据访问
   - 完善类型定义
+
+### Git 提交记录获取
+
+```bash
+git log --pretty=format:"%h - %an, %ad : %s" > commit_messages.txt
+```
+
+```bash
+npx @agentdeskai/browser-tools-server@1.2.0
+```
