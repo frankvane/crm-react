@@ -1,21 +1,5 @@
-import {
-  ApartmentOutlined,
-  AppstoreOutlined,
-  BarsOutlined,
-  DashboardOutlined,
-  FileTextOutlined,
-  KeyOutlined,
-  ProfileOutlined,
-  ProjectOutlined,
-  SecurityScanOutlined,
-  SettingOutlined,
-  ShopOutlined,
-  SolutionOutlined,
-  TagsOutlined,
-  TeamOutlined,
-  ToolOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
+import * as Icons from "@ant-design/icons";
+
 import { Form, Input, Modal, Select, message } from "antd";
 import type {
   ICreateResourceParams,
@@ -30,31 +14,25 @@ import {
 import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
+import React from "react";
 import { ResourceType } from "@/types/api/resource";
 
 // 定义常用的图标列表
-const ICON_OPTIONS = [
-  { label: "仪表盘", value: "DashboardOutlined", icon: <DashboardOutlined /> },
-  { label: "应用", value: "AppstoreOutlined", icon: <AppstoreOutlined /> },
-  { label: "用户", value: "UserOutlined", icon: <UserOutlined /> },
-  { label: "团队", value: "TeamOutlined", icon: <TeamOutlined /> },
-  { label: "设置", value: "SettingOutlined", icon: <SettingOutlined /> },
-  {
-    label: "安全",
-    value: "SecurityScanOutlined",
-    icon: <SecurityScanOutlined />,
-  },
-  { label: "权限", value: "KeyOutlined", icon: <KeyOutlined /> },
-  { label: "组织", value: "ApartmentOutlined", icon: <ApartmentOutlined /> },
-  { label: "列表", value: "BarsOutlined", icon: <BarsOutlined /> },
-  { label: "文档", value: "FileTextOutlined", icon: <FileTextOutlined /> },
-  { label: "商品", value: "ShopOutlined", icon: <ShopOutlined /> },
-  { label: "标签", value: "TagsOutlined", icon: <TagsOutlined /> },
-  { label: "档案", value: "ProfileOutlined", icon: <ProfileOutlined /> },
-  { label: "项目", value: "ProjectOutlined", icon: <ProjectOutlined /> },
-  { label: "方案", value: "SolutionOutlined", icon: <SolutionOutlined /> },
-  { label: "工具", value: "ToolOutlined", icon: <ToolOutlined /> },
-];
+const ICON_OPTIONS = Object.keys(Icons)
+  .filter((key) => {
+    const icon = Icons[key as keyof typeof Icons];
+    return (
+      key.endsWith("Outlined") &&
+      typeof icon === "object" &&
+      icon !== null &&
+      "$$typeof" in icon
+    );
+  })
+  .map((key) => ({
+    label: key,
+    value: key,
+    icon: React.createElement(Icons[key as keyof typeof Icons] as React.FC),
+  }));
 
 interface IResourceFormProps {
   visible: boolean;
@@ -71,6 +49,7 @@ const ResourceForm: React.FC<IResourceFormProps> = ({
 }) => {
   const [form] = Form.useForm<ICreateResourceParams>();
   const [parentId, setParentId] = useState<number | null>(null);
+  const [loading, setLoading] = useState(false);
 
   // 获取父级菜单信息
   const { data: parentResource } = useQuery({
@@ -107,19 +86,30 @@ const ResourceForm: React.FC<IResourceFormProps> = ({
     },
   });
 
-  // 监听表单可见性变化
+  // 监听表单可见性变化，编辑时实时请求数据回显
   useEffect(() => {
-    if (visible) {
-      if (editingResource) {
-        form.setFieldsValue(editingResource);
-        if (typeof editingResource.parentId === "number") {
-          setParentId(editingResource.parentId);
+    const fetchAndSet = async () => {
+      if (visible) {
+        if (editingResource) {
+          setLoading(true);
+          try {
+            const resource = await getResource(editingResource.id);
+            form.setFieldsValue(resource);
+            if (typeof resource.parentId === "number") {
+              setParentId(resource.parentId);
+            }
+          } catch {
+            message.error("获取资源数据失败，请重试");
+          } finally {
+            setLoading(false);
+          }
+        } else {
+          form.resetFields();
+          setParentId(null);
         }
-      } else {
-        form.resetFields();
-        setParentId(null);
       }
-    }
+    };
+    fetchAndSet();
   }, [visible, editingResource, form]);
 
   // 处理表单提交
@@ -152,9 +142,15 @@ const ResourceForm: React.FC<IResourceFormProps> = ({
       open={visible}
       onCancel={handleCancel}
       onOk={handleSubmit}
-      confirmLoading={createMutation.isPending || updateMutation.isPending}
+      confirmLoading={
+        createMutation.isPending || updateMutation.isPending || loading
+      }
     >
-      <Form<ICreateResourceParams> form={form} layout="vertical">
+      <Form<ICreateResourceParams>
+        form={form}
+        layout="horizontal"
+        labelCol={{ span: 6 }}
+      >
         <Form.Item
           name="name"
           label="菜单名称"
@@ -193,6 +189,7 @@ const ResourceForm: React.FC<IResourceFormProps> = ({
           rules={[{ required: true, message: "请选择图标" }]}
         >
           <Select
+            showSearch
             placeholder="请选择图标"
             options={ICON_OPTIONS}
             optionLabelProp="label"
@@ -202,6 +199,11 @@ const ResourceForm: React.FC<IResourceFormProps> = ({
                 <span>{option.data.label}</span>
               </div>
             )}
+            filterOption={(input, option) =>
+              (option?.label as string)
+                .toLowerCase()
+                .includes(input.toLowerCase())
+            }
           />
         </Form.Item>
 

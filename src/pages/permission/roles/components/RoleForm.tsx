@@ -4,9 +4,9 @@ import type {
   IRole,
   IUpdateRoleParams,
 } from "@/types/api/role";
-import { createRole, updateRole } from "@/api/modules/role";
+import { createRole, getRole, updateRole } from "@/api/modules/role";
+import { useEffect, useState } from "react";
 
-import { useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
 
 interface IRoleFormProps {
@@ -23,6 +23,7 @@ const RoleForm: React.FC<IRoleFormProps> = ({
   onSuccess,
 }) => {
   const [form] = Form.useForm<ICreateRoleParams>();
+  const [loading, setLoading] = useState(false);
 
   // 创建角色
   const createMutation = useMutation({
@@ -43,15 +44,26 @@ const RoleForm: React.FC<IRoleFormProps> = ({
     },
   });
 
-  // 监听表单可见性变化
+  // 监听表单可见性变化，编辑时实时请求数据回显
   useEffect(() => {
-    if (visible) {
-      if (editingRole) {
-        form.setFieldsValue(editingRole);
-      } else {
-        form.resetFields();
+    const fetchAndSet = async () => {
+      if (visible) {
+        if (editingRole) {
+          setLoading(true);
+          try {
+            const role = await getRole(editingRole.id);
+            form.setFieldsValue(role);
+          } catch {
+            message.error("获取角色数据失败，请重试");
+          } finally {
+            setLoading(false);
+          }
+        } else {
+          form.resetFields();
+        }
       }
-    }
+    };
+    fetchAndSet();
   }, [visible, editingRole, form]);
 
   // 处理表单提交
@@ -78,12 +90,15 @@ const RoleForm: React.FC<IRoleFormProps> = ({
       open={visible}
       onOk={handleSubmit}
       onCancel={onCancel}
-      confirmLoading={createMutation.isPending || updateMutation.isPending}
+      confirmLoading={
+        createMutation.isPending || updateMutation.isPending || loading
+      }
     >
       <Form<ICreateRoleParams>
         form={form}
-        layout="vertical"
+        layout="horizontal"
         initialValues={{ status: 1 }}
+        labelCol={{ span: 6 }}
       >
         <Form.Item
           name="name"

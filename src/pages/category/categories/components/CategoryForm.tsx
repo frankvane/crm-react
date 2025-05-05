@@ -59,14 +59,20 @@ const CategoryForm = ({
     categoryTypes.find((type) => type.id === typeId)?.name || "无";
 
   useEffect(() => {
-    if (visible) {
-      if (categoryData) {
-        form.setFieldsValue(categoryData);
-      } else {
-        form.resetFields();
+    const fetchAndSet = async () => {
+      if (visible) {
+        if (id) {
+          // 等待 categoryData 加载完成
+          if (categoryData) {
+            form.setFieldsValue(categoryData);
+          }
+        } else {
+          form.resetFields();
+        }
       }
-    }
-  }, [visible, categoryData, form]);
+    };
+    fetchAndSet();
+  }, [visible, id, categoryData, form]);
 
   const mutation = useMutation({
     mutationFn: (values: Partial<ICategory>) =>
@@ -101,7 +107,7 @@ const CategoryForm = ({
       confirmLoading={mutation.isPending}
       destroyOnClose
     >
-      <Form form={form} preserve={false}>
+      <Form form={form} preserve={false} labelCol={{ span: 6 }}>
         <Form.Item
           name="name"
           label="分类名称"

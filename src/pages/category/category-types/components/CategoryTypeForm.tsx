@@ -1,12 +1,13 @@
 import { Form, Input, Modal, message } from "antd";
 import {
   createCategoryType,
+  getCategoryType,
   updateCategoryType,
 } from "@/api/modules/category-type";
+import { useEffect, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import type { ICategoryType } from "@/types/api/category-type";
-import { useEffect } from "react";
 
 interface CategoryTypeFormProps {
   visible: boolean;
@@ -23,12 +24,26 @@ const CategoryTypeForm = ({
 }: CategoryTypeFormProps) => {
   const [form] = Form.useForm();
   const queryClient = useQueryClient();
+  const [loading, setLoading] = useState(false);
 
-  // 监听 editingCategoryType 变化，及时更新表单值
+  // 编辑时实时请求数据回显
   useEffect(() => {
-    if (visible && editingCategoryType) {
-      form.setFieldsValue(editingCategoryType);
-    }
+    const fetchData = async () => {
+      if (visible && editingCategoryType) {
+        setLoading(true);
+        try {
+          const data = await getCategoryType(editingCategoryType.id);
+          form.setFieldsValue(data);
+        } catch {
+          message.error("获取最新数据失败，请重试");
+        } finally {
+          setLoading(false);
+        }
+      } else if (visible) {
+        form.resetFields();
+      }
+    };
+    fetchData();
   }, [visible, editingCategoryType, form]);
 
   // 创建或更新分类类型
@@ -59,10 +74,10 @@ const CategoryTypeForm = ({
       open={visible}
       onOk={handleOk}
       onCancel={onCancel}
-      confirmLoading={mutation.isPending}
+      confirmLoading={mutation.isPending || loading}
       destroyOnClose
     >
-      <Form form={form} preserve={false}>
+      <Form form={form} preserve={false} labelCol={{ span: 6 }}>
         <Form.Item
           name="name"
           label="类型名称"

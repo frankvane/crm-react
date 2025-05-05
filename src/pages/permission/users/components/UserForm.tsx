@@ -4,9 +4,9 @@ import type {
   IUpdateUserParams,
   IUser,
 } from "@/types/api/user";
-import { createUser, updateUser } from "@/api/modules/user";
+import { createUser, getUser, updateUser } from "@/api/modules/user";
+import { useEffect, useState } from "react";
 
-import { useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
 
 interface IUserFormProps {
@@ -23,6 +23,7 @@ const UserForm: React.FC<IUserFormProps> = ({
   onSuccess,
 }) => {
   const [form] = Form.useForm();
+  const [loading, setLoading] = useState(false);
 
   // 创建用户
   const createMutation = useMutation({
@@ -43,20 +44,30 @@ const UserForm: React.FC<IUserFormProps> = ({
     },
   });
 
-  // 监听表单可见性变化
+  // 监听表单可见性变化，编辑时实时请求数据回显
   useEffect(() => {
-    if (visible) {
-      if (editingUser) {
-        // 转换角色数据结构
-        const formData = {
-          ...editingUser,
-          roleIds: editingUser.roles.map((role) => role.id),
-        };
-        form.setFieldsValue(formData);
-      } else {
-        form.resetFields();
+    const fetchAndSet = async () => {
+      if (visible) {
+        if (editingUser) {
+          setLoading(true);
+          try {
+            const user = await getUser(editingUser.id);
+            const formData = {
+              ...user,
+              roleIds: user.roles.map((role) => role.id),
+            };
+            form.setFieldsValue(formData);
+          } catch {
+            message.error("获取用户数据失败，请重试");
+          } finally {
+            setLoading(false);
+          }
+        } else {
+          form.resetFields();
+        }
       }
-    }
+    };
+    fetchAndSet();
   }, [visible, editingUser, form]);
 
   // 处理表单提交
@@ -83,9 +94,16 @@ const UserForm: React.FC<IUserFormProps> = ({
       open={visible}
       onOk={handleSubmit}
       onCancel={onCancel}
-      confirmLoading={createMutation.isPending || updateMutation.isPending}
+      confirmLoading={
+        createMutation.isPending || updateMutation.isPending || loading
+      }
     >
-      <Form form={form} layout="vertical" initialValues={{ status: 1 }}>
+      <Form
+        form={form}
+        layout="horizontal"
+        initialValues={{ status: 1 }}
+        labelCol={{ span: 6 }}
+      >
         <Form.Item
           name="username"
           label="用户名"

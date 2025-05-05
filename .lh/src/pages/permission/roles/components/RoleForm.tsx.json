@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 5,
+            "activePatchIndex": 6,
             "patches": [
                 {
                     "date": 1746087805912,
@@ -28,6 +28,10 @@
                 {
                     "date": 1746188857761,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -24,14 +24,8 @@\n   onSuccess,\r\n }) => {\r\n   const [form] = Form.useForm<ICreateRoleParams>();\r\n \r\n-  // 获取资源列表\r\n-  const { data: resourcesData } = useQuery({\r\n-    queryKey: [\"resources\"],\r\n-    queryFn: () => getResources({ page: 1, pageSize: 100 }),\r\n-  });\r\n-\r\n   // 创建角色\r\n   const createMutation = useMutation({\r\n     mutationFn: (data: ICreateRoleParams) => createRole(data),\r\n     onSuccess: () => {\r\n"
+                },
+                {
+                    "date": 1746409123036,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -3,11 +3,11 @@\n   ICreateRoleParams,\r\n   IRole,\r\n   IUpdateRoleParams,\r\n } from \"@/types/api/role\";\r\n-import { createRole, updateRole } from \"@/api/modules/role\";\r\n+import { createRole, getRole, updateRole } from \"@/api/modules/role\";\r\n+import { useEffect, useState } from \"react\";\r\n \r\n-import { useEffect } from \"react\";\r\n import { useMutation } from \"@tanstack/react-query\";\r\n \r\n interface IRoleFormProps {\r\n   visible: boolean;\r\n@@ -22,8 +22,9 @@\n   onCancel,\r\n   onSuccess,\r\n }) => {\r\n   const [form] = Form.useForm<ICreateRoleParams>();\r\n+  const [loading, setLoading] = useState(false);\r\n \r\n   // 创建角色\r\n   const createMutation = useMutation({\r\n     mutationFn: (data: ICreateRoleParams) => createRole(data),\r\n@@ -42,17 +43,28 @@\n       onSuccess();\r\n     },\r\n   });\r\n \r\n-  // 监听表单可见性变化\r\n+  // 监听表单可见性变化，编辑时实时请求数据回显\r\n   useEffect(() => {\r\n-    if (visible) {\r\n-      if (editingRole) {\r\n-        form.setFieldsValue(editingRole);\r\n-      } else {\r\n-        form.resetFields();\r\n+    const fetchAndSet = async () => {\r\n+      if (visible) {\r\n+        if (editingRole) {\r\n+          setLoading(true);\r\n+          try {\r\n+            const role = await getRole(editingRole.id);\r\n+            form.setFieldsValue(role);\r\n+          } catch {\r\n+            message.error(\"获取角色数据失败，请重试\");\r\n+          } finally {\r\n+            setLoading(false);\r\n+          }\r\n+        } else {\r\n+          form.resetFields();\r\n+        }\r\n       }\r\n-    }\r\n+    };\r\n+    fetchAndSet();\r\n   }, [visible, editingRole, form]);\r\n \r\n   // 处理表单提交\r\n   const handleSubmit = async () => {\r\n@@ -77,14 +89,17 @@\n       title={editingRole ? \"编辑角色\" : \"新增角色\"}\r\n       open={visible}\r\n       onOk={handleSubmit}\r\n       onCancel={onCancel}\r\n-      confirmLoading={createMutation.isPending || updateMutation.isPending}\r\n+      confirmLoading={\r\n+        createMutation.isPending || updateMutation.isPending || loading\r\n+      }\r\n     >\r\n       <Form<ICreateRoleParams>\r\n         form={form}\r\n-        layout=\"vertical\"\r\n+        layout=\"horizontal\"\r\n         initialValues={{ status: 1 }}\r\n+        labelCol={{ span: 6 }}\r\n       >\r\n         <Form.Item\r\n           name=\"name\"\r\n           label=\"角色名称\"\r\n"
                 }
             ],
             "date": 1746087805912,
