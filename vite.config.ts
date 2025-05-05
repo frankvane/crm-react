@@ -24,16 +24,32 @@ export default defineConfig({
       },
     },
   },
+  define: {
+    "process.env": process.env,
+  },
   build: {
-    sourcemap: false,
+    sourcemap: process.env.NODE_ENV !== "production",
+    outDir: "dist",
+    assetsDir: "assets",
+    target: "esnext",
     rollupOptions: {
       output: {
         manualChunks: {
           react: ["react", "react-dom", "react-router-dom"],
           antd: ["antd", "@ant-design/icons"],
-          axios: ["axios"],
+          axios: ["axios", "axios-auth-refresh"],
+          immer: ["immer"],
+          zustand: ["zustand"],
+          lodash: ["lodash"],
+          dayjs: ["dayjs"],
+          localforage: ["localforage"],
+          tanstack: ["@tanstack/react-query", "@tanstack/react-query-devtools"],
+          keepalive: ["keepalive-for-react"],
         },
       },
     },
+  },
+  optimizeDeps: {
+    include: ["lodash"],
   },
 });
