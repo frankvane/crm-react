@@ -117,3 +117,10 @@ git log --pretty=format:"%h - %an, %ad : %s" > commit_messages.txt
 ```bash
 npx @agentdeskai/browser-tools-server@1.2.0
 ```
+
+## [0.2.2] - 2025-05-05
+
+### 全局 loading 计数器方案
+
+- 全局 loading 升级为计数器方案，支持多请求并发场景，避免 loading 闪烁或提前消失。
+- 计数器方案是业界通用的全局 loading 管理方式，因为它能精确追踪所有并发请求的开始与结束，只有全部请求完成后 loading 才会消失，保证用户体验一致性。相比单一 boolean 方案，计数器能有效避免多个请求并发时 loading 过早消失或反复闪烁的问题，适用于中大型前端项目。
