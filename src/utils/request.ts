@@ -51,11 +51,12 @@ request.interceptors.request.use(
     }
 
     // 开启全局 loading
-    useGlobalLoading.getState().setLoading(true);
+    useGlobalLoading.getState().start();
+
     return config;
   },
   (error: AxiosError) => {
-    useGlobalLoading.getState().setLoading(false);
+    useGlobalLoading.getState().end();
     message.error("请求发送失败");
     return Promise.reject(error);
   }
@@ -64,7 +65,7 @@ request.interceptors.request.use(
 // 响应拦截器
 request.interceptors.response.use(
   (response: AxiosResponse) => {
-    useGlobalLoading.getState().setLoading(false);
+    useGlobalLoading.getState().end();
     const { data } = response;
     // 处理业务状态码
     if (data.code !== 200) {
@@ -75,7 +76,7 @@ request.interceptors.response.use(
     return data.data;
   },
   (error: AxiosError) => {
-    useGlobalLoading.getState().setLoading(false);
+    useGlobalLoading.getState().end();
     if (error.response) {
       const { status, data } = error.response as any;
       const apiMessage = data && data.message;
