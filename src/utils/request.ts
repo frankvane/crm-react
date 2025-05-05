@@ -146,7 +146,7 @@ const refreshAuthLogic = (failedRequest: {
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
       window.location.href =
-        "/user/login?redirect=" +
+        "/login?redirect=" +
         encodeURIComponent(window.location.pathname + window.location.search);
       return Promise.reject(failedRequest);
     });

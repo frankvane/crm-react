@@ -21,7 +21,7 @@ const BasicLayout: React.FC = () => {
 
   const handleLogout = async () => {
     await logout();
-    navigate("/user/login", { replace: true });
+    navigate("/login", { replace: true });
   };
 
   return (

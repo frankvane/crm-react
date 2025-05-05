@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 5,
+            "activePatchIndex": 6,
             "patches": [
                 {
                     "date": 1746090732276,
@@ -28,6 +28,10 @@
                 {
                     "date": 1746245778862,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -15,10 +15,10 @@\n         <>\r\n           <Button type=\"primary\" onClick={() => navigate(\"/user/login\")}>\r\n             返回登录\r\n           </Button>\r\n-          <Button type=\"primary\" onClick={() => navigate(\"/user/login\")}>\r\n-            返回登录\r\n+          <Button type=\"primary\" onClick={() => navigate(\"/app/dashboard\")}>\r\n+            返回首页\r\n           </Button>\r\n         </>\r\n       }\r\n     />\r\n"
+                },
+                {
+                    "date": 1746442884917,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -12,9 +12,9 @@\n       title=\"404\"\r\n       subTitle=\"抱歉，您访问的页面不存在。\"\r\n       extra={\r\n         <>\r\n-          <Button type=\"primary\" onClick={() => navigate(\"/user/login\")}>\r\n+          <Button type=\"primary\" onClick={() => navigate(\"/login\")}>\r\n             返回登录\r\n           </Button>\r\n           <Button type=\"primary\" onClick={() => navigate(\"/app/dashboard\")}>\r\n             返回首页\r\n"
                 }
             ],
             "date": 1746090732276,

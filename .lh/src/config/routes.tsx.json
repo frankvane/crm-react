@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 11,
+            "activePatchIndex": 12,
             "patches": [
                 {
                     "date": 1746088652079,
@@ -52,6 +52,10 @@
                 {
                     "date": 1746270607293,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,9 +4,8 @@\n import Dashboard from \"@/pages/dashboard\";\r\n import Login from \"@/pages/user/Login\";\r\n import { Navigate } from \"react-router-dom\";\r\n import NotFound from \"@/pages/404\";\r\n-import React from \"react\";\r\n import Resources from \"@/pages/permission/resources\";\r\n import Roles from \"@/pages/permission/roles\";\r\n import type { RouteObject } from \"react-router-dom\";\r\n import Users from \"@/pages/permission/users\";\r\n"
+                },
+                {
+                    "date": 1746442904862,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,9 +1,9 @@\n import AuthGuard from \"@/components/AuthGuard\";\r\n import Categories from \"@/pages/category/categories\";\r\n import CategoryTypes from \"@/pages/category/category-types\";\r\n import Dashboard from \"@/pages/dashboard\";\r\n-import Login from \"@/pages/user/Login\";\r\n+import Login from \"@/pages/login\";\r\n import { Navigate } from \"react-router-dom\";\r\n import NotFound from \"@/pages/404\";\r\n import Resources from \"@/pages/permission/resources\";\r\n import Roles from \"@/pages/permission/roles\";\r\n@@ -16,9 +16,9 @@\n \r\n export const routes: RouteObject[] = [\r\n   {\r\n     path: \"/\",\r\n-    element: <Navigate to=\"/user/login\" replace />,\r\n+    element: <Navigate to=\"/login\" replace />,\r\n   },\r\n   {\r\n     path: \"/app\",\r\n     element: (\r\n"
                 }
             ],
             "date": 1746088652079,

@@ -1,4 +1,4 @@
-import Login from "@/pages/user/Login";
+import Login from "@/pages/login";
 import { Navigate } from "react-router-dom";
 import NotFound from "@/pages/404";
 import UserLayout from "@/layouts/UserLayout";

@@ -2,7 +2,7 @@ import AuthGuard from "@/components/AuthGuard";
 import Categories from "@/pages/category/categories";
 import CategoryTypes from "@/pages/category/category-types";
 import Dashboard from "@/pages/dashboard";
-import Login from "@/pages/user/Login";
+import Login from "@/pages/login";
 import { Navigate } from "react-router-dom";
 import NotFound from "@/pages/404";
 import Resources from "@/pages/permission/resources";
@@ -17,7 +17,7 @@ const UserLayout = lazy(() => import("@/layouts/UserLayout"));
 export const routes: RouteObject[] = [
   {
     path: "/",
-    element: <Navigate to="/user/login" replace />,
+    element: <Navigate to="/login" replace />,
   },
   {
     path: "/app",

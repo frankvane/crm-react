@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 27,
+            "activePatchIndex": 28,
             "patches": [
                 {
                     "date": 1746086966685,
@@ -116,6 +116,10 @@
                 {
                     "date": 1746334738945,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -5,10 +5,10 @@\n   MenuUnfoldOutlined,\n } from \"@ant-design/icons\";\n import React, { useState } from \"react\";\n \n-import Sidebar from \"@/components/Sidebar\";\n-import TabBar from \"@/components/TabBar\";\n+import Sidebar from \"./Sidebar\";\n+import TabBar from \"./TabBar\";\n import styles from \"./style.module.less\";\n import { useAuthStore } from \"@/store/modules/auth\";\n import { useNavigate } from \"react-router-dom\";\n \n"
+                },
+                {
+                    "date": 1746442893774,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -20,9 +20,9 @@\n   const { logout } = useAuthStore();\n \n   const handleLogout = async () => {\n     await logout();\n-    navigate(\"/user/login\", { replace: true });\n+    navigate(\"/login\", { replace: true });\n   };\n \n   return (\n     <Layout className={styles.layout}>\n"
                 }
             ],
             "date": 1746086966685,
