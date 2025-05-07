@@ -57,6 +57,10 @@
 
 - 修复并发上传相关 linter 警告。
 
+## 2024-06-09
+
+- 将 useDynamicUploadConfig 移动到 src/components/FileUploader/hooks 目录，保持业务相关 hooks 内聚，便于维护。
+
 ## [0.2.2] - 2025-05-05
 
 ### 全局 loading 计数器方案

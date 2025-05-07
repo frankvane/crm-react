@@ -14,6 +14,7 @@ import {
 
 import async from "async";
 import request from "@/utils/request";
+import useDynamicUploadConfig from "./hooks/useDynamicUploadConfig";
 
 interface Chunk {
   index: number;
@@ -52,59 +53,13 @@ const FileUploader: React.FC<FileUploaderProps> = ({
       }
     >
   >({});
-  const [concurrent, setConcurrent] = useState(3);
-  const [chunkSize, setChunkSize] = useState(1 * 1024 * 1024);
+  const [chunkSize, setChunkSize, concurrent, setConcurrent] =
+    useDynamicUploadConfig();
   const [resumeTask, setResumeTask] = useState<any>(null);
   const [showResume, setShowResume] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [resumeTaskList, setResumeTaskList] = useState<any[]>([]);
   const [uploadingAll, setUploadingAll] = useState(false);
-
-  // 动态调整chunkSize和并发数
-  React.useEffect(() => {
-    let rtt: number | undefined = undefined;
-    const connection: any = navigator.connection;
-    if (connection && typeof connection.rtt === "number") {
-      rtt = connection.rtt;
-    }
-    const netType = connection?.effectiveType || connection?.type || "unknown";
-    if (typeof rtt === "number") {
-      if (rtt <= 100) {
-        setChunkSize(12 * 1024 * 1024);
-        setConcurrent(6);
-      } else if (rtt <= 150) {
-        setChunkSize(8 * 1024 * 1024);
-        setConcurrent(4);
-      } else if (rtt <= 550) {
-        setChunkSize(4 * 1024 * 1024);
-        setConcurrent(2);
-      } else {
-        setChunkSize(1 * 1024 * 1024);
-        setConcurrent(1);
-      }
-    } else if (navigator.onLine) {
-      // 优先用 effectiveType
-      if (netType === "4g") {
-        setChunkSize(10 * 1024 * 1024);
-        setConcurrent(5);
-      } else if (netType === "3g") {
-        setChunkSize(2 * 1024 * 1024);
-        setConcurrent(2);
-      } else if (netType === "2g" || netType === "slow-2g") {
-        setChunkSize(1 * 1024 * 1024);
-        setConcurrent(1);
-      } else if (
-        typeof navigator.connection !== "undefined" &&
-        (navigator.connection as any).type === "wifi"
-      ) {
-        setChunkSize(10 * 1024 * 1024);
-        setConcurrent(5);
-      } else {
-        setChunkSize(1 * 1024 * 1024);
-        setConcurrent(3);
-      }
-    }
-  }, []);
 
   // 页面加载时收集所有断点任务
   React.useEffect(() => {
