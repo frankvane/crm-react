@@ -2,6 +2,17 @@
 
 ## 2024-06-10
 
+- 修复 FileUploader 组件中断上传功能：新增 stoppedRef 全局标记，handleStop 时彻底阻断所有后续分片上传，确保中断操作立即生效，所有请求都能被终止。
+
+- 修复 FileUploader 组件暂停功能：现在点击暂停时会立即中断所有正在进行的分片上传请求（调用 AbortController.abort），确保暂停操作真正生效，用户体验更好。
+
+- FileUploader 组件新增本地存储上传进度和自动恢复提示功能：
+  - 上传分片成功后将 fileId、md5、文件名、已上传分片索引等信息实时存入 localStorage。
+  - 组件初始化时自动检测 localStorage 是否有未完成上传任务，弹窗提示用户是否恢复。
+  - 恢复时自动跳过已完成分片，上传完成/中断/重置时自动清理本地进度。
+
+## 2024-06-10
+
 - 修复 `src/components/FileUploader/index.tsx` 分片上传时 `cb is not a function` 的 bug。原因是 async.eachLimit 的 worker 用 async 函数并 return cb()，导致 cb 被错误处理为 Promise。现已改为普通函数并用 Promise 处理异步，彻底解决该问题。
 
 ## 2024-06-09
@@ -22,7 +33,9 @@
 
 ## 2024-06-09
 
-- FileUploader 组件支持分片上传时中断（abort）所有未完成请求，提升大文件上传体验和资源利用率。
+- FileUploader 组件重构：每个文件上传/暂停/恢复/中断按钮只影响自己，彻底移除全局 uploading/paused/md5/totalChunks/uploadingChunks 状态，所有上传相关状态都放到 fileStates 里。
+- handleStart/handlePause/handleResume/handleStop 都传 file 参数并只影响对应文件。
+- 上传全部按钮依然支持批量上传。
 
 ## 2024-06-09
 

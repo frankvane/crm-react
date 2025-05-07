@@ -97,7 +97,14 @@ request.interceptors.response.use(
           message.error(apiMessage || "网络错误");
       }
     } else if (error.request) {
-      message.error("网络连接失败，请检查网络");
+      if (error.code === "ERR_CANCELED") {
+        message.error("请求被取消");
+        return Promise.reject(error);
+      } else if (error.code === "ERR_NETWORK") {
+        message.error("网络连接失败，请检查网络");
+      } else if (error.code === "ERR_BAD_REQUEST") {
+        message.error("请求参数错误");
+      }
     } else {
       message.error("请求失败");
     }
@@ -114,6 +121,8 @@ request.interceptors.response.use(
 const refreshAuthLogic = (failedRequest: {
   response: { config: { headers: { Authorization: string } } };
 }) => {
+  console.log("refreshAuthLogic????????????");
+
   const refreshToken = localStorage.getItem("refreshToken");
 
   if (!refreshToken) {
