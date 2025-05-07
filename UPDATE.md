@@ -185,3 +185,9 @@ git log --pretty=format:"%h - %an, %ad : %s" > commit_messages.txt
 ```bash
 npx @agentdeskai/browser-tools-server@1.2.0
 ```
+
+## 2024-06-09
+
+- FileUploader 目录结构彻底模块化，所有核心 UI、hooks、工具函数均已解耦，主组件极简。
+- 每个文件上传前支持 /file/instant 秒传确认，若已上传则直接提示"秒传成功，文件已存在"，不会再走分片上传和 merge。
+- 优化所有 linter 报错，提升代码规范性和可维护性。

@@ -51,3 +51,65 @@ export async function uploadChunkWithRetry<T>(
 export function calcProgress(uploaded: number, total: number) {
   return Math.floor((uploaded / total) * 100);
 }
+
+// 原子写入+重试，确保 uploadedList 不丢分片
+export function atomicUpdateUploadedList(
+  localKeyPrefix: string,
+  fileId: string,
+  chunkIndex: number,
+  fileMd5: string,
+  file: File,
+  totalChunks: number
+) {
+  let uploadedListLocal: number[] = [];
+  const local = localStorage.getItem(localKeyPrefix + fileId);
+  if (local) {
+    uploadedListLocal = JSON.parse(local).uploadedList || [];
+  }
+  const newList = Array.from(new Set([...uploadedListLocal, chunkIndex]));
+  const newObj = {
+    fileId,
+    md5: fileMd5,
+    name: file?.name,
+    size: file?.size,
+    totalChunks,
+    uploadedList: newList,
+  };
+  const newStr = JSON.stringify(newObj);
+  try {
+    localStorage.setItem(localKeyPrefix + fileId, newStr);
+  } catch (err) {
+    console.error("[atomicUpdateUploadedList] localStorage 写入失败:", err);
+  }
+}
+
+// 文件类型和大小校验
+export function checkFileBeforeUpload({
+  file,
+  accept,
+  maxSizeMB,
+  onError,
+}: {
+  file: File;
+  accept: string;
+  maxSizeMB: number;
+  onError: (msg: string) => void;
+}) {
+  const acceptList = accept.split(",").map((s) => s.trim().toLowerCase());
+  const fileExt = "." + file.name.split(".").pop()?.toLowerCase();
+  const fileType = file.type.toLowerCase();
+  // 类型校验
+  const typeOk =
+    acceptList.includes("*") ||
+    acceptList.includes(fileExt) ||
+    (acceptList.includes("image/*") && fileType.startsWith("image/"));
+  if (!typeOk) {
+    onError("文件类型不支持");
+    return false;
+  }
+  if (file.size > maxSizeMB * 1024 * 1024) {
+    onError(`文件不能超过${maxSizeMB}MB`);
+    return false;
+  }
+  return true;
+}
