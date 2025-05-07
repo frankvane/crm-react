@@ -6,6 +6,7 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 
+import FileUploader from "../../components/FileUploader";
 import styles from "./style.module.less";
 
 const Dashboard = () => {
@@ -62,6 +63,8 @@ const Dashboard = () => {
           <Card title="销售额趋势">{/* 这里可以添加销售额趋势图表 */}</Card>
         </Col>
       </Row>
+
+      <FileUploader />
     </div>
   );
 };

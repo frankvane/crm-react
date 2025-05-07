@@ -1,5 +1,21 @@
 # 更新日志
 
+## 2024-06-09
+
+- 完善 `src/components/FileUploader/index.tsx`，实现大文件上传主流程：支持 MD5 秒传、断点续传、分片、并发上传、失败重试、暂停/恢复/中断、进度展示、动态切片和并发数调整，UI 联动，集成 request 统一请求。
+
+## 2024-06-09
+
+- 新增 `src/components/FileUploader/index.tsx`，实现大文件上传 UI 骨架，包含 Antd Upload、Progress、Button 等，预留上传、暂停、恢复、中断等核心方法和状态。
+
+## 2024-06-09
+
+- 新增 `src/components/FileUploader/utils.ts`，封装切片、MD5 计算（worker 通信）、分片重试、进度计算等核心工具函数骨架。
+
+## 2024-06-09
+
+- 新增 `src/components/FileUploader/worker-md5.js`，基于 spark-md5 实现 webworker 文件 MD5 计算，提升大文件处理性能。
+
 ## [0.2.2] - 2025-05-05
 
 ### 全局 loading 计数器方案
