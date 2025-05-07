@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 30,
+            "activePatchIndex": 31,
             "patches": [
                 {
                     "date": 1746086966685,
@@ -128,6 +128,10 @@
                 {
                     "date": 1746452109841,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -5,9 +5,8 @@\n   MenuUnfoldOutlined,\n } from \"@ant-design/icons\";\n import React, { useState } from \"react\";\n \n-import GlobalLoading from \"@/components/GlobalLoading\";\n import Sidebar from \"./Sidebar\";\n import TabBar from \"./TabBar\";\n import styles from \"./style.module.less\";\n import { useAuthStore } from \"@/store/modules/auth\";\n@@ -49,10 +48,8 @@\n             </div>\n           </div>\n         </Header>\n         <div className={styles.mainContent}>\n-          <GlobalLoading />\n-\n           <TabBar />\n         </div>\n       </Layout>\n     </Layout>\n"
+                },
+                {
+                    "date": 1746603040986,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -36,9 +36,11 @@\n               onClick={() => setCollapsed(!collapsed)}\n               className={styles.trigger}\n             />\n             <div className={styles.userInfo}>\n-              <span className={styles.username}>Admin</span>\n+              <span className={styles.username}>\n+                {useAuthStore((s) => s.user?.username || \"未登录\")}\n+              </span>\n               <Button\n                 type=\"text\"\n                 icon={<LogoutOutlined />}\n                 onClick={handleLogout}\n"
                 }
             ],
             "date": 1746086966685,

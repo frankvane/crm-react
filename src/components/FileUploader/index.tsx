@@ -93,12 +93,12 @@ const FileUploader: React.FC = () => {
     const fileId = `${fileMd5}-${file.name}-${file.size}`;
     message.success({ content: `MD5: ${fileMd5}`, key: "md5", duration: 1 });
     // 2. 秒传确认
-    const checkRes = await request.post("/file/instant", {
+    const checkRes = (await request.post("/file/instant", {
       file_id: fileId,
       md5: fileMd5,
       name: file.name,
       size: file.size,
-    });
+    })) as any;
     if (checkRes?.uploaded) {
       setProgress(100);
       setUploading(false);

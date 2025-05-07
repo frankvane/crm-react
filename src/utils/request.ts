@@ -33,7 +33,7 @@ interface RefreshTokenResponse {
 // 创建axios实例
 const request: AxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:3000",
-  timeout: 10000,
+  timeout: 50000,
   headers: {
     "Content-Type": "application/json",
   },
@@ -51,12 +51,12 @@ request.interceptors.request.use(
     }
 
     // 开启全局 loading
-    useGlobalLoading.getState().start();
+    // useGlobalLoading.getState().start();
 
     return config;
   },
   (error: AxiosError) => {
-    useGlobalLoading.getState().end();
+    // useGlobalLoading.getState().end();
     message.error("请求发送失败");
     return Promise.reject(error);
   }
@@ -65,7 +65,7 @@ request.interceptors.request.use(
 // 响应拦截器
 request.interceptors.response.use(
   (response: AxiosResponse) => {
-    useGlobalLoading.getState().end();
+    // useGlobalLoading.getState().end();
     const { data } = response;
     // 处理业务状态码
     if (data.code !== 200) {
@@ -76,7 +76,7 @@ request.interceptors.response.use(
     return data.data;
   },
   (error: AxiosError) => {
-    useGlobalLoading.getState().end();
+    // useGlobalLoading.getState().end();
     if (error.response) {
       const { status, data } = error.response as any;
       const apiMessage = data && data.message;

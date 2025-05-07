@@ -37,7 +37,9 @@ const BasicLayout: React.FC = () => {
               className={styles.trigger}
             />
             <div className={styles.userInfo}>
-              <span className={styles.username}>Admin</span>
+              <span className={styles.username}>
+                {useAuthStore((s) => s.user?.username || "未登录")}
+              </span>
               <Button
                 type="text"
                 icon={<LogoutOutlined />}
