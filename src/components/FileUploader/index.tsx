@@ -36,6 +36,7 @@ const FileUploader: React.FC = () => {
   const [uploadingChunks, setUploadingChunks] = useState(0);
   const queueRef = useRef<any>(null);
   const network = useNetwork();
+  const controllersRef = useRef<AbortController[]>([]);
 
   // 动态调整chunkSize和并发数
   React.useEffect(() => {
@@ -61,11 +62,26 @@ const FileUploader: React.FC = () => {
     return false;
   };
 
+  // 重置所有状态
+  const reset = () => {
+    setUploading(false);
+    setPaused(false);
+    setProgress(0);
+    setFile(null);
+    setMd5("");
+    setTotalChunks(0);
+    setUploadingChunks(0);
+    if (queueRef.current) queueRef.current.kill();
+    controllersRef.current.forEach((c) => c.abort());
+    controllersRef.current = [];
+  };
+
   // 秒传确认、断点续传、切片、上传主流程
   const handleStart = async () => {
     if (!file) return;
     setUploading(true);
     setPaused(false);
+    controllersRef.current = []; // 启动前清空
     message.loading({ content: "正在计算MD5...", key: "md5" });
     // 1. 计算MD5
     let fileMd5 = md5;
@@ -77,95 +93,113 @@ const FileUploader: React.FC = () => {
     const fileId = `${fileMd5}-${file.name}-${file.size}`;
     message.success({ content: `MD5: ${fileMd5}`, key: "md5", duration: 1 });
     // 2. 秒传确认
-    const checkRes = await request.post("/fileUpload/check", {
+    const checkRes = await request.post("/file/instant", {
       file_id: fileId,
       md5: fileMd5,
       name: file.name,
       size: file.size,
     });
-    if (checkRes?.data?.uploaded) {
+    if (checkRes?.uploaded) {
       setProgress(100);
       setUploading(false);
       message.success("文件已秒传，无需重复上传");
-      return;
+      setTimeout(reset, 1000);
+      return; // 必须 return，后续不再执行
     }
     // 3. 查询已上传分片
-    const uploadedRes = await request.get("/fileUpload/uploadedChunks", {
+    const uploadedRes = await request.get("/file/status", {
       params: { file_id: fileId, md5: fileMd5 },
     });
     const uploadedList: number[] = uploadedRes?.data?.chunks || [];
     // 4. 切片
     const chunks: Chunk[] = createFileChunks(file, chunkSize);
     setTotalChunks(chunks.length);
-    // 5. 并发上传
+    // 5. 填补式并发上传（eachLimit）
     let finished = uploadedList.length;
     setProgress(calcProgress(finished, chunks.length));
     setUploadingChunks(finished);
-    // async queue
-    queueRef.current = async.queue(async (chunk: Chunk, cb) => {
-      if (paused) return cb();
-      if (uploadedList.includes(chunk.index)) return cb();
-      try {
-        await uploadChunkWithRetry(
-          {
-            file_id: fileId,
-            md5: fileMd5,
-            index: chunk.index,
-            chunk: chunk.chunk,
-            name: file.name,
-            total: chunks.length,
-          },
-          async (data) => {
-            const formData = new FormData();
-            formData.append("file_id", data.file_id);
-            formData.append("md5", data.md5);
-            formData.append("index", String(data.index));
-            formData.append("chunk", data.chunk);
-            formData.append("name", data.name);
-            formData.append("total", String(data.total));
-            return request.post("/fileUpload/uploadChunk", formData, {
-              headers: { "Content-Type": "multipart/form-data" },
+    // 过滤未上传的分片
+    const pendingChunks = chunks.filter((c) => !uploadedList.includes(c.index));
+    // 标记暂停
+    const stopped = false;
+    // eachLimit 并发上传
+    await new Promise<void>((resolve, reject) => {
+      async.eachLimit(
+        pendingChunks,
+        concurrent,
+        (chunk, cb) => {
+          if (paused || stopped) return cb();
+          uploadChunkWithRetry(
+            {
+              file_id: fileId,
+              md5: fileMd5,
+              index: chunk.index,
+              chunk: chunk.chunk,
+              name: file.name,
+              total: chunks.length,
+            },
+            async (data) => {
+              const formData = new FormData();
+              formData.append("file_id", data.file_id);
+              formData.append("md5", data.md5);
+              formData.append("index", String(data.index));
+              formData.append("chunk", data.chunk);
+              formData.append("name", data.name);
+              formData.append("total", String(data.total));
+              // 新增：为每个分片请求创建 AbortController
+              const controller = new AbortController();
+              controllersRef.current.push(controller);
+              return request.post("/file/upload", formData, {
+                headers: { "Content-Type": "multipart/form-data" },
+                signal: controller.signal,
+              });
+            }
+          )
+            .then(() => {
+              finished++;
+              setUploadingChunks(finished);
+              setProgress(calcProgress(finished, chunks.length));
+              cb();
+            })
+            .catch((e: any) => {
+              message.error(`分片${chunk.index}上传失败: ${e.message}`);
+              setUploading(false);
+              cb(e);
             });
+        },
+        async (err) => {
+          if (err) return reject(err);
+          if (!stopped && !paused) {
+            // 6. 合并
+            await request.post("/file/merge", {
+              file_id: fileId,
+              md5: fileMd5,
+              name: file.name,
+              size: file.size,
+              total: chunks.length,
+            });
+            setProgress(100);
+            setUploading(false);
+            message.success("上传完成并合并成功");
+            setTimeout(reset, 1000);
           }
-        );
-        finished++;
-        setUploadingChunks(finished);
-        setProgress(calcProgress(finished, chunks.length));
-        if (finished === chunks.length) {
-          // 6. 合并
-          await request.post("/fileUpload/merge", {
-            file_id: fileId,
-            md5: fileMd5,
-            name: file.name,
-            size: file.size,
-            total: chunks.length,
-          });
-          setProgress(100);
-          setUploading(false);
-          message.success("上传完成并合并成功");
+          resolve();
         }
-      } catch (e: any) {
-        message.error(`分片${chunk.index}上传失败: ${e.message}`);
-        setUploading(false);
-      }
-      cb();
-    }, concurrent);
-    // 启动队列
-    queueRef.current.push(
-      chunks.filter((c) => !uploadedList.includes(c.index))
-    );
+      );
+    });
   };
 
   // 暂停
   const handlePause = () => {
     setPaused(true);
-    if (queueRef.current) queueRef.current.pause();
+    // async.js 没有 pause，直接通过 paused 标记控制
   };
 
   // 恢复
   const handleResume = () => {
     setPaused(false);
-    if (queueRef.current) queueRef.current.resume();
+    // 重新触发 handleStart 即可
+    handleStart();
   };
 
   // 中断
@@ -177,7 +211,11 @@ const FileUploader: React.FC = () => {
     setMd5("");
     setTotalChunks(0);
     setUploadingChunks(0);
-    if (queueRef.current) queueRef.current.kill();
+    // 终止所有请求
+    controllersRef.current.forEach((c) => c.abort());
+    controllersRef.current = [];
+    // 标记停止
+    // stopped 变量在 handleStart 内部
   };
 
   return (
@@ -190,13 +228,13 @@ const FileUploader: React.FC = () => {
         <Button icon={<UploadOutlined />}>选择文件</Button>
       </Upload>
       <div style={{ margin: "12px 0" }}>
-        <span>切片大小(字节): </span>
+        <span>切片大小(MB): </span>
         <InputNumber
-          min={1024 * 1024}
-          max={100 * 1024 * 1024}
-          step={1024 * 1024}
-          value={chunkSize}
-          onChange={(v) => setChunkSize(Number(v))}
+          min={1}
+          max={100}
+          step={1}
+          value={chunkSize / 1024 / 1024}
+          onChange={(v) => setChunkSize(Number(v) * 1024 * 1024)}
           disabled={uploading}
         />
         <span style={{ marginLeft: 16 }}>并发数: </span>
@@ -211,6 +249,7 @@ const FileUploader: React.FC = () => {
       {file && (
         <div style={{ marginTop: 16 }}>
           <div>{file.name}</div>
+          <div>文件大小：{(file.size / 1024 / 1024).toFixed(2)} MB</div>
           <Progress percent={progress} />
           <div style={{ marginTop: 8 }}>
             {!uploading && (

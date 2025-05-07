@@ -1,5 +1,9 @@
 # 更新日志
 
+## 2024-06-10
+
+- 修复 `src/components/FileUploader/index.tsx` 分片上传时 `cb is not a function` 的 bug。原因是 async.eachLimit 的 worker 用 async 函数并 return cb()，导致 cb 被错误处理为 Promise。现已改为普通函数并用 Promise 处理异步，彻底解决该问题。
+
 ## 2024-06-09
 
 - 完善 `src/components/FileUploader/index.tsx`，实现大文件上传主流程：支持 MD5 秒传、断点续传、分片、并发上传、失败重试、暂停/恢复/中断、进度展示、动态切片和并发数调整，UI 联动，集成 request 统一请求。
@@ -15,6 +19,30 @@
 ## 2024-06-09
 
 - 新增 `src/components/FileUploader/worker-md5.js`，基于 spark-md5 实现 webworker 文件 MD5 计算，提升大文件处理性能。
+
+## 2024-06-09
+
+- FileUploader 组件支持分片上传时中断（abort）所有未完成请求，提升大文件上传体验和资源利用率。
+
+## 2024-06-09
+
+- FileUploader 组件切片大小输入框和显示优化为 MB 单位，文件名下方新增文件大小（MB）显示，提升用户体验。
+
+## 2024-06-09
+
+- 修复 FileUploader 秒传确认后 return 逻辑，避免后续多余操作；上传完成（含秒传）后自动重置所有状态，提升用户体验。
+
+## 2024-06-09
+
+- 修正 FileUploader 秒传确认判断，uploaded 字段路径改为 checkRes.data.data.uploaded，彻底避免同一文件重复上传。
+
+## 2024-06-09
+
+- FileUploader 组件并发上传逻辑由 async.queue 替换为 async.js 的 eachLimit 填补式并发，提升上传效率与带宽利用率。
+
+## 2024-06-09
+
+- 修复并发上传相关 linter 警告。
 
 ## [0.2.2] - 2025-05-05
 
