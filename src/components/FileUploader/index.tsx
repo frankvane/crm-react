@@ -10,127 +10,33 @@ import {
 } from "antd";
 import React, { useEffect, useRef, useState } from "react";
 import {
+  appendSpeedHistory,
   calcFileMD5WithWorker,
+  calcSpeedAndLeftTime,
+  calcTotalSpeed,
   checkFileBeforeUpload,
   createFileChunks,
 } from "./utils";
+import {
+  checkInstantUpload,
+  getFileStatus,
+  mergeFile,
+  uploadFileChunk,
+} from "./api";
 
 import { UploadOutlined } from "@ant-design/icons";
 import { useNetworkType } from "./hooks/useNetworkType";
 
-const API_PREFIX = "http://localhost:3000/api";
+const DEFAULT_CHUNK_SIZE = 2 * 1024 * 1024; // 2MB
+const MAX_CONCURRENT_UPLOAD = 3; // 最大并发文件数
+const SPEED_WINDOW = 5; // 速率滑动窗口，单位：分片
 
-// 秒传验证API（需后端接口支持）
-async function checkInstantUpload({
-  fileId,
-  md5,
-  name,
-  size,
-  total,
-  chunkMD5s,
-}: {
-  fileId: string;
-  md5: string;
-  name: string;
-  size: number;
-  total: number;
-  chunkMD5s: string[];
-}): Promise<{
-  uploaded: boolean;
-  chunkCheckResult: Array<{ index: number; exist: boolean; match: boolean }>;
-}> {
-  const res = await fetch(`${API_PREFIX}/file/instant`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      file_id: fileId,
-      md5,
-      name,
-      size,
-      total,
-      chunk_md5s: chunkMD5s,
-    }),
-  });
-  const data = await res.json();
-  if (data.code !== 200) throw new Error(data.message || "秒传接口异常");
-  return data.data || { uploaded: false, chunkCheckResult: [] };
-}
-
-// 获取已上传分片
-async function getFileStatus({ fileId, md5 }: { fileId: string; md5: string }) {
-  const res = await fetch(
-    `${API_PREFIX}/file/status?file_id=${encodeURIComponent(fileId)}&md5=${md5}`
-  );
-  const data = await res.json();
-  if (data.code !== 200) throw new Error(data.message || "状态检测失败");
-  return data.data?.chunks || [];
-}
-
-// 上传单个分片
-async function uploadFileChunk({
-  fileId,
-  md5,
-  index,
-  chunk,
-  name,
-  total,
-}: {
-  fileId: string;
-  md5: string;
-  index: number;
-  chunk: Blob;
-  name: string;
-  total: number;
-}) {
-  const formData = new FormData();
-  formData.append("file_id", fileId);
-  formData.append("md5", md5);
-  formData.append("index", String(index));
-  formData.append("chunk", chunk);
-  formData.append("name", name);
-  formData.append("total", String(total));
-  const res = await fetch(`${API_PREFIX}/file/upload`, {
-    method: "POST",
-    body: formData,
-  });
-  const data = await res.json();
-  if (data.code !== 200) throw new Error(data.message || "分片上传失败");
-  return data;
-}
-
-// 合并分片
-async function mergeFile({
-  fileId,
-  md5,
-  name,
-  size,
-  total,
-}: {
-  fileId: string;
-  md5: string;
-  name: string;
-  size: number;
-  total: number;
-}) {
-  const res = await fetch(`${API_PREFIX}/file/merge`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ file_id: fileId, md5, name, size, total }),
-  });
-  const data = await res.json();
-  if (data.code !== 200) throw new Error(data.message || "合并失败");
-  return data;
-}
-
+// 恢复 FileUploaderProps 定义
 interface FileUploaderProps {
   accept?: string;
   maxSizeMB?: number;
   multiple?: boolean;
 }
-
-const DEFAULT_CHUNK_SIZE = 2 * 1024 * 1024; // 2MB
-const MAX_CONCURRENT_UPLOAD = 3; // 最大并发文件数
-const SPEED_WINDOW = 5; // 速率滑动窗口，单位：分片
 
 const FileUploader: React.FC<FileUploaderProps> = ({
   accept = "*",
@@ -158,6 +64,11 @@ const FileUploader: React.FC<FileUploaderProps> = ({
   const { networkType, concurrency } = useNetworkType();
   const concurrencyRef = useRef(concurrency);
   const [errorInfo, setErrorInfo] = useState<Record<string, string>>({});
+
+  // 保证并发数动态响应网络变化
+  useEffect(() => {
+    concurrencyRef.current = concurrency;
+  }, [concurrency]);
 
   // beforeUpload 校验
   const handleBeforeUpload = (file: File) => {
@@ -264,6 +175,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
         status: "uploading",
       },
     }));
+    // 初始化速率历史
     speedHistoryRef.current[key] = [
       { time: Date.now(), loaded: uploadedBytes },
     ];
@@ -295,18 +207,21 @@ const FileUploader: React.FC<FileUploaderProps> = ({
               status: "uploading",
             },
           }));
+          // 上传分片后速率统计
           const now = Date.now();
-          const history = speedHistoryRef.current[key] || [];
-          history.push({ time: now, loaded: uploadedBytes });
-          if (history.length > SPEED_WINDOW) history.shift();
-          speedHistoryRef.current[key] = history;
+          const prevHistory = speedHistoryRef.current[key] || [];
+          speedHistoryRef.current[key] = appendSpeedHistory(
+            prevHistory,
+            now,
+            uploadedBytes,
+            SPEED_WINDOW
+          );
+          const history = speedHistoryRef.current[key];
           if (history.length >= 2) {
-            const first = history[0];
-            const last = history[history.length - 1];
-            const speed =
-              (last.loaded - first.loaded) / ((last.time - first.time) / 1000); // B/s
-            const leftBytes = file.size - last.loaded;
-            const leftTime = speed > 0 ? leftBytes / speed : 0;
+            const { speed, leftTime } = calcSpeedAndLeftTime(
+              history,
+              file.size
+            );
             setSpeedInfo((prev) => ({
               ...prev,
               [key]: {
@@ -447,10 +362,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
   };
 
   // 统计总速率
-  const totalSpeed = Object.values(speedInfo).reduce(
-    (sum, s) => sum + (s.speed || 0),
-    0
-  );
+  const totalSpeed = calcTotalSpeed(speedInfo);
 
   // 是否有失败文件
   const hasFailed = files.some((file) => {

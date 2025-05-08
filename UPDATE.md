@@ -4,6 +4,8 @@
 
 - 抽离上传相关工具函数（checkFileBeforeUpload、createFileChunks、calcFileMD5WithWorker）到 src/components/FileUploader/utils.ts，提升代码复用性和可维护性。
 - 抽离网络类型检测与并发数映射逻辑为 hooks/useNetworkType，自适应网络变化，提升组件解耦性与可维护性。
+- useNetworkType 重构为基于 ahooks useNetwork 的二次封装，支持 rtt/effectiveType 等，简化实现。
+- useNetworkType 的 concurrency 计算方式改为基于 rtt 动态判断，移除网络类型映射表，提升并发自适应性。
 
 ## 2024-06-10
 
@@ -287,3 +289,7 @@ npx @agentdeskai/browser-tools-server@1.2.0
   - 上传完成/中断/重置时自动清理本地进度，避免脏数据。
   - UI 增加"恢复上传"提示和入口。
   - 代码结构清晰，便于后续扩展。
+
+## 2024-06-12
+
+- 重构 FileUploader 组件：将文件上传相关请求（checkInstantUpload、getFileStatus、uploadFileChunk、mergeFile）抽离到 api 目录（api/index.ts），原 hooks/api.ts 已删除，所有 API 统一从 api/index.ts 导入，结构更清晰。

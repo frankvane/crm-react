@@ -72,3 +72,53 @@ export function calcFileMD5WithWorker(
     };
   });
 }
+
+/**
+ * 追加速率滑动窗口历史
+ * @param history 现有历史数组
+ * @param time 当前时间戳
+ * @param loaded 当前已上传字节数
+ * @param windowSize 滑动窗口大小
+ * @returns 新的历史数组
+ */
+export function appendSpeedHistory(
+  history: Array<{ time: number; loaded: number }>,
+  time: number,
+  loaded: number,
+  windowSize: number
+) {
+  const newHistory = [...history, { time, loaded }];
+  if (newHistory.length > windowSize) newHistory.shift();
+  return newHistory;
+}
+
+/**
+ * 计算速率和剩余时间
+ * @param history 滑动窗口历史
+ * @param fileSize 文件总大小
+ * @returns { speed: number, leftTime: number }
+ */
+export function calcSpeedAndLeftTime(
+  history: Array<{ time: number; loaded: number }>,
+  fileSize: number
+) {
+  if (history.length < 2) return { speed: 0, leftTime: 0 };
+  const first = history[0];
+  const last = history[history.length - 1];
+  const speed =
+    (last.loaded - first.loaded) / ((last.time - first.time) / 1000); // B/s
+  const leftBytes = fileSize - last.loaded;
+  const leftTime = speed > 0 ? leftBytes / speed : 0;
+  return { speed, leftTime };
+}
+
+/**
+ * 统计总速率
+ * @param speedInfo 所有文件的速率信息
+ * @returns 总速率（B/s）
+ */
+export function calcTotalSpeed(
+  speedInfo: Record<string, { speed: number; leftTime: number }>
+) {
+  return Object.values(speedInfo).reduce((sum, s) => sum + (s.speed || 0), 0);
+}
