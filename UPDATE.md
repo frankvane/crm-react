@@ -12,7 +12,7 @@
   - 组件初始化时自动检测 localStorage 是否有未完成上传任务，弹窗提示用户是否恢复。
   - 恢复时自动跳过已完成分片，上传完成/中断/重置时自动清理本地进度。
 
-- 修复中断后继续上传时报 fileStates 某些属性 undefined 的问题，增强 handleResume/handlePause/handleStop 的健壮性，修正自动修复引入的 linter 错误。
+- 修复 FileUploader 中断上传功能，handleStop 只标记 stopped，不再 setTimeout 删除 fileStates，所有分片上传/进度回调/handleStart 等流程都判断 stopped，只有上传完成或用户主动移除时才清理 fileStates。
 
 ## 2024-06-10
 
@@ -188,9 +188,3 @@ git log --pretty=format:"%h - %an, %ad : %s" > commit_messages.txt
 ```bash
 npx @agentdeskai/browser-tools-server@1.2.0
 ```
-
-## 2024-06-09
-
-- FileUploader 目录结构彻底模块化，所有核心 UI、hooks、工具函数均已解耦，主组件极简。
-- 每个文件上传前支持 /file/instant 秒传确认，若已上传则直接提示"秒传成功，文件已存在"，不会再走分片上传和 merge。
-- 优化所有 linter 报错，提升代码规范性和可维护性。
