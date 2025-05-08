@@ -190,36 +190,49 @@ export default function useFileUploadQueue({
           cb(e);
         });
     }, concurrent);
-    queue.drain(() => {
-      setFileStates((prev) => ({
-        ...prev,
-        [fileKey]: { ...prev[fileKey], uploading: false },
-      }));
-      if (!fileStates[fileKey]?.stopped && !fileStates[fileKey]?.paused) {
-        request
-          .post("/file/merge", {
-            file_id: fileId,
-            md5: fileMd5,
-            name: file.name,
-            size: file.size,
-            total: chunks.length,
-          })
-          .then(() => {
-            message.success("上传完成并合并成功");
-            setTimeout(() => {
-              setFiles((prev) =>
-                prev.filter((f) => f.name + f.size !== fileKey)
-              );
-              setFileStates((prev) => {
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                const { [fileKey]: _unused, ...rest } = prev;
-                return rest;
-              });
-              localStorage.removeItem(LOCAL_KEY_PREFIX + fileId);
-            }, 1000);
-          });
+
+    // 修复：如果 pendingChunks 为空，直接 merge，不再走 queue
+    if (pendingChunks.length === 0) {
+      // 再次校验 uploadedList 长度
+      if (uploadedList.length === chunks.length) {
+        setFileStates((prev) => ({
+          ...prev,
+          [fileKey]: { ...prev[fileKey], uploading: false },
+        }));
+        if (!fileStates[fileKey]?.stopped && !fileStates[fileKey]?.paused) {
+          request
+            .post("/file/merge", {
+              file_id: fileId,
+              md5: fileMd5,
+              name: file.name,
+              size: file.size,
+              total: chunks.length,
+            })
+            .then(() => {
+              message.success("上传完成并合并成功");
+              setTimeout(() => {
+                setFiles((prev) =>
+                  prev.filter((f) => f.name + f.size !== fileKey)
+                );
+                setFileStates((prev) => {
+                  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                  const { [fileKey]: _unused, ...rest } = prev;
+                  return rest;
+                });
+                localStorage.removeItem(LOCAL_KEY_PREFIX + fileId);
+              }, 1000);
+            });
+        }
+      } else {
+        message.error("没有可合并的分片，无法合并");
+        setFileStates((prev) => ({
+          ...prev,
+          [fileKey]: { ...prev[fileKey], uploading: false },
+        }));
       }
-    });
+      return;
+    }
+    // 正常上传分片
     setFileStates((prev) => ({
       ...prev,
       [fileKey]: {

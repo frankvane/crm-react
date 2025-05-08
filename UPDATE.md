@@ -14,6 +14,8 @@
 
 - 修复 FileUploader 中断上传功能，handleStop 只标记 stopped，不再 setTimeout 删除 fileStates，所有分片上传/进度回调/handleStart 等流程都判断 stopped，只有上传完成或用户主动移除时才清理 fileStates。
 
+- 修复 pendingChunks 为空时直接 merge 导致分片不存在报错的问题。queue.push 前判断 pendingChunks.length，只有所有分片都已上传才允许 merge，否则提示错误。
+
 ## 2024-06-10
 
 - 修复 `src/components/FileUploader/index.tsx` 分片上传时 `cb is not a function` 的 bug。原因是 async.eachLimit 的 worker 用 async 函数并 return cb()，导致 cb 被错误处理为 Promise。现已改为普通函数并用 Promise 处理异步，彻底解决该问题。
