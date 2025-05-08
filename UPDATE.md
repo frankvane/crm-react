@@ -3,6 +3,7 @@
 ## 2025-05-08
 
 - 抽离上传相关工具函数（checkFileBeforeUpload、createFileChunks、calcFileMD5WithWorker）到 src/components/FileUploader/utils.ts，提升代码复用性和可维护性。
+- 抽离网络类型检测与并发数映射逻辑为 hooks/useNetworkType，自适应网络变化，提升组件解耦性与可维护性。
 
 ## 2024-06-10
 

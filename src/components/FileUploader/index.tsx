@@ -16,6 +16,7 @@ import {
 } from "./utils";
 
 import { UploadOutlined } from "@ant-design/icons";
+import { useNetworkType } from "./hooks/useNetworkType";
 
 const API_PREFIX = "http://localhost:3000/api";
 
@@ -131,24 +132,6 @@ const DEFAULT_CHUNK_SIZE = 2 * 1024 * 1024; // 2MB
 const MAX_CONCURRENT_UPLOAD = 3; // 最大并发文件数
 const SPEED_WINDOW = 5; // 速率滑动窗口，单位：分片
 
-// 网络类型与并发数映射
-const NETWORK_CONCURRENCY_MAP: Record<string, number> = {
-  wifi: 5,
-  ethernet: 5,
-  "4g": 3,
-  "5g": 3,
-  "3g": 1,
-  "2g": 1,
-  "slow-2g": 1,
-  unknown: 2,
-  "": 2,
-};
-
-function getNetworkType() {
-  // @ts-expect-error: navigator.connection 仅部分浏览器支持
-  return navigator.connection?.effectiveType || "unknown";
-}
-
 const FileUploader: React.FC<FileUploaderProps> = ({
   accept = "*",
   maxSizeMB = 2048,
@@ -172,8 +155,8 @@ const FileUploader: React.FC<FileUploaderProps> = ({
   const speedHistoryRef = useRef<
     Record<string, Array<{ time: number; loaded: number }>>
   >({});
-  const [networkType, setNetworkType] = useState(getNetworkType());
-  const concurrencyRef = useRef(NETWORK_CONCURRENCY_MAP[getNetworkType()] || 2);
+  const { networkType, concurrency } = useNetworkType();
+  const concurrencyRef = useRef(concurrency);
   const [errorInfo, setErrorInfo] = useState<Record<string, string>>({});
 
   // beforeUpload 校验
@@ -478,18 +461,6 @@ const FileUploader: React.FC<FileUploaderProps> = ({
       (uploading.status === "error" || uploading.status === "merge-error")
     );
   });
-
-  // 动态监听网络状态变化
-  useEffect(() => {
-    const conn = (navigator as any).connection;
-    if (!conn) return;
-    const handler = () => {
-      setNetworkType(conn.effectiveType);
-      concurrencyRef.current = NETWORK_CONCURRENCY_MAP[conn.effectiveType] || 2;
-    };
-    conn.addEventListener?.("change", handler);
-    return () => conn.removeEventListener?.("change", handler);
-  }, []);
 
   return (
     <div>
