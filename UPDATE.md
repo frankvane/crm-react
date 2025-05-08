@@ -22,6 +22,26 @@
 
 ## 2024-06-09
 
+- 修复断点续传时 chunkSize 变化导致的分片数量异常问题。
+- 现在每个文件的 chunkSize 会在首次上传时记录，后续 resume 时强制使用相同 chunkSize，保证分片数量一致。
+
+## 2024-06-09
+
+- 彻底移除断点续传和恢复上传相关功能：
+  - 删除 useUploadResume.ts 和 ResumeUploadModal.tsx 文件。
+  - FileUploader 组件移除所有恢复上传相关 UI 和逻辑。
+  - useFileUploadQueue 彻底移除 stopped 状态和 handleResume 相关代码。
+  - FileUploadCard 组件不再渲染任何恢复上传按钮。
+
+## 2024-06-09
+
+- 优化上传组件：中断上传后文件卡片不再消失，支持点击"恢复上传"按钮重新上传。
+- handleStop 现在只标记 stopped 状态，不会移除 fileStates 和 files，断点信息保留。
+- handleStart 支持 stopped 状态下重新启动上传。
+- FileUploadCard UI 增加"恢复上传"按钮，stopped 状态下可恢复。
+
+## 2024-06-09
+
 - 完善 `src/components/FileUploader/index.tsx`，实现大文件上传主流程：支持 MD5 秒传、断点续传、分片、并发上传、失败重试、暂停/恢复/中断、进度展示、动态切片和并发数调整，UI 联动，集成 request 统一请求。
 
 ## 2024-06-09
@@ -190,3 +210,33 @@ git log --pretty=format:"%h - %an, %ad : %s" > commit_messages.txt
 ```bash
 npx @agentdeskai/browser-tools-server@1.2.0
 ```
+
+## 2024-06-09
+
+- 修复所有 setFileStates 相关回调中 state 可能为 undefined 的判空，彻底解决 TypeError。
+- 修复上传中断后，fileStates[fileKey] 可能为 undefined 导致的 TypeError，所有 merge 前判断都加了判空，避免报错。
+
+## 2024-06-09
+
+- 移除上传中断后的恢复功能。中断后文件卡片直接消失，无法恢复上传。
+- FileUploadCard 组件移除"恢复上传"按钮。
+- handleStop 直接移除 fileStates 和 files。
+
+## 2024-06-09
+
+- 修复：实现了上传暂停后的恢复功能，新增 handleResume 方法，并将"恢复"按钮正确绑定到该方法，支持分片上传的断点续传。
+
+## 2024-06-09
+
+- 【修复&优化】重构文件上传的暂停、继续、停止功能：
+  - 暂停时只暂停 queue，不 abort 当前分片，保证分片不丢失。
+  - 恢复时只 resume queue，不重新走 handleStart，避免重复上传和状态错乱。
+  - 中断时 kill queue 并 abort 所有请求，UI 延迟移除，彻底清理 fileStates 和 localStorage。
+  - controllers 与 queue 任务一一对应，所有异步回调都判空 fileStates，防止幽灵回调。
+  - 增加注释，保证逻辑清晰。
+
+## 2024-06-09
+
+- 【修复】修正暂停/继续上传后分片数量异常问题：
+  - 恢复/继续上传时 chunkSize 只能用 fileStates 里已记录的 chunkSize，禁止变动，彻底解决分片数量不一致导致的进度丢失和上传卡死。
+  - 有文件正在上传/暂停时，禁用切片大小和并发数配置，防止用户误操作。

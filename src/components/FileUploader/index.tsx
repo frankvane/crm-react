@@ -2,13 +2,11 @@ import { Button, Upload, message } from "antd";
 import React, { useState } from "react";
 
 import FileUploadCard from "./FileUploadCard";
-import ResumeUploadModal from "./ResumeUploadModal";
 import UploadConfigPanel from "./UploadConfigPanel";
 import { UploadOutlined } from "@ant-design/icons";
 import { checkFileBeforeUpload } from "./utils";
 import useDynamicUploadConfig from "./hooks/useDynamicUploadConfig";
 import useFileUploadQueue from "./hooks/useFileUploadQueue";
-import useUploadResume from "./hooks/useUploadResume";
 
 interface FileUploaderProps {
   accept?: string;
@@ -32,26 +30,13 @@ const FileUploader: React.FC<FileUploaderProps> = ({
     setFileStates,
     handleStart,
     handlePause,
-    handleResume,
     handleStop,
     handleStartAll,
+    handleResume,
   } = useFileUploadQueue({
     chunkSize,
     concurrent,
     setFiles,
-  });
-
-  // 用 useUploadResume 管理断点续传相关状态和逻辑
-  const {
-    resumeTaskList,
-    resumeTask,
-    setResumeTask,
-    showResume,
-    setShowResume,
-    fileInputRef,
-    handleResumeFileChange,
-  } = useUploadResume({
-    handleStart: (file) => handleStart(file),
   });
 
   // 新 beforeUpload，支持类型和大小校验
@@ -98,27 +83,19 @@ const FileUploader: React.FC<FileUploaderProps> = ({
       >
         上传全部
       </Button>
-      <Button
-        style={{ marginLeft: 8 }}
-        onClick={() => {
-          if (resumeTaskList.length === 0) {
-            message.info("暂无可恢复的上传任务");
-            return;
-          }
-          setResumeTask(resumeTaskList[0]);
-          setShowResume(true);
-        }}
-        disabled={uploadingAll}
-      >
-        恢复上传
-      </Button>
       <div style={{ margin: "12px 0" }}>
         <UploadConfigPanel
           chunkSize={chunkSize}
           setChunkSize={setChunkSize}
           concurrent={concurrent}
           setConcurrent={setConcurrent}
-          disabled={uploadingAll}
+          disabled={
+            uploadingAll ||
+            files.some((f) => {
+              const state = fileStates[f.name + f.size] || {};
+              return state.uploading || state.paused;
+            })
+          }
         />
       </div>
       {files.map((file) => {
@@ -135,22 +112,6 @@ const FileUploader: React.FC<FileUploaderProps> = ({
           />
         );
       })}
-      {showResume && (
-        <ResumeUploadModal
-          open={showResume}
-          resumeTask={resumeTask}
-          fileInputRef={fileInputRef}
-          onCancel={() => setShowResume(false)}
-          onFileChange={(e) =>
-            handleResumeFileChange(e, setFiles, setFileStates)
-          }
-          onDelete={() => {
-            setShowResume(false);
-            localStorage.removeItem(resumeTask.fileId);
-            window.location.reload();
-          }}
-        />
-      )}
     </div>
   );
 };
