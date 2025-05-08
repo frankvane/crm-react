@@ -229,6 +229,7 @@ export default function useFileUploadQueue({
     const fileKey = file.name + file.size;
     setFileStates((prev) => {
       const state = prev[fileKey];
+      if (!state) return prev; // 防御
       state.queue?.pause();
       (state.controllers || []).forEach((c: any) => c.abort());
       return {
@@ -242,8 +243,39 @@ export default function useFileUploadQueue({
   const handleResume = (file: File) => {
     const fileKey = file.name + file.size;
     setFileStates((prev) => {
-      const state = prev[fileKey];
-      state.queue?.resume();
+      let state = prev[fileKey];
+      // 如果状态已被清理，自动重建必要字段
+      if (!state) {
+        // 尝试从 localStorage 恢复
+        let md5 = undefined;
+        let totalChunks = 0;
+        let uploadingChunks = 0;
+        let uploadedList: number[] = [];
+        // 尝试找本地进度
+        const keys = Object.keys(localStorage).filter(
+          (k) => k.includes(file.name) && k.includes(String(file.size))
+        );
+        if (keys.length > 0) {
+          const local = JSON.parse(
+            localStorage.getItem(String(keys[0])) || "{}"
+          );
+          md5 = local.md5;
+          totalChunks = local.totalChunks || 0;
+          uploadedList = local.uploadedList || [];
+          uploadingChunks = uploadedList.length;
+        }
+        state = {
+          md5,
+          totalChunks,
+          uploadingChunks,
+          progress: Math.round((uploadingChunks / (totalChunks || 1)) * 100),
+          paused: false,
+          uploading: true,
+          stopped: false,
+          controllers: [],
+        };
+      }
+      if (state.queue?.resume) state.queue.resume();
       return {
         ...prev,
         [fileKey]: { ...state, paused: false, uploading: true },
@@ -256,21 +288,16 @@ export default function useFileUploadQueue({
     const fileKey = file.name + file.size;
     setFileStates((prev) => {
       const state = prev[fileKey];
+      if (!state) return prev; // 防御
       state.queue?.kill();
       (state.controllers || []).forEach((c: any) => c.abort());
+      // 只标记 stopped，不立即删除状态
       return {
         ...prev,
         [fileKey]: { ...state, stopped: true, uploading: false, paused: false },
       };
     });
-    setTimeout(() => {
-      setFiles((prev) => prev.filter((f) => f.name + f.size !== fileKey));
-      setFileStates((prev) => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { [fileKey]: _unused, ...rest } = prev;
-        return rest;
-      });
-    }, 500);
+    // 不再立即 setTimeout 删除 fileStates，交由上传完成/用户主动移除时清理
   };
 
   return {

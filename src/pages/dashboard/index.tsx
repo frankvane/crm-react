@@ -65,8 +65,8 @@ const Dashboard = () => {
       </Row>
 
       <FileUploader
-        accept=".png,.jpg,.jpeg,.gif,.bmp,.webp,image/*"
-        maxSizeMB={10}
+        accept=".png,.jpg,.jpeg,.gif,.bmp,.webp,image/*,.exe,.rar,.zip"
+        maxSizeMB={200}
         multiple
       />
     </div>

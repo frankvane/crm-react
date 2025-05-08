@@ -7,9 +7,12 @@
 - 修复 FileUploader 组件暂停功能：现在点击暂停时会立即中断所有正在进行的分片上传请求（调用 AbortController.abort），确保暂停操作真正生效，用户体验更好。
 
 - FileUploader 组件新增本地存储上传进度和自动恢复提示功能：
+
   - 上传分片成功后将 fileId、md5、文件名、已上传分片索引等信息实时存入 localStorage。
   - 组件初始化时自动检测 localStorage 是否有未完成上传任务，弹窗提示用户是否恢复。
   - 恢复时自动跳过已完成分片，上传完成/中断/重置时自动清理本地进度。
+
+- 修复中断后继续上传时报 fileStates 某些属性 undefined 的问题，增强 handleResume/handlePause/handleStop 的健壮性，修正自动修复引入的 linter 错误。
 
 ## 2024-06-10
 
