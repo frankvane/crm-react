@@ -55,20 +55,7 @@ const Dashboard = () => {
         </Col>
       </Row>
 
-      <Row gutter={[24, 24]} className={styles.charts}>
-        <Col xs={24} lg={12}>
-          <Card title="访问量趋势">{/* 这里可以添加访问量趋势图表 */}</Card>
-        </Col>
-        <Col xs={24} lg={12}>
-          <Card title="销售额趋势">{/* 这里可以添加销售额趋势图表 */}</Card>
-        </Col>
-      </Row>
-
-      <FileUploader
-        accept=".png,.jpg,.jpeg,.gif,.bmp,.webp,image/*,.exe,.rar,.zip"
-        maxSizeMB={200}
-        multiple
-      />
+      <FileUploader />
     </div>
   );
 };
