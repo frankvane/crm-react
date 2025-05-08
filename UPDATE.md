@@ -2,13 +2,7 @@
 
 ## 2025-05-08
 
-- 抽离上传相关工具函数（checkFileBeforeUpload、createFileChunks、calcFileMD5WithWorker）到 src/utils/upload.ts，提升代码复用性和可维护性。
-
-## 2025-05-08
-
-- FileUploader 组件彻底移除断点续传/恢复上传相关功能，删除所有本地进度存储、恢复提示、resume 相关代码和 UI。
-- 优化上传文件列表 UI，仅保留文件名、大小、上传状态，移除分片数、已计算等冗余信息，使用 Flex 布局对齐各列。
-- 修复因 resume 相关代码移除导致的未使用变量、类型警告、空 catch 等 linter 报错，提升代码健壮性。
+- 抽离上传相关工具函数（checkFileBeforeUpload、createFileChunks、calcFileMD5WithWorker）到 src/components/FileUploader/utils.ts，提升代码复用性和可维护性。
 
 ## 2024-06-10
 

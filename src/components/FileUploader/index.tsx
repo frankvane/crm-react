@@ -13,7 +13,7 @@ import {
   calcFileMD5WithWorker,
   checkFileBeforeUpload,
   createFileChunks,
-} from "@/utils/upload";
+} from "./utils";
 
 import { UploadOutlined } from "@ant-design/icons";
 
