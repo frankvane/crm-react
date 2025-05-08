@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 2,
+            "activePatchIndex": 3,
             "patches": [
                 {
                     "date": 1746086979967,
@@ -16,6 +16,10 @@
                 {
                     "date": 1746090380463,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -12,41 +12,28 @@\n   background-color: #001529;\r\n }\r\n \r\n .header {\r\n-  background-color: #fff;\r\n   padding: 0;\r\n-  height: 64px;\r\n-  line-height: 64px;\r\n-  border-bottom: 1px solid #f0f0f0;\r\n+  background: #fff;\r\n+  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);\r\n+  position: relative;\r\n+  z-index: 10;\r\n }\r\n \r\n .headerContent {\r\n   display: flex;\r\n-  justify-content: flex-end;\r\n+  justify-content: space-between;\r\n   align-items: center;\r\n-  padding: 0 24px;\r\n   height: 100%;\r\n+  padding: 0 16px;\r\n }\r\n \r\n-.content {\r\n-  margin-left: 200px;\r\n-  overflow: auto;\r\n-  background-color: #f0f2f5;\r\n-  min-height: calc(100vh - 112px);\r\n-}\r\n-\r\n-.logo {\r\n-  height: 32px;\r\n-  margin: 16px;\r\n-  background: rgba(255, 255, 255, 0.2);\r\n-}\r\n-\r\n .trigger {\r\n   font-size: 18px;\r\n-  line-height: 64px;\r\n   cursor: pointer;\r\n   transition: color 0.3s;\r\n+  padding: 0 24px;\r\n \r\n   &:hover {\r\n     color: #1890ff;\r\n   }\r\n@@ -68,4 +55,24 @@\n       color: #1890ff;\r\n     }\r\n   }\r\n }\r\n+\r\n+.mainContent {\r\n+  display: flex;\r\n+  flex-direction: column;\r\n+  height: calc(100vh - 64px);\r\n+  overflow: hidden;\r\n+}\r\n+\r\n+.content {\r\n+  flex: 1;\r\n+  padding: 24px;\r\n+  overflow: auto;\r\n+  background: #f0f2f5;\r\n+}\r\n+\r\n+.logo {\r\n+  height: 32px;\r\n+  margin: 16px;\r\n+  background: rgba(255, 255, 255, 0.2);\r\n+}\r\n"
+                },
+                {
+                    "date": 1746711701905,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -59,9 +59,9 @@\n \r\n .mainContent {\r\n   display: flex;\r\n   flex-direction: column;\r\n-  height: calc(100vh - 64px);\r\n+  // height: calc(100vh - 64px);\r\n   overflow: hidden;\r\n }\r\n \r\n .content {\r\n"
                 }
             ],
             "date": 1746086979967,
