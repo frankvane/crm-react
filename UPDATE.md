@@ -1,5 +1,10 @@
 # 更新日志
 
+## 2024-06-12
+
+- useNetworkType、useFileUploadQueue、utils.ts 全部方法补充/规范了 jsdoc 注释，提升代码可读性和团队协作效率。
+- 其它细节优化见代码。
+
 ## 2025-05-08
 
 - 抽离上传相关工具函数（checkFileBeforeUpload、createFileChunks、calcFileMD5WithWorker）到 src/components/FileUploader/utils.ts，提升代码复用性和可维护性。

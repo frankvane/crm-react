@@ -2,6 +2,11 @@
 
 /**
  * 校验文件类型和大小
+ * @param params.file 文件对象
+ * @param params.accept 支持的类型（如 .png,.jpg,image/*）
+ * @param params.maxSizeMB 最大文件大小（MB）
+ * @param params.onError 错误回调
+ * @returns 是否通过校验
  */
 export function checkFileBeforeUpload({
   file,
@@ -35,6 +40,9 @@ export function checkFileBeforeUpload({
 
 /**
  * 文件分片切割
+ * @param file 文件对象
+ * @param chunkSize 分片大小（字节）
+ * @returns 分片数组
  */
 export function createFileChunks(file: File, chunkSize: number) {
   const chunks = [];
@@ -53,6 +61,9 @@ export function createFileChunks(file: File, chunkSize: number) {
 
 /**
  * 通过WebWorker计算文件MD5
+ * @param file 文件对象
+ * @param chunkSize 分片大小（字节）
+ * @returns Promise<{ fileMD5: string; chunkMD5s: string[] }>
  */
 export function calcFileMD5WithWorker(
   file: File,
@@ -121,4 +132,16 @@ export function calcTotalSpeed(
   speedInfo: Record<string, { speed: number; leftTime: number }>
 ) {
   return Object.values(speedInfo).reduce((sum, s) => sum + (s.speed || 0), 0);
+}
+
+/**
+ * 字节数友好显示（自动转换为 KB/MB/GB，保留两位小数）
+ * @param size 字节数
+ * @returns 友好字符串
+ */
+export function ByteConvert(size: number): string {
+  if (size < 1024) return size + " B";
+  if (size < 1024 * 1024) return (size / 1024).toFixed(2) + " KB";
+  if (size < 1024 * 1024 * 1024) return (size / 1024 / 1024).toFixed(2) + " MB";
+  return (size / 1024 / 1024 / 1024).toFixed(2) + " GB";
 }

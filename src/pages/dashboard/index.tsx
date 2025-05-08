@@ -55,7 +55,11 @@ const Dashboard = () => {
         </Col>
       </Row>
 
-      <FileUploader />
+      <FileUploader
+        accept=".png,.jpg,.jpeg,.gif"
+        maxSizeMB={10}
+        multiple={false}
+      />
     </div>
   );
 };

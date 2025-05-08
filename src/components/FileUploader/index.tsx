@@ -1,35 +1,10 @@
-import {
-  Button,
-  List,
-  Modal,
-  Progress,
-  Tag,
-  Tooltip,
-  Upload,
-  message,
-} from "antd";
-import React, { useEffect, useRef, useState } from "react";
-import {
-  appendSpeedHistory,
-  calcFileMD5WithWorker,
-  calcSpeedAndLeftTime,
-  calcTotalSpeed,
-  checkFileBeforeUpload,
-  createFileChunks,
-} from "./utils";
-import {
-  checkInstantUpload,
-  getFileStatus,
-  mergeFile,
-  uploadFileChunk,
-} from "./api";
+import { Button, List, Progress, Tag, Tooltip, Upload } from "antd";
+import React, { useEffect, useRef } from "react";
 
+import { ByteConvert } from "./utils";
 import { UploadOutlined } from "@ant-design/icons";
+import { useFileUploadQueue } from "./hooks/useFileUploadQueue";
 import { useNetworkType } from "./hooks/useNetworkType";
-
-const DEFAULT_CHUNK_SIZE = 2 * 1024 * 1024; // 2MB
-const MAX_CONCURRENT_UPLOAD = 3; // 最大并发文件数
-const SPEED_WINDOW = 5; // 速率滑动窗口，单位：分片
 
 // 恢复 FileUploaderProps 定义
 interface FileUploaderProps {
@@ -43,323 +18,34 @@ const FileUploader: React.FC<FileUploaderProps> = ({
   maxSizeMB = 2048,
   multiple = true,
 }) => {
-  const [files, setFiles] = useState<File[]>([]);
-  const [md5Info, setMd5Info] = useState<
-    Record<string, { fileMD5: string; chunkMD5s: string[] }>
-  >({});
-  const [instantInfo, setInstantInfo] = useState<
-    Record<string, { uploaded: boolean; chunkCheckResult: any[] }>
-  >({});
-  const [uploadingInfo, setUploadingInfo] = useState<
-    Record<string, { progress: number; status: string }>
-  >({});
-  const [loadingKey, setLoadingKey] = useState<string | null>(null);
-  const [uploadingAll, setUploadingAll] = useState(false);
-  const [speedInfo, setSpeedInfo] = useState<
-    Record<string, { speed: number; leftTime: number }>
-  >({});
-  const speedHistoryRef = useRef<
-    Record<string, Array<{ time: number; loaded: number }>>
-  >({});
-  const { networkType, concurrency } = useNetworkType();
+  const { networkType, concurrency, chunkSize } = useNetworkType();
+  const {
+    files,
+    md5Info,
+    instantInfo,
+    uploadingInfo,
+    uploadingAll,
+    speedInfo,
+    errorInfo,
+    handleBeforeUpload,
+    handleStartAll,
+    handleRetry,
+    handleRetryAllFailed,
+    handleStartUploadWithAutoMD5,
+    calcTotalSpeed,
+  } = useFileUploadQueue({
+    accept,
+    maxSizeMB,
+    multiple,
+    concurrency,
+    chunkSize,
+  });
   const concurrencyRef = useRef(concurrency);
-  const [errorInfo, setErrorInfo] = useState<Record<string, string>>({});
 
   // 保证并发数动态响应网络变化
   useEffect(() => {
     concurrencyRef.current = concurrency;
   }, [concurrency]);
-
-  // beforeUpload 校验
-  const handleBeforeUpload = (file: File) => {
-    const ok = checkFileBeforeUpload({
-      file,
-      accept,
-      maxSizeMB,
-      onError: (msg) => message.error(msg),
-    });
-    if (!ok) return Upload.LIST_IGNORE;
-    setFiles((prev) => {
-      if (prev.find((f) => f.name === file.name && f.size === file.size))
-        return prev;
-      return [...prev, file];
-    });
-    return false; // 阻止自动上传
-  };
-
-  // 计算MD5并秒传验证
-  const handleCalcMD5 = async (file: File) => {
-    setLoadingKey(file.name + file.size);
-    try {
-      const result = await calcFileMD5WithWorker(file, DEFAULT_CHUNK_SIZE);
-      setMd5Info((prev) => ({ ...prev, [file.name + file.size]: result }));
-      message.success(`MD5计算完成: ${result.fileMD5}`);
-      // 秒传验证
-      const fileId = `${result.fileMD5}-${file.name}-${file.size}`;
-      const chunks = createFileChunks(file, DEFAULT_CHUNK_SIZE);
-      const instantRes = await checkInstantUpload({
-        fileId,
-        md5: result.fileMD5,
-        name: file.name,
-        size: file.size,
-        total: chunks.length,
-        chunkMD5s: result.chunkMD5s,
-      });
-      setInstantInfo((prev) => ({
-        ...prev,
-        [file.name + file.size]: instantRes,
-      }));
-      if (instantRes.uploaded) {
-        message.success("[秒传] 文件已存在，无需上传");
-      } else {
-        const needUpload = instantRes.chunkCheckResult.filter(
-          (c: any) => !c.exist || !c.match
-        ).length;
-        message.info(`[秒传] 需上传分片数: ${needUpload}`);
-      }
-    } catch {
-      message.error("MD5或秒传接口异常");
-    } finally {
-      setLoadingKey(null);
-    }
-  };
-
-  // 找到所有未计算MD5的文件，依次自动计算
-  useEffect(() => {
-    const unMd5Files = files.filter((f) => !md5Info[f.name + f.size]);
-    if (unMd5Files.length > 0 && !loadingKey) {
-      (async () => {
-        for (const file of unMd5Files) {
-          await handleCalcMD5(file);
-        }
-      })();
-    }
-  }, [files, md5Info, loadingKey]);
-
-  // 分片上传主流程（带本地进度存储）
-  const handleStartUpload = async (file: File, resumeInfo?: any) => {
-    const key = file.name + file.size;
-    setErrorInfo((prev) => ({ ...prev, [key]: "" }));
-    const md5 = md5Info[key]?.fileMD5 || resumeInfo?.md5;
-    if (!md5) {
-      message.error("请先计算MD5");
-      return;
-    }
-    const fileId = `${md5}-${file.name}-${file.size}`;
-    let uploadedChunks: number[] = resumeInfo?.uploadedChunks || [];
-    if (!resumeInfo) {
-      try {
-        uploadedChunks = await getFileStatus({ fileId, md5 });
-      } catch {
-        /* 忽略异常 */
-      }
-    }
-    const needUploadChunks = createFileChunks(file, DEFAULT_CHUNK_SIZE).filter(
-      (c) => !uploadedChunks.includes(c.index)
-    );
-    let uploadedCount = uploadedChunks.length;
-    let uploadedBytes = uploadedChunks.reduce(
-      (sum, idx) =>
-        sum +
-        (createFileChunks(file, DEFAULT_CHUNK_SIZE)[idx]?.end -
-          createFileChunks(file, DEFAULT_CHUNK_SIZE)[idx]?.start),
-      0
-    );
-    setUploadingInfo((prev) => ({
-      ...prev,
-      [key]: {
-        progress: Math.round(
-          (uploadedCount / createFileChunks(file, DEFAULT_CHUNK_SIZE).length) *
-            100
-        ),
-        status: "uploading",
-      },
-    }));
-    // 初始化速率历史
-    speedHistoryRef.current[key] = [
-      { time: Date.now(), loaded: uploadedBytes },
-    ];
-    for (const chunk of needUploadChunks) {
-      let retry = 0;
-      let delay = 500;
-      const chunkSize = chunk.end - chunk.start;
-      while (retry < 5) {
-        try {
-          await uploadFileChunk({
-            fileId,
-            md5,
-            index: chunk.index,
-            chunk: chunk.chunk,
-            name: file.name,
-            total: createFileChunks(file, DEFAULT_CHUNK_SIZE).length,
-          });
-          uploadedCount++;
-          uploadedBytes += chunkSize;
-          uploadedChunks.push(chunk.index);
-          setUploadingInfo((prev) => ({
-            ...prev,
-            [key]: {
-              progress: Math.round(
-                (uploadedCount /
-                  createFileChunks(file, DEFAULT_CHUNK_SIZE).length) *
-                  100
-              ),
-              status: "uploading",
-            },
-          }));
-          // 上传分片后速率统计
-          const now = Date.now();
-          const prevHistory = speedHistoryRef.current[key] || [];
-          speedHistoryRef.current[key] = appendSpeedHistory(
-            prevHistory,
-            now,
-            uploadedBytes,
-            SPEED_WINDOW
-          );
-          const history = speedHistoryRef.current[key];
-          if (history.length >= 2) {
-            const { speed, leftTime } = calcSpeedAndLeftTime(
-              history,
-              file.size
-            );
-            setSpeedInfo((prev) => ({
-              ...prev,
-              [key]: {
-                speed,
-                leftTime,
-              },
-            }));
-          }
-          break;
-        } catch (err: any) {
-          retry++;
-          if (retry >= 5) {
-            setUploadingInfo((prev) => ({
-              ...prev,
-              [key]: {
-                progress: Math.round(
-                  (uploadedCount /
-                    createFileChunks(file, DEFAULT_CHUNK_SIZE).length) *
-                    100
-                ),
-                status: "error",
-              },
-            }));
-            setErrorInfo((prev) => ({
-              ...prev,
-              [key]: err?.message || "分片上传失败",
-            }));
-            message.error(`分片${chunk.index}上传失败`);
-            return;
-          }
-          await new Promise((res) => setTimeout(res, delay));
-          delay = Math.min(delay * 2, 5000);
-        }
-      }
-    }
-    try {
-      await mergeFile({
-        fileId,
-        md5,
-        name: file.name,
-        size: file.size,
-        total: createFileChunks(file, DEFAULT_CHUNK_SIZE).length,
-      });
-      setUploadingInfo((prev) => ({
-        ...prev,
-        [key]: { progress: 100, status: "done" },
-      }));
-      setSpeedInfo((prev) => ({ ...prev, [key]: { speed: 0, leftTime: 0 } }));
-      setErrorInfo((prev) => ({ ...prev, [key]: "" }));
-      message.success("上传并合并完成");
-    } catch (err: any) {
-      setUploadingInfo((prev) => ({
-        ...prev,
-        [key]: { progress: 100, status: "merge-error" },
-      }));
-      setErrorInfo((prev) => ({
-        ...prev,
-        [key]: err?.message || "合并失败",
-      }));
-      Modal.error({
-        title: "合并失败",
-        content: err?.message || "合并失败",
-      });
-      message.error("合并失败");
-    }
-  };
-
-  // 重试单个文件
-  const handleRetry = (file: File) => {
-    handleStartUpload(file);
-  };
-
-  // 重试所有失败文件
-  const handleRetryAllFailed = async () => {
-    const failedFiles = files.filter((file) => {
-      const key = file.name + file.size;
-      const uploading = uploadingInfo[key];
-      return (
-        uploading &&
-        (uploading.status === "error" || uploading.status === "merge-error")
-      );
-    });
-    for (const file of failedFiles) {
-      await handleStartUpload(file);
-    }
-    message.success("所有失败文件已重试");
-  };
-
-  // 批量上传自动补齐MD5
-  const handleStartAll = async () => {
-    setUploadingAll(true);
-    // 先为所有未计算MD5的文件自动计算MD5
-    for (const file of files) {
-      const key = file.name + file.size;
-      if (!md5Info[key]) {
-        await handleCalcMD5(file);
-      }
-    }
-    // 过滤出未秒传且未上传完成的文件
-    const needUploadFiles = files.filter((file) => {
-      const key = file.name + file.size;
-      const instant = instantInfo[key];
-      const uploading = uploadingInfo[key];
-      return (
-        md5Info[key] &&
-        !instant?.uploaded &&
-        (!uploading || uploading.status !== "done")
-      );
-    });
-    // 并发控制
-    let idx = 0;
-    const queue: Promise<void>[] = [];
-    const next = async () => {
-      if (idx >= needUploadFiles.length) return;
-      const file = needUploadFiles[idx++];
-      await handleStartUpload(file);
-      await next();
-    };
-    for (
-      let i = 0;
-      i < Math.min(MAX_CONCURRENT_UPLOAD, needUploadFiles.length);
-      i++
-    ) {
-      queue.push(next());
-    }
-    await Promise.all(queue);
-    setUploadingAll(false);
-    message.success("全部上传任务已完成");
-  };
-
-  // 单个文件上传按钮自动补齐MD5
-  const handleStartUploadWithAutoMD5 = async (file: File) => {
-    const key = file.name + file.size;
-    if (!md5Info[key]) {
-      await handleCalcMD5(file);
-    }
-    await handleStartUpload(file);
-  };
 
   // 统计总速率
   const totalSpeed = calcTotalSpeed(speedInfo);
@@ -380,7 +66,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
         <Tag color="blue">网络类型: {networkType}</Tag>
         <Tag color="purple">并发数: {concurrencyRef.current}</Tag>
         <Tag color="geekblue">
-          切片大小: {(DEFAULT_CHUNK_SIZE / 1024 / 1024).toFixed(2)} MB
+          切片大小: {(chunkSize / 1024 / 1024).toFixed(2)} MB
         </Tag>
         {uploadingAll && (
           <Tag color="magenta">
@@ -434,7 +120,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
               >
                 <span style={{ flex: 1, minWidth: 200 }}>{file.name}</span>
                 <span style={{ width: 80, textAlign: "right", color: "#888" }}>
-                  {(file.size / 1024 / 1024).toFixed(2)} MB
+                  {ByteConvert(file.size)}
                 </span>
                 <span
                   style={{ width: 120, textAlign: "center", marginLeft: 8 }}
