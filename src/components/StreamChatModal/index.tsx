@@ -47,6 +47,8 @@ const StreamChatModal: React.FC<StreamChatModalProps> = ({
 
   const messageListRef = useRef<ChatMessageListRef>(null);
   const [autoFocusInput, setAutoFocusInput] = useState(false);
+  const [isAtTop, setIsAtTop] = useState(true);
+  const [isAtBottom, setIsAtBottom] = useState(true);
 
   // 弹窗打开时自动提问
   useEffect(() => {
@@ -106,6 +108,10 @@ const StreamChatModal: React.FC<StreamChatModalProps> = ({
             ref={messageListRef}
             messages={messages}
             isFetching={isFetching}
+            onScrollStatusChange={({ isAtTop, isAtBottom }) => {
+              setIsAtTop(isAtTop);
+              setIsAtBottom(isAtBottom);
+            }}
           />
           {/* 滚动按钮绝对定位在内容区右下角 */}
           <div
@@ -124,15 +130,13 @@ const StreamChatModal: React.FC<StreamChatModalProps> = ({
                 border: "1px solid #eee",
                 borderRadius: 16,
                 padding: 4,
-                cursor: messageListRef.current?.isAtTop
-                  ? "not-allowed"
-                  : "pointer",
-                color: messageListRef.current?.isAtTop ? "#ccc" : "#1890ff",
+                cursor: isAtTop ? "not-allowed" : "pointer",
+                color: isAtTop ? "#ccc" : "#1890ff",
                 fontSize: 18,
                 boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
               }}
               onClick={() => messageListRef.current?.scrollToTop()}
-              disabled={messageListRef.current?.isAtTop}
+              disabled={isAtTop}
               title="回到顶部"
             >
               <UpOutlined />
@@ -143,15 +147,13 @@ const StreamChatModal: React.FC<StreamChatModalProps> = ({
                 border: "1px solid #eee",
                 borderRadius: 16,
                 padding: 4,
-                cursor: messageListRef.current?.isAtBottom
-                  ? "not-allowed"
-                  : "pointer",
-                color: messageListRef.current?.isAtBottom ? "#ccc" : "#1890ff",
+                cursor: isAtBottom ? "not-allowed" : "pointer",
+                color: isAtBottom ? "#ccc" : "#1890ff",
                 fontSize: 18,
                 boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
               }}
               onClick={() => messageListRef.current?.scrollToBottom()}
-              disabled={messageListRef.current?.isAtBottom}
+              disabled={isAtBottom}
               title="回到底部"
             >
               <DownOutlined />

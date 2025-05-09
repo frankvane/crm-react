@@ -20,10 +20,14 @@ export interface ChatMessageListRef {
 interface ChatMessageListProps {
   messages: Message[];
   isFetching?: boolean;
+  onScrollStatusChange?: (status: {
+    isAtTop: boolean;
+    isAtBottom: boolean;
+  }) => void;
 }
 
 const ChatMessageList = forwardRef<ChatMessageListRef, ChatMessageListProps>(
-  ({ messages, isFetching }, ref) => {
+  ({ messages, isFetching, onScrollStatusChange }, ref) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const contentEndRef = useRef<HTMLDivElement>(null);
     const lastMsg = messages[messages.length - 1];
@@ -62,6 +66,13 @@ const ChatMessageList = forwardRef<ChatMessageListRef, ChatMessageListProps>(
         container.scrollTop = container.scrollHeight;
       });
     }, [messages, isFetching, shouldAutoScroll]);
+
+    // 通知父组件当前滚动状态
+    useEffect(() => {
+      if (onScrollStatusChange) {
+        onScrollStatusChange({ isAtTop, isAtBottom });
+      }
+    }, [isAtTop, isAtBottom, onScrollStatusChange]);
 
     // 暴露方法给父组件
     useImperativeHandle(
