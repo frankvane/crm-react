@@ -8,6 +8,7 @@
 - 标题区顶部新增品牌色渐变条，提升辨识度。
 - 标题区底部分割线加深，与整体风格统一。
 - 修复 useStreamChat.ts 递归 setState 导致的 Maximum update depth exceeded 报错：useEffect 里用 useRef 跳过首次渲染，彻底避免 onMessagesChange 递归死循环，提升健壮性。
+- StreamChatModal 聊天消息区滚动到顶部/底部时增加平滑动画（smooth behavior），提升滚动体验。
 
 ## 2025-05-08
 

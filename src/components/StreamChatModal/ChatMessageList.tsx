@@ -80,11 +80,15 @@ const ChatMessageList = forwardRef<ChatMessageListRef, ChatMessageListProps>(
       () => ({
         scrollToTop: () => {
           const container = containerRef.current;
-          if (container) container.scrollTop = 0;
+          if (container) container.scrollTo({ top: 0, behavior: "smooth" });
         },
         scrollToBottom: () => {
           const container = containerRef.current;
-          if (container) container.scrollTop = container.scrollHeight;
+          if (container)
+            container.scrollTo({
+              top: container.scrollHeight,
+              behavior: "smooth",
+            });
         },
         isAtTop,
         isAtBottom,
