@@ -6,7 +6,6 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 
-import FileUploader from "../../components/FileUploader";
 import styles from "./style.module.less";
 
 const Dashboard = () => {
@@ -54,12 +53,6 @@ const Dashboard = () => {
           </Card>
         </Col>
       </Row>
-
-      <FileUploader
-        accept=".png,.jpg,.jpeg,.gif"
-        maxSizeMB={10}
-        multiple={false}
-      />
     </div>
   );
 };
