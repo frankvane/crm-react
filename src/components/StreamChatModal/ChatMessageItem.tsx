@@ -19,11 +19,12 @@ const ChatMessageItem: React.FC<ChatMessageItemProps> = ({ msg }) => {
         <Avatar
           icon={<UserOutlined />}
           style={{
+            // assistant 的背景色是绿色
             backgroundColor:
               msg.role === "user"
                 ? "#1890ff"
                 : msg.role === "assistant"
-                ? msg.roleColor
+                ? "#4eb609"
                 : "#f5222d",
           }}
         />

@@ -1,3 +1,13 @@
+// constants 示例内容
+// 如有默认角色、系统消息等常量，统一放在此处
+
+// 例：
+// export const DEFAULT_ROLE = 'user';
+// export const SYSTEM_MESSAGE = '你是一名专业的AI助手';
+
+// 原 constants.ts 内容
+// ...
+
 // 角色类型声明
 export interface RoleOption {
   value: string;

@@ -8,7 +8,7 @@ import ChatInputBar from "./ChatInputBar";
 import ChatMessageList from "./ChatMessageList";
 import type { ChatMessageListRef } from "./ChatMessageList";
 import type { Message } from "./types";
-import { useStreamChat } from "./useStreamChat";
+import { useStreamChat } from "./hooks/useStreamChat";
 
 interface StreamChatModalProps {
   visible: boolean;

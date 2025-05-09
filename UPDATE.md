@@ -9,6 +9,7 @@
 - 标题区底部分割线加深，与整体风格统一。
 - 修复 useStreamChat.ts 递归 setState 导致的 Maximum update depth exceeded 报错：useEffect 里用 useRef 跳过首次渲染，彻底避免 onMessagesChange 递归死循环，提升健壮性。
 - StreamChatModal 聊天消息区滚动到顶部/底部时增加平滑动画（smooth behavior），提升滚动体验。
+- StreamChatModal 目录结构优化：新增 hooks 子目录并迁移 useStreamChat.ts，修正相关导入路径，提升可维护性和规范性。
 
 ## 2025-05-08
 
