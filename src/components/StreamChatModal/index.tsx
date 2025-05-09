@@ -69,8 +69,9 @@ const StreamChatModal: React.FC<StreamChatModalProps> = ({
         bottom: 24,
         width,
         height,
-        boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
-        borderRadius: 8,
+        boxShadow: "0 4px 24px rgba(0,0,0,0.18)",
+        border: "1.5px solid #e0e0e0",
+        borderRadius: 10,
         background: "#fff",
         zIndex: 2000,
         display: "flex",
@@ -78,11 +79,22 @@ const StreamChatModal: React.FC<StreamChatModalProps> = ({
         padding: 0,
       }}
     >
+      <div
+        style={{
+          height: 4,
+          width: "100%",
+          borderTopLeftRadius: 10,
+          borderTopRightRadius: 10,
+          background: "linear-gradient(90deg, #ccc 0%, #fff 100%)",
+        }}
+      />
       <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
         <div
           style={{
+            // 从上到下渐变，颜色浅蓝到一点点蓝
+            background: "linear-gradient(to bottom, #ccc 0%, #fff 100%)",
             padding: 12,
-            borderBottom: "1px solid #eee",
+            borderBottom: "1.5px solid #e0e0e0",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",

@@ -22,9 +22,14 @@ export function useStreamChat(options: UseStreamChatOptions) {
   const [role, setRole] = useState<string>(initialRole);
   const [isFetching, setIsFetching] = useState<boolean>(false);
   const abortControllerRef = useRef<AbortController | null>(null);
+  const isFirst = useRef(true);
 
   // 消息变更时回调父组件
   useEffect(() => {
+    if (isFirst.current) {
+      isFirst.current = false;
+      return;
+    }
     if (onMessagesChange) {
       onMessagesChange(messages);
     }

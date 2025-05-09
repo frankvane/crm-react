@@ -4,6 +4,10 @@
 
 - useNetworkType、useFileUploadQueue、utils.ts 全部方法补充/规范了 jsdoc 注释，提升代码可读性和团队协作效率。
 - 其它细节优化见代码。
+- StreamChatModal 智能对话框整体视觉优化：加深边框色（border: 1.5px solid #e0e0e0）、增强阴影（boxShadow: 0 4px 24px rgba(0,0,0,0.18)）、圆角 10。
+- 标题区顶部新增品牌色渐变条，提升辨识度。
+- 标题区底部分割线加深，与整体风格统一。
+- 修复 useStreamChat.ts 递归 setState 导致的 Maximum update depth exceeded 报错：useEffect 里用 useRef 跳过首次渲染，彻底避免 onMessagesChange 递归死循环，提升健壮性。
 
 ## 2025-05-08
 
