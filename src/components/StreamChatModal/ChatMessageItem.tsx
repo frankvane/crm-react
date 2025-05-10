@@ -1,5 +1,7 @@
-import { Avatar, Divider, Space } from "antd";
+import { Avatar, Space } from "antd";
+import { Tooltip, message as antdMessage } from "antd";
 
+import { CopyOutlined } from "@ant-design/icons";
 import type { Message } from "./types";
 import React from "react";
 import ReactMarkdown from "react-markdown";
@@ -13,8 +15,41 @@ interface ChatMessageItemProps {
 }
 
 const ChatMessageItem: React.FC<ChatMessageItemProps> = ({ msg }) => {
+  const [hover, setHover] = React.useState(false);
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(msg.content);
+      antdMessage.success("已复制");
+    } catch {
+      antdMessage.error("复制失败");
+    }
+  };
   return (
-    <div style={{ marginBottom: 20 }}>
+    <div
+      style={{ marginBottom: 20, position: "relative" }}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+    >
+      {/* 复制按钮 */}
+      {hover && (
+        <Tooltip title="复制" placement="left">
+          <CopyOutlined
+            onClick={handleCopy}
+            style={{
+              position: "absolute",
+              right: 8,
+              top: 8,
+              fontSize: 16,
+              color: "#999",
+              cursor: "pointer",
+              zIndex: 2,
+              transition: "color 0.2s",
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = "#1890ff")}
+            onMouseLeave={(e) => (e.currentTarget.style.color = "#999")}
+          />
+        </Tooltip>
+      )}
       <Space>
         <Avatar
           icon={<UserOutlined />}
