@@ -1,7 +1,7 @@
 import "github-markdown-css/github-markdown-light.css";
 import "antd/dist/reset.css";
 
-import { DownOutlined, UpOutlined } from "@ant-design/icons";
+import { DownOutlined, MessageOutlined, UpOutlined } from "@ant-design/icons";
 import React, { useEffect, useRef, useState } from "react";
 
 import { Button } from "antd";
@@ -51,6 +51,7 @@ const StreamChatModal: React.FC<StreamChatModalProps> = ({
   const [isAtTop, setIsAtTop] = useState(true);
   const [isAtBottom, setIsAtBottom] = useState(true);
   const [selectedText, setSelectedText] = useState("");
+  const [minimized, setMinimized] = useState(false);
   const bringBtnRef = useRef<HTMLButtonElement>(null);
 
   // 弹窗打开时自动提问
@@ -79,6 +80,30 @@ const StreamChatModal: React.FC<StreamChatModalProps> = ({
   }, [selectedText]);
 
   if (!visible) return null;
+  if (minimized) {
+    return (
+      <div
+        style={{
+          position: "fixed",
+          right: 32,
+          bottom: 32,
+          zIndex: 2100,
+          background: "#fff",
+          borderRadius: 24,
+          boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+          padding: 10,
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          border: "1.5px solid #e0e0e0",
+        }}
+        onClick={() => setMinimized(false)}
+        title="展开对话"
+      >
+        <MessageOutlined style={{ fontSize: 24, color: "#1890ff" }} />
+      </div>
+    );
+  }
 
   return (
     <div
@@ -121,9 +146,22 @@ const StreamChatModal: React.FC<StreamChatModalProps> = ({
           }}
         >
           <span>智能对话</span>
-          <span style={{ cursor: "pointer", fontSize: 20 }} onClick={onClose}>
-            ×
-          </span>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <span
+              style={{ cursor: "pointer", fontSize: 20 }}
+              onClick={() => setMinimized(true)}
+              title="最小化"
+            >
+              –
+            </span>
+            <span
+              style={{ cursor: "pointer", fontSize: 20 }}
+              onClick={onClose}
+              title="关闭"
+            >
+              ×
+            </span>
+          </div>
         </div>
         {/* 内容区+控制按钮区 */}
         <div

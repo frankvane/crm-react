@@ -304,3 +304,7 @@ npx @agentdeskai/browser-tools-server@1.2.0
 ## 2024-06-12
 
 - 重构 FileUploader 组件：将文件上传相关请求（checkInstantUpload、getFileStatus、uploadFileChunk、mergeFile）抽离到 api 目录（api/index.ts），原 hooks/api.ts 已删除，所有 API 统一从 api/index.ts 导入，结构更清晰。
+
+## 2024-06-13
+
+修复 StreamChat 聊天消息区滚动条无法自动跟随到底部的问题：移除 shouldAutoScroll 逻辑，messages 或 isFetching 变化时始终自动滚动到底部（流式输出时无动画，结束时 smooth）。提升了用户体验。

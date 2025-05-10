@@ -1,4 +1,4 @@
-import React, {
+import {
   forwardRef,
   useEffect,
   useImperativeHandle,
@@ -35,11 +35,12 @@ const ChatMessageList = forwardRef<ChatMessageListRef, ChatMessageListProps>(
     const showLoading =
       isFetching &&
       (!lastMsg || lastMsg.role !== "assistant" || !lastMsg.content);
+    const prevIsFetching = useRef(isFetching);
     const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
-    const [isAtBottom, setIsAtBottom] = useState(true);
     const [isAtTop, setIsAtTop] = useState(true);
+    const [isAtBottom, setIsAtBottom] = useState(true);
 
-    // 监听用户滚动，判断是否在底部/顶部
+    // 监听用户滚动，判断是否在底部
     useEffect(() => {
       const container = containerRef.current;
       if (!container) return;
@@ -52,27 +53,21 @@ const ChatMessageList = forwardRef<ChatMessageListRef, ChatMessageListProps>(
           tolerance;
         const atTop = container.scrollTop <= tolerance;
         setShouldAutoScroll(atBottom);
-        setIsAtBottom(atBottom);
         setIsAtTop(atTop);
+        setIsAtBottom(atBottom);
       };
       container.addEventListener("scroll", handleScroll);
       return () => container.removeEventListener("scroll", handleScroll);
     }, []);
 
-    // 内容变更时，仅在shouldAutoScroll为true时自动滚动到底部
     useEffect(() => {
-      const container = containerRef.current;
-      if (!container || !shouldAutoScroll) return;
-      requestAnimationFrame(() => {
-        if (isFetching) {
-          container.scrollTop = container.scrollHeight;
-        } else {
-          container.scrollTo({
-            top: container.scrollHeight,
-            behavior: "smooth",
-          });
-        }
-      });
+      if (!contentEndRef.current) return;
+      if (isFetching && shouldAutoScroll) {
+        contentEndRef.current.scrollIntoView({ behavior: "auto" });
+      } else if (prevIsFetching.current && shouldAutoScroll) {
+        contentEndRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+      prevIsFetching.current = isFetching;
     }, [messages, isFetching, shouldAutoScroll]);
 
     // 通知父组件当前滚动状态
@@ -90,7 +85,6 @@ const ChatMessageList = forwardRef<ChatMessageListRef, ChatMessageListProps>(
           const container = containerRef.current;
           if (container) {
             container.scrollTo({ top: 0, behavior: "smooth" });
-            setShouldAutoScroll(false);
           }
         },
         scrollToBottom: () => {
@@ -100,7 +94,6 @@ const ChatMessageList = forwardRef<ChatMessageListRef, ChatMessageListProps>(
               top: container.scrollHeight,
               behavior: "smooth",
             });
-            setShouldAutoScroll(true);
           }
         },
         isAtTop,
