@@ -131,6 +131,12 @@ const StreamChatModal: React.FC<StreamChatModalProps> = ({
     if (error) setError(null);
   }, [isFetching]);
 
+  // 关闭窗口时自动中断流式请求
+  const handleClose = () => {
+    if (isFetching) abortFetch();
+    onClose();
+  };
+
   if (!visible) return null;
   if (minimized) {
     return (
@@ -156,9 +162,6 @@ const StreamChatModal: React.FC<StreamChatModalProps> = ({
         title="展开对话"
       >
         <MessageOutlined style={{ fontSize: 24, color: "#1890ff" }} />
-        <span style={{ marginLeft: 8, fontWeight: 500, color: "#1890ff" }}>
-          智能对话
-        </span>
       </div>
     );
   }
@@ -217,7 +220,7 @@ const StreamChatModal: React.FC<StreamChatModalProps> = ({
             </span>
             <span
               style={{ cursor: "pointer", fontSize: 20 }}
-              onClick={onClose}
+              onClick={handleClose}
               title="关闭"
             >
               ×
