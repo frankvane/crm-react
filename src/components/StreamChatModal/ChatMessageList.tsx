@@ -1,3 +1,4 @@
+import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
 import {
   forwardRef,
   useEffect,
@@ -29,69 +30,63 @@ interface ChatMessageListProps {
 
 const ChatMessageList = forwardRef<ChatMessageListRef, ChatMessageListProps>(
   ({ messages, isFetching, onScrollStatusChange, onSelectText }, ref) => {
+    const virtuosoRef = useRef<VirtuosoHandle>(null);
     const containerRef = useRef<HTMLDivElement>(null);
-    const contentEndRef = useRef<HTMLDivElement>(null);
+    const prevIsFetching = useRef(isFetching);
     const lastMsg = messages[messages.length - 1];
     const showLoading =
       isFetching &&
       (!lastMsg || lastMsg.role !== "assistant" || !lastMsg.content);
-    const prevIsFetching = useRef(isFetching);
     const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
-    const [isAtTop, setIsAtTop] = useState(true);
+    const [isAtTop, setIsAtTop] = useState(false);
     const [isAtBottom, setIsAtBottom] = useState(true);
 
-    // 监听用户滚动，判断是否在底部
-    useEffect(() => {
-      const container = containerRef.current;
-      if (!container) return;
-      const tolerance = 5;
-      const handleScroll = () => {
-        const atBottom =
-          container.scrollHeight -
-            container.scrollTop -
-            container.clientHeight <=
-          tolerance;
-        const atTop = container.scrollTop <= tolerance;
-        setShouldAutoScroll(atBottom);
-        setIsAtTop(atTop);
-        setIsAtBottom(atBottom);
-      };
-      container.addEventListener("scroll", handleScroll);
-      return () => container.removeEventListener("scroll", handleScroll);
-    }, []);
+    // 监听滚动状态
+    const handleScrollStatus = ({
+      atTop,
+      atBottom,
+    }: {
+      atTop: boolean;
+      atBottom: boolean;
+    }) => {
+      setIsAtTop(atTop);
+      setIsAtBottom(atBottom);
+      setShouldAutoScroll(atBottom); // 用户在底部时启用自动滚动，向上滚动时禁用
+      if (onScrollStatusChange) {
+        onScrollStatusChange({ isAtTop: atTop, isAtBottom: atBottom });
+      }
+    };
 
+    // 自动滚动到最新消息
     useEffect(() => {
-      if (!contentEndRef.current) return;
-      if (isFetching && shouldAutoScroll) {
-        contentEndRef.current.scrollIntoView({ behavior: "auto" });
-      } else if (prevIsFetching.current && shouldAutoScroll) {
-        contentEndRef.current.scrollIntoView({ behavior: "smooth" });
+      if (virtuosoRef.current && messages.length > 0 && shouldAutoScroll) {
+        const behavior =
+          isFetching || prevIsFetching.current ? "auto" : "smooth";
+        virtuosoRef.current.scrollToIndex({
+          index: messages.length - 1,
+          align: "end",
+          behavior,
+        });
       }
       prevIsFetching.current = isFetching;
-    }, [messages, isFetching, shouldAutoScroll]);
-
-    // 通知父组件当前滚动状态
-    useEffect(() => {
-      if (onScrollStatusChange) {
-        onScrollStatusChange({ isAtTop, isAtBottom });
-      }
-    }, [isAtTop, isAtBottom, onScrollStatusChange]);
+    }, [messages.length, isFetching, shouldAutoScroll]);
 
     // 暴露方法给父组件
     useImperativeHandle(
       ref,
       () => ({
         scrollToTop: () => {
-          const container = containerRef.current;
-          if (container) {
-            container.scrollTo({ top: 0, behavior: "smooth" });
-          }
+          virtuosoRef.current?.scrollToIndex({
+            index: 0,
+            align: "start",
+            behavior: "smooth",
+          });
         },
         scrollToBottom: () => {
-          const container = containerRef.current;
-          if (container) {
-            container.scrollTo({
-              top: container.scrollHeight,
+          if (messages.length > 0) {
+            virtuosoRef.current?.scrollToIndex({
+              index: messages.length - 1,
+              align: "end",
               behavior: "smooth",
             });
           }
@@ -99,8 +94,16 @@ const ChatMessageList = forwardRef<ChatMessageListRef, ChatMessageListProps>(
         isAtTop,
         isAtBottom,
       }),
-      [isAtTop, isAtBottom]
+      [isAtTop, isAtBottom, messages.length]
     );
+
+    // 文本选择功能
+    const handleMouseUp = () => {
+      const text = window.getSelection()?.toString();
+      if (text && text.trim() && onSelectText) {
+        onSelectText(text.trim());
+      }
+    };
 
     return (
       <div
@@ -109,38 +112,53 @@ const ChatMessageList = forwardRef<ChatMessageListRef, ChatMessageListProps>(
         style={{
           flex: 1,
           minHeight: 0,
-          overflowY: "auto",
-          padding: "10px",
-          marginBottom: "10px",
           position: "relative",
+          height: "100%",
+          padding: "15px 5px 0 15px",
         }}
-        onMouseUp={() => {
-          const text = window.getSelection()?.toString();
-          if (text && text.trim() && onSelectText) {
-            onSelectText(text.trim());
-          }
-        }}
+        onMouseUp={handleMouseUp}
       >
-        {messages.map((msg) => (
-          <ChatMessageItem key={msg.id} msg={msg} />
-        ))}
-        {showLoading && (
-          <div
-            style={{
-              color: "#1890ff",
-              textAlign: "left",
-              margin: "8px 0 0 40px",
-              fontSize: 14,
-              display: "flex",
-              alignItems: "center",
-              gap: 6,
-            }}
-          >
-            <Spin size="small" style={{ marginRight: 8 }} />
-            正在生成回复...
-          </div>
-        )}
-        <div ref={contentEndRef} />
+        <Virtuoso
+          ref={virtuosoRef}
+          style={{ height: "100%" }}
+          totalCount={messages.length}
+          overscan={20}
+          atTopStateChange={(atTop) =>
+            handleScrollStatus({ atTop, atBottom: isAtBottom })
+          }
+          atBottomStateChange={(atBottom) =>
+            handleScrollStatus({ atTop: isAtTop, atBottom })
+          }
+          followOutput={() => (shouldAutoScroll ? "smooth" : false)}
+          itemContent={(index) => <ChatMessageItem msg={messages[index]} />}
+          computeItemKey={(index) => messages[index].id} // 确保唯一键
+          components={{
+            Footer: showLoading
+              ? () => (
+                  <div
+                    style={{
+                      color: "#1890ff",
+                      textAlign: "left",
+                      margin: "8px 0 0 40px",
+                      fontSize: 14,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 6,
+                      padding: "0 0 10px 0",
+                    }}
+                  >
+                    <Spin size="small" style={{ marginRight: 8 }} />
+                    正在生成回复...
+                  </div>
+                )
+              : undefined,
+          }}
+          defaultItemHeight={100}
+          increaseViewportBy={{ top: 20, bottom: 20 }}
+          initialTopMostItemIndex={
+            messages.length > 0 ? messages.length - 1 : 0
+          }
+        />
       </div>
     );
   }
