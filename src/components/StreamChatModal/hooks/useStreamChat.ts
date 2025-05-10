@@ -42,6 +42,7 @@ export function useStreamChat(options: UseStreamChatOptions) {
       role: "user",
       content: inputValue,
       id: Date.now(),
+      timestamp: Date.now(),
     };
     setMessages((prev) => [...prev, userMessage]);
     setInputValue("");
@@ -69,6 +70,7 @@ export function useStreamChat(options: UseStreamChatOptions) {
         id: Date.now() + 1,
         roleName: role,
         roleColor: undefined,
+        timestamp: Date.now(),
       };
       setMessages((prev) => [...prev, assistantMessage]);
       while (true) {
@@ -87,7 +89,12 @@ export function useStreamChat(options: UseStreamChatOptions) {
       if (error instanceof Error && error.name === "AbortError") {
         setMessages((prev) => [
           ...prev,
-          { role: "system", content: "[用户请求中断]", id: Date.now() },
+          {
+            role: "system",
+            content: "[用户请求中断]",
+            id: Date.now(),
+            timestamp: Date.now(),
+          },
         ]);
       }
     } finally {

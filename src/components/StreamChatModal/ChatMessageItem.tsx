@@ -7,6 +7,7 @@ import React from "react";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { UserOutlined } from "@ant-design/icons";
+import dayjs from "dayjs";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import remarkGfm from "remark-gfm";
 
@@ -70,6 +71,11 @@ const ChatMessageItem: React.FC<ChatMessageItemProps> = ({ msg }) => {
             ? msg.roleName
             : "系统"}
         </span>
+        {msg.timestamp && (
+          <span style={{ marginLeft: 12, fontSize: 12, color: "#bbb" }}>
+            {dayjs(msg.timestamp).format("YYYY-MM-DD HH:mm:ss")}
+          </span>
+        )}
       </Space>
       <div style={{ marginTop: 12 }}></div>
       <ReactMarkdown

@@ -4,4 +4,5 @@ export interface Message {
   content: string;
   roleName?: string;
   roleColor?: string;
+  timestamp?: string | number;
 }

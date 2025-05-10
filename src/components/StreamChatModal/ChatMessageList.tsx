@@ -64,7 +64,14 @@ const ChatMessageList = forwardRef<ChatMessageListRef, ChatMessageListProps>(
       const container = containerRef.current;
       if (!container || !shouldAutoScroll) return;
       requestAnimationFrame(() => {
-        container.scrollTop = container.scrollHeight;
+        if (isFetching) {
+          container.scrollTop = container.scrollHeight;
+        } else {
+          container.scrollTo({
+            top: container.scrollHeight,
+            behavior: "smooth",
+          });
+        }
       });
     }, [messages, isFetching, shouldAutoScroll]);
 
@@ -81,15 +88,20 @@ const ChatMessageList = forwardRef<ChatMessageListRef, ChatMessageListProps>(
       () => ({
         scrollToTop: () => {
           const container = containerRef.current;
-          if (container) container.scrollTo({ top: 0, behavior: "smooth" });
+          if (container) {
+            container.scrollTo({ top: 0, behavior: "smooth" });
+            setShouldAutoScroll(false);
+          }
         },
         scrollToBottom: () => {
           const container = containerRef.current;
-          if (container)
+          if (container) {
             container.scrollTo({
               top: container.scrollHeight,
               behavior: "smooth",
             });
+            setShouldAutoScroll(true);
+          }
         },
         isAtTop,
         isAtBottom,
