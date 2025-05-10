@@ -1,3 +1,5 @@
+import { Alert, Spin, message } from "antd";
+
 import StreamChatModal from "@/components/StreamChatModal";
 import { useState } from "react";
 
@@ -42,11 +44,30 @@ const Index = () => {
         defaultRole="医疗顾问"
         defaultQuestion={currentQuestion}
         apiUrl="http://localhost:3000/api/stream-chat"
-        onSuccess={(msg) => console.log("AI回复完成", msg)}
-        onError={(err) => console.log("出错: " + err.message)}
-        onAbort={() => console.log("已中断")}
+        onSuccess={() => {
+          message.success("AI回复已生成！");
+        }}
+        onError={() => {
+          message.error("AI服务异常，请稍后重试");
+        }}
+        onAbort={() => {
+          message.info("AI回复已中断");
+        }}
         onMessage={(msg) => console.log("流式片段", msg)}
         onMinimize={(min) => console.log("最小化状态", min)}
+        errorRender={(err) => (
+          <Alert
+            type="error"
+            message={err.message}
+            showIcon
+            style={{ margin: 12 }}
+          />
+        )}
+        loadingRender={() => (
+          <Spin tip="AI正在思考...">
+            <div style={{ minHeight: 32 }} />
+          </Spin>
+        )}
       />
     </div>
   );

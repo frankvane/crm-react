@@ -1,10 +1,10 @@
 import "github-markdown-css/github-markdown-light.css";
 import "antd/dist/reset.css";
 
+import { Alert, Button, Spin, message } from "antd";
 import { DownOutlined, MessageOutlined, UpOutlined } from "@ant-design/icons";
 import React, { useEffect, useRef, useState } from "react";
 
-import { Button } from "antd";
 import ChatInputBar from "./ChatInputBar";
 import ChatMessageList from "./ChatMessageList";
 import type { ChatMessageListRef } from "./ChatMessageList";
@@ -29,6 +29,8 @@ interface StreamChatModalProps extends Omit<StreamChatApiOptions, "signal"> {
   onAbort?: () => void;
   onMessage?: (message: Message) => void;
   onMinimize?: (minimized: boolean) => void;
+  errorRender?: (error: Error) => React.ReactNode;
+  loadingRender?: () => React.ReactNode;
 }
 
 const StreamChatModal: React.FC<StreamChatModalProps> = ({
@@ -44,10 +46,11 @@ const StreamChatModal: React.FC<StreamChatModalProps> = ({
   apiHeaders,
   apiParamsTransform,
   onSuccess,
-  onError,
   onAbort,
   onMessage,
   onMinimize,
+  errorRender,
+  loadingRender,
 }) => {
   const {
     messages,
@@ -65,7 +68,10 @@ const StreamChatModal: React.FC<StreamChatModalProps> = ({
     apiHeaders,
     apiParamsTransform,
     onSuccess,
-    onError,
+    onError: (err) => {
+      setError(err);
+      if (typeof errorRender !== "function") message.error(err.message);
+    },
     onAbort,
     onMessage,
   });
@@ -77,6 +83,7 @@ const StreamChatModal: React.FC<StreamChatModalProps> = ({
   const [selectedText, setSelectedText] = useState("");
   const [minimized, setMinimized] = useState(false);
   const bringBtnRef = useRef<HTMLButtonElement>(null);
+  const [error, setError] = useState<Error | null>(null);
 
   // 弹窗打开时自动提问
   useEffect(() => {
@@ -117,6 +124,12 @@ const StreamChatModal: React.FC<StreamChatModalProps> = ({
   // 可根据需要实现更细粒度的流式回调
 
   // 3. 错误和中断（可在 useStreamChat 内部通过自定义事件或状态提升实现）
+
+  // 错误自动清理（如用户重新输入/提问时）
+  useEffect(() => {
+    if (!isFetching) return;
+    if (error) setError(null);
+  }, [isFetching]);
 
   if (!visible) return null;
   if (minimized) {
@@ -220,6 +233,40 @@ const StreamChatModal: React.FC<StreamChatModalProps> = ({
             flexDirection: "column",
           }}
         >
+          {/* 错误展示 */}
+          {error &&
+            (errorRender ? (
+              errorRender(error)
+            ) : (
+              <Alert
+                type="error"
+                message={error.message}
+                showIcon
+                style={{ margin: 12 }}
+              />
+            ))}
+          {/* loading 展示 */}
+          {isFetching &&
+            !error &&
+            (loadingRender ? (
+              loadingRender()
+            ) : (
+              <div
+                style={{
+                  color: "#1890ff",
+                  textAlign: "left",
+                  margin: "8px 0 0 40px",
+                  fontSize: 14,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                }}
+              >
+                <Spin size="small" style={{ marginRight: 8 }} />
+                正在生成回复...
+              </div>
+            ))}
+          {/* 消息列表 */}
           <ChatMessageList
             ref={messageListRef}
             messages={messages}

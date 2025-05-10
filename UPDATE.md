@@ -312,3 +312,5 @@ npx @agentdeskai/browser-tools-server@1.2.0
 StreamChatModal 组件 API 层抽象：支持 apiUrl、apiHeaders、apiParamsTransform 配置，所有请求通过 hooks/useStreamChatApi.ts 统一发起，便于复用和环境切换。修复流式请求中断（abort）功能，fetch 支持 signal，abortFetch 可正常中断流式请求。
 
 StreamChatModal 组件事件/回调机制完善：支持 onSuccess、onError、onAbort、onMessage、onMinimize 等回调，主项目可灵活接管 AI 回复、异常、中断、流式片段、最小化等事件，实现业务联动和体验提升。
+
+StreamChatModal 组件错误处理与 loading 状态统一：支持 errorRender、loadingRender props，主项目可自定义错误和 loading 展示，默认兜底 UI，提升健壮性和可扩展性。
