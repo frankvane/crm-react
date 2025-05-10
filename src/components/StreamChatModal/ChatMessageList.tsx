@@ -24,10 +24,11 @@ interface ChatMessageListProps {
     isAtTop: boolean;
     isAtBottom: boolean;
   }) => void;
+  onSelectText?: (text: string) => void;
 }
 
 const ChatMessageList = forwardRef<ChatMessageListRef, ChatMessageListProps>(
-  ({ messages, isFetching, onScrollStatusChange }, ref) => {
+  ({ messages, isFetching, onScrollStatusChange, onSelectText }, ref) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const contentEndRef = useRef<HTMLDivElement>(null);
     const lastMsg = messages[messages.length - 1];
@@ -107,6 +108,12 @@ const ChatMessageList = forwardRef<ChatMessageListRef, ChatMessageListProps>(
           padding: "10px",
           marginBottom: "10px",
           position: "relative",
+        }}
+        onMouseUp={() => {
+          const text = window.getSelection()?.toString();
+          if (text && text.trim() && onSelectText) {
+            onSelectText(text.trim());
+          }
         }}
       >
         {messages.map((msg) => (

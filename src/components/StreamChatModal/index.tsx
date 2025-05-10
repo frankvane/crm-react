@@ -4,6 +4,7 @@ import "antd/dist/reset.css";
 import { DownOutlined, UpOutlined } from "@ant-design/icons";
 import React, { useEffect, useRef, useState } from "react";
 
+import { Button } from "antd";
 import ChatInputBar from "./ChatInputBar";
 import ChatMessageList from "./ChatMessageList";
 import type { ChatMessageListRef } from "./ChatMessageList";
@@ -49,6 +50,8 @@ const StreamChatModal: React.FC<StreamChatModalProps> = ({
   const [autoFocusInput, setAutoFocusInput] = useState(false);
   const [isAtTop, setIsAtTop] = useState(true);
   const [isAtBottom, setIsAtBottom] = useState(true);
+  const [selectedText, setSelectedText] = useState("");
+  const bringBtnRef = useRef<HTMLButtonElement>(null);
 
   // 弹窗打开时自动提问
   useEffect(() => {
@@ -58,6 +61,22 @@ const StreamChatModal: React.FC<StreamChatModalProps> = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible, defaultQuestion]);
+
+  useEffect(() => {
+    if (!selectedText) return;
+    const handleClick = (e: MouseEvent) => {
+      if (
+        bringBtnRef.current &&
+        bringBtnRef.current.contains(e.target as Node)
+      ) {
+        // 点击了"带入输入框"按钮本身，不清除
+        return;
+      }
+      setSelectedText("");
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [selectedText]);
 
   if (!visible) return null;
 
@@ -106,12 +125,11 @@ const StreamChatModal: React.FC<StreamChatModalProps> = ({
             ×
           </span>
         </div>
-        {/* 内容区+滚动按钮 */}
+        {/* 内容区+控制按钮区 */}
         <div
           style={{
             flex: 1,
             minHeight: 0,
-            position: "relative",
             display: "flex",
             flexDirection: "column",
           }}
@@ -124,31 +142,64 @@ const StreamChatModal: React.FC<StreamChatModalProps> = ({
               setIsAtTop(isAtTop);
               setIsAtBottom(isAtBottom);
             }}
+            onSelectText={setSelectedText}
           />
-          {/* 滚动按钮绝对定位在内容区右下角 */}
           <div
             style={{
-              position: "absolute",
-              right: 16,
-              bottom: 16,
+              width: "100%",
               display: "flex",
+              justifyContent: "flex-end",
+              alignItems: "center",
               gap: 8,
-              zIndex: 10,
+              padding: "8px 16px",
+              background: "rgba(255,255,255,0.96)",
+              borderTop: "1px solid #eee",
+              zIndex: 20,
+              flexShrink: 0,
             }}
           >
+            {selectedText && !isFetching && (
+              <div
+                style={{
+                  position: "relative",
+                  display: "inline-block",
+                  marginRight: 8,
+                }}
+              >
+                <Button
+                  ref={bringBtnRef}
+                  onClick={() => {
+                    setInputValue((prev) =>
+                      prev ? prev + "\n" + selectedText : selectedText
+                    );
+                    setSelectedText("");
+                    setAutoFocusInput(true);
+                  }}
+                  type="primary"
+                  size="small"
+                  style={{
+                    flexShrink: 0,
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  带入输入框
+                </Button>
+              </div>
+            )}
             <button
               style={{
                 background: "#fff",
                 border: "1px solid #eee",
                 borderRadius: 16,
                 padding: 4,
-                cursor: isAtTop ? "not-allowed" : "pointer",
-                color: isAtTop ? "#ccc" : "#1890ff",
+                cursor: isAtTop || isFetching ? "not-allowed" : "pointer",
+                color: isAtTop || isFetching ? "#ccc" : "#1890ff",
                 fontSize: 18,
                 boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
               }}
               onClick={() => messageListRef.current?.scrollToTop()}
-              disabled={isAtTop}
+              disabled={isAtTop || isFetching}
               title="回到顶部"
             >
               <UpOutlined />
@@ -159,13 +210,13 @@ const StreamChatModal: React.FC<StreamChatModalProps> = ({
                 border: "1px solid #eee",
                 borderRadius: 16,
                 padding: 4,
-                cursor: isAtBottom ? "not-allowed" : "pointer",
-                color: isAtBottom ? "#ccc" : "#1890ff",
+                cursor: isAtBottom || isFetching ? "not-allowed" : "pointer",
+                color: isAtBottom || isFetching ? "#ccc" : "#1890ff",
                 fontSize: 18,
                 boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
               }}
               onClick={() => messageListRef.current?.scrollToBottom()}
-              disabled={isAtBottom}
+              disabled={isAtBottom || isFetching}
               title="回到底部"
             >
               <DownOutlined />
