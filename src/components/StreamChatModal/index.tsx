@@ -9,9 +9,10 @@ import ChatInputBar from "./ChatInputBar";
 import ChatMessageList from "./ChatMessageList";
 import type { ChatMessageListRef } from "./ChatMessageList";
 import type { Message } from "./types";
+import type { StreamChatApiOptions } from "./hooks/useStreamChatApi";
 import { useStreamChat } from "./hooks/useStreamChat";
 
-interface StreamChatModalProps {
+interface StreamChatModalProps extends Omit<StreamChatApiOptions, "signal"> {
   visible: boolean;
   onClose: () => void;
   defaultRole: string;
@@ -23,6 +24,11 @@ interface StreamChatModalProps {
   apiUrl: string;
   apiHeaders?: Record<string, string>;
   apiParamsTransform?: (params: any) => any;
+  onSuccess?: (message: Message) => void;
+  onError?: (error: Error) => void;
+  onAbort?: () => void;
+  onMessage?: (message: Message) => void;
+  onMinimize?: (minimized: boolean) => void;
 }
 
 const StreamChatModal: React.FC<StreamChatModalProps> = ({
@@ -37,6 +43,11 @@ const StreamChatModal: React.FC<StreamChatModalProps> = ({
   apiUrl,
   apiHeaders,
   apiParamsTransform,
+  onSuccess,
+  onError,
+  onAbort,
+  onMessage,
+  onMinimize,
 }) => {
   const {
     messages,
@@ -53,6 +64,10 @@ const StreamChatModal: React.FC<StreamChatModalProps> = ({
     apiUrl,
     apiHeaders,
     apiParamsTransform,
+    onSuccess,
+    onError,
+    onAbort,
+    onMessage,
   });
 
   const messageListRef = useRef<ChatMessageListRef>(null);
@@ -88,6 +103,21 @@ const StreamChatModal: React.FC<StreamChatModalProps> = ({
     return () => document.removeEventListener("mousedown", handleClick);
   }, [selectedText]);
 
+  // 事件回调监听
+  // 1. AI回复完成
+  useEffect(() => {
+    if (!messages || messages.length === 0) return;
+    const lastMsg = messages[messages.length - 1];
+    if (lastMsg.role === "assistant" && !isFetching && onSuccess) {
+      onSuccess(lastMsg);
+    }
+  }, [messages, isFetching, onSuccess]);
+
+  // 2. 流式片段
+  // 可根据需要实现更细粒度的流式回调
+
+  // 3. 错误和中断（可在 useStreamChat 内部通过自定义事件或状态提升实现）
+
   if (!visible) return null;
   if (minimized) {
     return (
@@ -106,10 +136,16 @@ const StreamChatModal: React.FC<StreamChatModalProps> = ({
           alignItems: "center",
           border: "1.5px solid #e0e0e0",
         }}
-        onClick={() => setMinimized(false)}
+        onClick={() => {
+          setMinimized(false);
+          if (onMinimize) onMinimize(false);
+        }}
         title="展开对话"
       >
         <MessageOutlined style={{ fontSize: 24, color: "#1890ff" }} />
+        <span style={{ marginLeft: 8, fontWeight: 500, color: "#1890ff" }}>
+          智能对话
+        </span>
       </div>
     );
   }
@@ -158,7 +194,10 @@ const StreamChatModal: React.FC<StreamChatModalProps> = ({
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <span
               style={{ cursor: "pointer", fontSize: 20 }}
-              onClick={() => setMinimized(true)}
+              onClick={() => {
+                setMinimized(true);
+                if (onMinimize) onMinimize(true);
+              }}
               title="最小化"
             >
               –

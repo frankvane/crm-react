@@ -8,6 +8,10 @@ interface UseStreamChatOptions {
   initialRole: string;
   initialQuestion?: string;
   onMessagesChange?: (msgs: Message[]) => void;
+  onSuccess?: (message: Message) => void;
+  onError?: (error: Error) => void;
+  onAbort?: () => void;
+  onMessage?: (message: Message) => void;
 }
 
 export function useStreamChat(
@@ -76,9 +80,16 @@ export function useStreamChat(
         timestamp: Date.now(),
       };
       setMessages((prev) => [...prev, assistantMessage]);
+      let lastContent = "";
       while (true) {
         const { done, value: chunk } = await reader.read();
-        if (done) break;
+        if (done) {
+          // 流式结束，完整内容
+          if (assistantMessage.content && options.onSuccess) {
+            options.onSuccess({ ...assistantMessage });
+          }
+          break;
+        }
         assistantMessage.content += new TextDecoder().decode(chunk);
         setMessages((prev) =>
           prev.map((msg) =>
@@ -87,6 +98,10 @@ export function useStreamChat(
               : msg
           )
         );
+        if (options.onMessage && assistantMessage.content !== lastContent) {
+          options.onMessage({ ...assistantMessage });
+          lastContent = assistantMessage.content;
+        }
       }
     } catch (error) {
       if (error instanceof Error && error.name === "AbortError") {
@@ -99,6 +114,9 @@ export function useStreamChat(
             timestamp: Date.now(),
           },
         ]);
+        if (options.onAbort) options.onAbort();
+      } else {
+        if (options.onError) options.onError(error as Error);
       }
     } finally {
       setIsFetching(false);

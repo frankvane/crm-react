@@ -41,7 +41,12 @@ const Index = () => {
         onClose={() => setModalVisible(false)}
         defaultRole="医疗顾问"
         defaultQuestion={currentQuestion}
-        apiUrl="http://localhost:3000/api/stream-chat" // 按原组件实现的接口地址
+        apiUrl="http://localhost:3000/api/stream-chat"
+        onSuccess={(msg) => console.log("AI回复完成", msg)}
+        onError={(err) => console.log("出错: " + err.message)}
+        onAbort={() => console.log("已中断")}
+        onMessage={(msg) => console.log("流式片段", msg)}
+        onMinimize={(min) => console.log("最小化状态", min)}
       />
     </div>
   );
