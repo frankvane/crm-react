@@ -308,3 +308,5 @@ npx @agentdeskai/browser-tools-server@1.2.0
 ## 2024-06-13
 
 修复 StreamChat 聊天消息区滚动条无法自动跟随到底部的问题：移除 shouldAutoScroll 逻辑，messages 或 isFetching 变化时始终自动滚动到底部（流式输出时无动画，结束时 smooth）。提升了用户体验。
+
+StreamChatModal 组件 API 层抽象：支持 apiUrl、apiHeaders、apiParamsTransform 配置，所有请求通过 hooks/useStreamChatApi.ts 统一发起，便于复用和环境切换。修复流式请求中断（abort）功能，fetch 支持 signal，abortFetch 可正常中断流式请求。

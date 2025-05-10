@@ -20,6 +20,9 @@ interface StreamChatModalProps {
   height?: number | string;
   messages?: Message[];
   onMessagesChange?: (msgs: Message[]) => void;
+  apiUrl: string;
+  apiHeaders?: Record<string, string>;
+  apiParamsTransform?: (params: any) => any;
 }
 
 const StreamChatModal: React.FC<StreamChatModalProps> = ({
@@ -31,6 +34,9 @@ const StreamChatModal: React.FC<StreamChatModalProps> = ({
   height = 600,
   messages: propMessages,
   onMessagesChange,
+  apiUrl,
+  apiHeaders,
+  apiParamsTransform,
 }) => {
   const {
     messages,
@@ -44,6 +50,9 @@ const StreamChatModal: React.FC<StreamChatModalProps> = ({
     initialRole: defaultRole,
     initialQuestion: defaultQuestion,
     onMessagesChange,
+    apiUrl,
+    apiHeaders,
+    apiParamsTransform,
   });
 
   const messageListRef = useRef<ChatMessageListRef>(null);

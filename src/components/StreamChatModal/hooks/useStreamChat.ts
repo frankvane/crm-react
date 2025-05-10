@@ -1,3 +1,4 @@
+import { StreamChatApiOptions, fetchStreamChat } from "./useStreamChatApi";
 import { useEffect, useRef, useState } from "react";
 
 import type { Message } from "../types";
@@ -9,7 +10,9 @@ interface UseStreamChatOptions {
   onMessagesChange?: (msgs: Message[]) => void;
 }
 
-export function useStreamChat(options: UseStreamChatOptions) {
+export function useStreamChat(
+  options: UseStreamChatOptions & StreamChatApiOptions
+) {
   const {
     initialMessages = [],
     initialRole,
@@ -49,17 +52,17 @@ export function useStreamChat(options: UseStreamChatOptions) {
     const controller = new AbortController();
     abortControllerRef.current = controller;
     try {
-      const bodyMessages = JSON.stringify({
+      const params = {
         messages: [
           { role: "system", content: `你是一名专业的${role}` },
           ...messages,
           userMessage,
         ],
-      });
-      const response = await fetch("http://localhost:3000/api/stream-chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: bodyMessages,
+      };
+      const response = await fetchStreamChat(params, {
+        apiUrl: options.apiUrl,
+        apiHeaders: options.apiHeaders,
+        apiParamsTransform: options.apiParamsTransform,
         signal: controller.signal,
       });
       if (!response.body) throw new Error("No response body");
@@ -85,7 +88,7 @@ export function useStreamChat(options: UseStreamChatOptions) {
           )
         );
       }
-    } catch (error: unknown) {
+    } catch (error) {
       if (error instanceof Error && error.name === "AbortError") {
         setMessages((prev) => [
           ...prev,

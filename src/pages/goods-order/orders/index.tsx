@@ -41,6 +41,7 @@ const Index = () => {
         onClose={() => setModalVisible(false)}
         defaultRole="医疗顾问"
         defaultQuestion={currentQuestion}
+        apiUrl="http://localhost:3000/api/stream-chat" // 按原组件实现的接口地址
       />
     </div>
   );
