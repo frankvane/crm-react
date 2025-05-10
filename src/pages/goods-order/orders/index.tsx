@@ -44,30 +44,30 @@ const Index = () => {
         defaultRole="医疗顾问"
         defaultQuestion={currentQuestion}
         apiUrl="http://localhost:3000/api/stream-chat"
-        onSuccess={() => {
-          message.success("AI回复已生成！");
-        }}
-        onError={() => {
-          message.error("AI服务异常，请稍后重试");
-        }}
-        onAbort={() => {
-          message.info("AI回复已中断");
-        }}
-        onMessage={(msg) => console.log("流式片段", msg)}
-        onMinimize={(min) => console.log("最小化状态", min)}
-        errorRender={(err) => (
-          <Alert
-            type="error"
-            message={err.message}
-            showIcon
-            style={{ margin: 12 }}
-          />
-        )}
-        loadingRender={() => (
-          <Spin tip="AI正在思考...">
-            <div style={{ minHeight: 32 }} />
-          </Spin>
-        )}
+        // onSuccess={() => {
+        //   message.success("AI回复已生成！");
+        // }}
+        // onError={() => {
+        //   message.error("AI服务异常，请稍后重试");
+        // }}
+        // onAbort={() => {
+        //   message.info("AI回复已中断");
+        // }}
+        // onMessage={(msg) => console.log("流式片段", msg)}
+        // onMinimize={(min) => console.log("最小化状态", min)}
+        // errorRender={(err) => (
+        //   <Alert
+        //     type="error"
+        //     message={err.message}
+        //     showIcon
+        //     style={{ margin: 12 }}
+        //   />
+        // )}
+        // loadingRender={() => (
+        //   <Spin tip="AI正在思考...">
+        //     <div style={{ minHeight: 32 }} />
+        //   </Spin>
+        // )}
       />
     </div>
   );

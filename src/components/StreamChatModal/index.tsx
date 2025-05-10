@@ -246,26 +246,7 @@ const StreamChatModal: React.FC<StreamChatModalProps> = ({
               />
             ))}
           {/* loading 展示 */}
-          {isFetching &&
-            !error &&
-            (loadingRender ? (
-              loadingRender()
-            ) : (
-              <div
-                style={{
-                  color: "#1890ff",
-                  textAlign: "left",
-                  margin: "8px 0 0 40px",
-                  fontSize: 14,
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 6,
-                }}
-              >
-                <Spin size="small" style={{ marginRight: 8 }} />
-                正在生成回复...
-              </div>
-            ))}
+          {isFetching && !error && loadingRender && loadingRender()}
           {/* 消息列表 */}
           <ChatMessageList
             ref={messageListRef}
