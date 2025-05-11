@@ -150,8 +150,8 @@ export const ProductCardWrapper: React.FC<ProductCardWrapperProps> & {
       )
     : undefined;
 
-  // 判断是否有 props 内容
-  const hasPropsContent = imageSrc || badgeType || title || price;
+  // 只要有 props 内容（imageSrc、badgeType、title、price 任一），就只渲染 props 内容，完全忽略 children
+  const hasPropsContent = !!(imageSrc || badgeType || title || price);
 
   return (
     <ProductCard
@@ -176,6 +176,7 @@ export const ProductCardWrapper: React.FC<ProductCardWrapperProps> & {
           {price && <ProductCard.Price>{price}</ProductCard.Price>}
         </>
       ) : (
+        // 只有所有 props 都未传递时才渲染 children
         children
       )}
     </ProductCard>

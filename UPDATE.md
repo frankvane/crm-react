@@ -346,3 +346,11 @@ StreamChatModal 组件错误处理与 loading 状态统一：支持 errorRender�
 ## 2024-06-13
 
 - 补充完善 ProductCard 组件文档：在 props 及插槽/复合结构用法部分，系统说明了 ProductCard.Section 的用法和作用，增加了标准用法示例和详细说明，便于开发者前置理解 Section 插槽能力，提升文档可读性和组件易用性。
+
+## 2024-06-13
+
+- 重构 ProductCardWrapper 组件渲染逻辑：只要有 imageSrc、title、price、badgeType 等 props 之一有值，仅渲染 props 内容，完全忽略 children。只有所有这些 props 都未传递时才渲染 children，彻底避免 props/children 混用导致的重复渲染问题，逻辑更严谨。
+
+## 2024-06-13
+
+- 修复 ProductCard 主组件对子组件重复渲染问题：遍历 children 时，每种类型（Image、Title、Price、Badge）只渲染第一个同类型子组件，后续同类型自动忽略，保证每种类型只渲染一次，彻底避免 props/children 混用导致的重复渲染，逻辑更严谨。

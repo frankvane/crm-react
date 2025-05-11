@@ -18,6 +18,7 @@ const LogisticsDemo: React.FC = () => {
       <ProductProvider>
         <div style={{ display: "flex", gap: 24 }}>
           <ProductCardWrapper
+            layout="horizontal"
             productId="p1"
             imageSrc="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=400&q=80"
             badgeType="premium"

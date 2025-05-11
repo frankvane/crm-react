@@ -212,17 +212,38 @@ const ProductCard: React.FC<ProductCardProps> & {
       ? styles.productCardHorizontal
       : styles.productCardVertical;
 
-  const findChildComponent = (ComponentType: React.ElementType) =>
-    React.Children.toArray(children).find(
-      (child: any) => child.type === ComponentType
-    );
+  // 只渲染每种类型的第一个子组件，后续同类型自动忽略，避免重复渲染
+  const childrenArray = React.Children.toArray(children);
+  const typeMap = new Map();
+  const uniqueChildren: React.ReactNode[] = [];
+  childrenArray.forEach((child: any) => {
+    if (!child || !child.type) {
+      uniqueChildren.push(child);
+      return;
+    }
+    const typeName = child.type.displayName || child.type.name || child.type;
+    // 只对 Image、Title、Price、Badge 做唯一性控制，其它类型允许多次
+    if (
+      [
+        "ProductCard.Image",
+        "ProductCard.Title",
+        "ProductCard.Price",
+        "ProductCard.Badge",
+      ].includes(typeName)
+    ) {
+      if (!typeMap.has(typeName)) {
+        typeMap.set(typeName, true);
+        uniqueChildren.push(child);
+      }
+    } else {
+      uniqueChildren.push(child);
+    }
+  });
 
-  const imageComponent = findChildComponent(ProductCardImage);
-  const badgeComponent = findChildComponent(ProductCardBadge);
-
+  // Section 分区和其它内容分类
   const sections: Record<string, React.ReactNode[]> = {};
   const otherChildren: React.ReactNode[] = [];
-  React.Children.forEach(children, (child: any) => {
+  uniqueChildren.forEach((child: any) => {
     if (child && child.type === ProductCardSection && child.props?.name) {
       if (!sections[child.props.name]) sections[child.props.name] = [];
       sections[child.props.name].push(child);
@@ -230,6 +251,14 @@ const ProductCard: React.FC<ProductCardProps> & {
       otherChildren.push(child);
     }
   });
+
+  // 只渲染第一个 Image/Badge
+  const imageComponent = uniqueChildren.find(
+    (child: any) => child.type === ProductCardImage
+  );
+  const badgeComponent = uniqueChildren.find(
+    (child: any) => child.type === ProductCardBadge
+  );
 
   return (
     <div
