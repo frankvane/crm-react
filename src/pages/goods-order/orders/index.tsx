@@ -38,6 +38,7 @@ const Index = () => {
         ))}
       </ul>
       <StreamChatModal
+        pageSize={4}
         key={currentQuestion}
         visible={modalVisible}
         onClose={() => setModalVisible(false)}

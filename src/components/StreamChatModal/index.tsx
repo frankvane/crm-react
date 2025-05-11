@@ -31,6 +31,7 @@ interface StreamChatModalProps extends Omit<StreamChatApiOptions, "signal"> {
   onMinimize?: (minimized: boolean) => void;
   errorRender?: (error: Error) => React.ReactNode;
   loadingRender?: () => React.ReactNode;
+  pageSize?: number;
 }
 
 const StreamChatModal: React.FC<StreamChatModalProps> = ({
@@ -51,6 +52,7 @@ const StreamChatModal: React.FC<StreamChatModalProps> = ({
   onMinimize,
   errorRender,
   loadingRender,
+  pageSize,
 }) => {
   const {
     messages,
@@ -260,6 +262,7 @@ const StreamChatModal: React.FC<StreamChatModalProps> = ({
               setIsAtBottom(isAtBottom);
             }}
             onSelectText={setSelectedText}
+            pageSize={pageSize}
           />
           <div
             style={{

@@ -25,10 +25,14 @@ interface ChatMessageListProps {
     isAtBottom: boolean;
   }) => void;
   onSelectText?: (text: string) => void;
+  pageSize?: number;
 }
 
 const ChatMessageList = forwardRef<ChatMessageListRef, ChatMessageListProps>(
-  ({ messages, isFetching, onScrollStatusChange, onSelectText }, ref) => {
+  (
+    { messages, isFetching, onScrollStatusChange, onSelectText, pageSize = 2 },
+    ref
+  ) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const contentEndRef = useRef<HTMLDivElement>(null);
     const lastMsg = messages[messages.length - 1];
@@ -39,8 +43,7 @@ const ChatMessageList = forwardRef<ChatMessageListRef, ChatMessageListProps>(
     const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
     const [isAtTop, setIsAtTop] = useState(true);
     const [isAtBottom, setIsAtBottom] = useState(true);
-    const PAGE_SIZE = 2;
-    const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+    const [visibleCount, setVisibleCount] = useState(pageSize);
     const visibleMessages = messages.slice(-visibleCount);
 
     // 监听用户滚动，判断是否在底部
@@ -106,8 +109,8 @@ const ChatMessageList = forwardRef<ChatMessageListRef, ChatMessageListProps>(
     );
 
     useEffect(() => {
-      setVisibleCount(PAGE_SIZE); // 新消息时重置只显示最新3条
-    }, [messages.length]);
+      setVisibleCount(pageSize); // 新消息时重置只显示最新pageSize条
+    }, [messages.length, pageSize]);
 
     return (
       <div
@@ -140,7 +143,7 @@ const ChatMessageList = forwardRef<ChatMessageListRef, ChatMessageListProps>(
             }}
             onClick={() =>
               setVisibleCount((prev) =>
-                Math.min(messages.length, prev + PAGE_SIZE)
+                Math.min(messages.length, prev + pageSize)
               )
             }
           >
