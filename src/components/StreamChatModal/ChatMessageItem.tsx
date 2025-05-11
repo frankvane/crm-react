@@ -13,9 +13,10 @@ import remarkGfm from "remark-gfm";
 
 interface ChatMessageItemProps {
   msg: Message;
+  index: number;
 }
 
-const ChatMessageItem: React.FC<ChatMessageItemProps> = ({ msg }) => {
+const ChatMessageItem: React.FC<ChatMessageItemProps> = ({ msg, index }) => {
   const [hover, setHover] = React.useState(false);
   const handleCopy = async () => {
     try {
@@ -52,6 +53,13 @@ const ChatMessageItem: React.FC<ChatMessageItemProps> = ({ msg }) => {
         </Tooltip>
       )}
       <Space>
+        <span
+          style={{
+            color: "#aaa",
+          }}
+        >
+          [{index}]
+        </span>
         <Avatar
           icon={<UserOutlined />}
           style={{

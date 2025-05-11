@@ -1,5 +1,16 @@
 # 更新日志
 
+## 2024-06-09
+
+- ChatMessageList.tsx 顶部增加"查看更多历史消息"按钮，点击后每次加载 3 条历史消息，并在每条消息前加上索引编号以便调试。
+- ChatMessageList.tsx 调整"查看更多历史消息"按钮的渲染逻辑，只要消息总数大于 PAGE_SIZE，按钮就一直显示，但点到头不会再加载更多。
+- ChatMessageList.tsx 移除滚动到顶部时自动加载历史消息的逻辑，现在只有点击"查看更多历史消息"按钮时才会加载更多历史消息。
+- ChatMessageList.tsx 禁止出现横向滚动条，给外层容器样式加上 overflowX: 'hidden'。
+
+## 2024-06-09
+
+- ChatMessageList.tsx 实现分段渲染+懒加载，PAGE_SIZE=3。初始只渲染最新 3 条消息，用户上滑到顶部时每次多加载 3 条。
+
 ## 2024-06-12
 
 - useNetworkType、useFileUploadQueue、utils.ts 全部方法补充/规范了 jsdoc 注释，提升代码可读性和团队协作效率。
