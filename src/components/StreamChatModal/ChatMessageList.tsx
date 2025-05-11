@@ -1,4 +1,3 @@
-import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
 import {
   forwardRef,
   useEffect,
@@ -30,16 +29,15 @@ interface ChatMessageListProps {
 
 const ChatMessageList = forwardRef<ChatMessageListRef, ChatMessageListProps>(
   ({ messages, isFetching, onScrollStatusChange, onSelectText }, ref) => {
-    const virtuosoRef = useRef<VirtuosoHandle>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const contentEndRef = useRef<HTMLDivElement>(null);
-    const prevIsFetching = useRef(isFetching);
     const lastMsg = messages[messages.length - 1];
     const showLoading =
       isFetching &&
       (!lastMsg || lastMsg.role !== "assistant" || !lastMsg.content);
+    const prevIsFetching = useRef(isFetching);
     const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
-    const [isAtTop, setIsAtTop] = useState(false);
+    const [isAtTop, setIsAtTop] = useState(true);
     const [isAtBottom, setIsAtBottom] = useState(true);
     const PAGE_SIZE = 2;
     const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
@@ -66,39 +64,37 @@ const ChatMessageList = forwardRef<ChatMessageListRef, ChatMessageListProps>(
     }, [messages.length, visibleCount]);
 
     useEffect(() => {
-      setVisibleCount(PAGE_SIZE); // 新消息时重置只显示最新3条
-    }, [messages.length]);
-
-    // 自动滚动到最新消息
-    useEffect(() => {
-      if (virtuosoRef.current && messages.length > 0 && shouldAutoScroll) {
-        const behavior =
-          isFetching || prevIsFetching.current ? "auto" : "smooth";
-        virtuosoRef.current.scrollToIndex({
-          index: messages.length - 1,
-          align: "end",
-          behavior,
-        });
+      if (!contentEndRef.current) return;
+      if (isFetching && shouldAutoScroll) {
+        contentEndRef.current.scrollIntoView({ behavior: "auto" });
+      } else if (prevIsFetching.current && shouldAutoScroll) {
+        contentEndRef.current.scrollIntoView({ behavior: "smooth" });
       }
       prevIsFetching.current = isFetching;
-    }, [messages.length, isFetching, shouldAutoScroll]);
+    }, [messages, isFetching, shouldAutoScroll]);
+
+    // 通知父组件当前滚动状态
+    useEffect(() => {
+      if (onScrollStatusChange) {
+        onScrollStatusChange({ isAtTop, isAtBottom });
+      }
+    }, [isAtTop, isAtBottom, onScrollStatusChange]);
 
     // 暴露方法给父组件
     useImperativeHandle(
       ref,
       () => ({
         scrollToTop: () => {
-          virtuosoRef.current?.scrollToIndex({
-            index: 0,
-            align: "start",
-            behavior: "smooth",
-          });
+          const container = containerRef.current;
+          if (container) {
+            container.scrollTo({ top: 0, behavior: "smooth" });
+          }
         },
         scrollToBottom: () => {
-          if (messages.length > 0) {
-            virtuosoRef.current?.scrollToIndex({
-              index: messages.length - 1,
-              align: "end",
+          const container = containerRef.current;
+          if (container) {
+            container.scrollTo({
+              top: container.scrollHeight,
               behavior: "smooth",
             });
           }
@@ -106,16 +102,12 @@ const ChatMessageList = forwardRef<ChatMessageListRef, ChatMessageListProps>(
         isAtTop,
         isAtBottom,
       }),
-      [isAtTop, isAtBottom, messages.length]
+      [isAtTop, isAtBottom]
     );
 
-    // 文本选择功能
-    const handleMouseUp = () => {
-      const text = window.getSelection()?.toString();
-      if (text && text.trim() && onSelectText) {
-        onSelectText(text.trim());
-      }
-    };
+    useEffect(() => {
+      setVisibleCount(PAGE_SIZE); // 新消息时重置只显示最新3条
+    }, [messages.length]);
 
     return (
       <div
@@ -129,9 +121,13 @@ const ChatMessageList = forwardRef<ChatMessageListRef, ChatMessageListProps>(
           padding: "10px",
           marginBottom: "10px",
           position: "relative",
-          height: "100%",
         }}
-        onMouseUp={handleMouseUp}
+        onMouseUp={() => {
+          const text = window.getSelection()?.toString();
+          if (text && text.trim() && onSelectText) {
+            onSelectText(text.trim());
+          }
+        }}
       >
         {visibleCount < messages.length && (
           <div
