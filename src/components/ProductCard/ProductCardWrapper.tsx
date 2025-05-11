@@ -150,6 +150,9 @@ export const ProductCardWrapper: React.FC<ProductCardWrapperProps> & {
       )
     : undefined;
 
+  // 判断是否有 props 内容
+  const hasPropsContent = imageSrc || badgeType || title || price;
+
   return (
     <ProductCard
       productId={productId}
@@ -159,21 +162,21 @@ export const ProductCardWrapper: React.FC<ProductCardWrapperProps> & {
       className={className}
       style={style}
     >
-      {imageSrc && (
-        <ProductCard.Image src={imageSrc} alt={title || "Product"} />
-      )}
-
-      {!!badgeType && (
-        <ProductCard.Badge type={badgeType}>
-          {badgeType || "甄选"}
-        </ProductCard.Badge>
-      )}
-
-      {children || (
+      {hasPropsContent ? (
         <>
+          {imageSrc && (
+            <ProductCard.Image src={imageSrc} alt={title || "Product"} />
+          )}
+          {!!badgeType && (
+            <ProductCard.Badge type={badgeType}>
+              {badgeType || "甄选"}
+            </ProductCard.Badge>
+          )}
           {title && <ProductCard.Title>{title}</ProductCard.Title>}
           {price && <ProductCard.Price>{price}</ProductCard.Price>}
         </>
+      ) : (
+        children
       )}
     </ProductCard>
   );

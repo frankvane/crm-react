@@ -126,11 +126,41 @@ const ProductCardActionButton: React.FC<ProductCardActionButtonProps> = ({
 };
 
 /**
+ * 通用分区插槽 Section props
+ * @property {string} name - 分区名称（如 desc/shop/promotion/自定义）
+ * @property {ReactNode} children - 分区内容
+ */
+export interface ProductCardSectionProps {
+  name: string;
+  children: React.ReactNode;
+}
+/**
+ * 通用分区插槽 Section
+ */
+const ProductCardSection: React.FC<ProductCardSectionProps> = ({
+  children,
+}) => <>{children}</>;
+
+/**
+ * renderActions 参数上下文类型，支持扩展
+ */
+export interface ProductCardActionContext {
+  isAddedToCart: boolean;
+  isWishlisted: boolean;
+  toggleCart: () => void;
+  toggleWishlist: () => void;
+  productId: string;
+  children: React.ReactNode;
+  productData?: any;
+  extra?: any;
+}
+
+/**
  * ProductCard 主组件 props
  * @property {string} productId - 商品唯一标识（必填）
  * @property {ReactNode} children - 子组件内容（必填，推荐使用 ProductCard.Image、Title、Price、Badge 等）
  * @property {ReactNode} [customFooter] - 自定义底部内容
- * @property {(params) => ReactNode} [renderActions] - 自定义操作按钮渲染函数
+ * @property {(params: ProductCardActionContext) => ReactNode} [renderActions] - 自定义操作按钮渲染函数
  * @property {"vertical"|"horizontal"} [layout="vertical"] - 布局方向
  * @property {string} [className] - 自定义 className
  * @property {CSSProperties} [style] - 自定义样式
@@ -146,12 +176,7 @@ export interface ProductCardProps {
    * 自定义操作按钮渲染函数
    * @param params 当前商品的购物车/心愿单状态与切换方法
    */
-  renderActions?: (params: {
-    isAddedToCart: boolean;
-    isWishlisted: boolean;
-    toggleCart: () => void;
-    toggleWishlist: () => void;
-  }) => ReactNode;
+  renderActions?: (params: ProductCardActionContext) => ReactNode;
   /** 布局方向 */
   layout?: "vertical" | "horizontal";
   /** 自定义 className */
@@ -169,6 +194,7 @@ const ProductCard: React.FC<ProductCardProps> & {
   Price: typeof ProductCardPrice;
   Badge: typeof ProductCardBadge;
   ActionButton: typeof ProductCardActionButton;
+  Section: typeof ProductCardSection;
 } = ({
   productId,
   children,
@@ -191,16 +217,19 @@ const ProductCard: React.FC<ProductCardProps> & {
       (child: any) => child.type === ComponentType
     );
 
-  const filterChildrenComponents = (ComponentType: React.ElementType) =>
-    React.Children.toArray(children).filter(
-      (child: any) => child.type !== ComponentType
-    );
-
   const imageComponent = findChildComponent(ProductCardImage);
   const badgeComponent = findChildComponent(ProductCardBadge);
-  const otherComponents = filterChildrenComponents(ProductCardImage).filter(
-    (child: any) => child.type !== ProductCardBadge
-  );
+
+  const sections: Record<string, React.ReactNode[]> = {};
+  const otherChildren: React.ReactNode[] = [];
+  React.Children.forEach(children, (child: any) => {
+    if (child && child.type === ProductCardSection && child.props?.name) {
+      if (!sections[child.props.name]) sections[child.props.name] = [];
+      sections[child.props.name].push(child);
+    } else {
+      otherChildren.push(child);
+    }
+  });
 
   return (
     <div
@@ -213,7 +242,7 @@ const ProductCard: React.FC<ProductCardProps> & {
       </div>
 
       <div className={styles.productDetails}>
-        {otherComponents}
+        {otherChildren}
         {renderActions && (
           <div className={styles.productActions}>
             {renderActions({
@@ -221,6 +250,10 @@ const ProductCard: React.FC<ProductCardProps> & {
               isWishlisted: wishlist,
               toggleCart: () => toggleState(productId, "cart"),
               toggleWishlist: () => toggleState(productId, "wishlist"),
+              productId,
+              children,
+              productData: {},
+              extra: {},
             })}
           </div>
         )}
@@ -238,12 +271,14 @@ ProductCard.Title = ProductCardTitle;
 ProductCard.Price = ProductCardPrice;
 ProductCard.Badge = ProductCardBadge;
 ProductCard.ActionButton = ProductCardActionButton;
+ProductCard.Section = ProductCardSection;
 
 ProductCardImage.displayName = "ProductCard.Image";
 ProductCardTitle.displayName = "ProductCard.Title";
 ProductCardPrice.displayName = "ProductCard.Price";
 ProductCardBadge.displayName = "ProductCard.Badge";
 ProductCardActionButton.displayName = "ProductCard.ActionButton";
+ProductCardSection.displayName = "ProductCard.Section";
 ProductCard.displayName = "ProductCard";
 
 export default ProductCard;
