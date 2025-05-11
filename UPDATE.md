@@ -354,3 +354,7 @@ StreamChatModal 组件错误处理与 loading 状态统一：支持 errorRender�
 ## 2024-06-13
 
 - 修复 ProductCard 主组件对子组件重复渲染问题：遍历 children 时，每种类型（Image、Title、Price、Badge）只渲染第一个同类型子组件，后续同类型自动忽略，保证每种类型只渲染一次，彻底避免 props/children 混用导致的重复渲染，逻辑更严谨。
+
+## 2024-06-13
+
+- 递归修复 ProductCard 主组件对子组件唯一性渲染：递归展开所有 children（支持 Fragment/数组嵌套），对 Image、Title、Price、Badge 类型做全量唯一性去重，彻底解决嵌套结构下的重复渲染问题。

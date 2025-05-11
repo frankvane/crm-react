@@ -17,18 +17,14 @@ const PRELOAD_OFFSET = ITEM_SIZE * 15; // 距离底部4行时预加载
 
 // 模拟异步获取商品数据
 const unsplashImages = [
-  "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=600",
-  "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?w=600",
-  "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?w=600",
-  "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=600",
-  "https://images.unsplash.com/photo-1516979187457-637abb4f9353?w=600",
-  "https://images.unsplash.com/photo-1465101178521-c1a9136a3b41?w=600",
-  "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?w=600",
-  "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=600",
-  "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?w=600",
-  "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=600",
+  "https://images.unsplash.com/photo-1461988320302-91bde64fc8e4?ixid=2yJhcHBfaWQiOjEyMDd9&fm=jpg&w=200&fit=max",
+  "https://images.unsplash.com/photo-1480694313141-fce5e697ee25?ixid=2yJhcHBfaWQiOjEyMDd9&fm=jpg&w=200&fit=max",
+  "https://images.unsplash.com/photo-1514575110897-1253ff7b2ccb?ixid=2yJhcHBfaWQiOjEyMDd9&fm=jpg&w=200&fit=max",
+  "https://images.unsplash.com/photo-1583847323635-7ad5b93640ad?ixid=2yJhcHBfaWQiOjEyMDd9&fm=jpg&w=200&fit=max",
+  "https://images.unsplash.com/photo-1595121766249-ee5532be40cb?ixid=2yJhcHBfaWQiOjEyMDd9&fm=jpg&w=200&fit=max",
+  "https://images.unsplash.com/photo-1614138159368-242fb95e79e6?ixid=2yJhcHBfaWQiOjEyMDd9&fm=jpg&w=200&fit=max",
 ];
-
+// https://images.unsplash.com/photo-1461988320302-91bde64fc8e4?ixid=2yJhcHBfaWQiOjEyMDd9&fm=jpg&w=200&fit=max
 const fetchProducts = async (page: number) => {
   await new Promise((resolve) => setTimeout(resolve, 500));
   if (page > 15) return [];

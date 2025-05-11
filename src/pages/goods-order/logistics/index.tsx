@@ -116,11 +116,19 @@ const LogisticsDemo: React.FC = () => {
               <ProductCard.Title>旗舰运动鞋</ProductCard.Title>
               <ProductCard.Section name="desc">
                 <div style={{ color: "#888", fontSize: 13 }}>
-                  超轻透气，适合夏季运动，舒适耐穿。
+                  超轻透气，适合夏季运动，舒适耐穿，心动价格，快来抢购！
                 </div>
               </ProductCard.Section>
               <ProductCard.Section name="shop">
-                <span style={{ color: "#0a0", fontWeight: 500 }}>
+                <span
+                  style={{
+                    color: "#0a0",
+                    fontWeight: 500,
+                    paddingTop: 5,
+                    paddingBottom: 5,
+                    display: "block",
+                  }}
+                >
                   官方旗舰店
                 </span>
               </ProductCard.Section>
@@ -165,7 +173,7 @@ const LogisticsDemo: React.FC = () => {
               <ProductCard.Badge type="default">热卖</ProductCard.Badge>
               <ProductCard.Title>现代风格椅子</ProductCard.Title>
               <ProductCard.Section name="desc">
-                <div style={{ color: "#888", fontSize: 13 }}>
+                <div style={{ color: "#888", fontSize: 13, margin: 5 }}>
                   北欧设计，简约时尚，适合多种家居风格。
                 </div>
               </ProductCard.Section>

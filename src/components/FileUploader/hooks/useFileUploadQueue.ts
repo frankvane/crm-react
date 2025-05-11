@@ -297,7 +297,7 @@ export function useFileUploadQueue({
             await uploadFileChunk(
               {
                 fileId,
-                md5,
+                chunk_md5: md5,
                 index: chunk.index,
                 chunk: chunk.chunk,
                 name: file.name,

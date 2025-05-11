@@ -85,14 +85,14 @@ export async function getFileStatus(
 export async function uploadFileChunk(
   {
     fileId,
-    md5,
+    chunk_md5,
     index,
     chunk,
     name,
     total,
   }: {
     fileId: string;
-    md5: string;
+    chunk_md5: string;
     index: number;
     chunk: Blob;
     name: string;
@@ -108,7 +108,7 @@ export async function uploadFileChunk(
   const formData = new FormData();
   let reqParams = {
     file_id: fileId,
-    md5,
+    chunk_md5,
     index: String(index),
     chunk,
     name,

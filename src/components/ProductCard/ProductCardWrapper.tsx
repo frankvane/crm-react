@@ -150,8 +150,26 @@ export const ProductCardWrapper: React.FC<ProductCardWrapperProps> & {
       )
     : undefined;
 
-  // 只要有 props 内容（imageSrc、badgeType、title、price 任一），就只渲染 props 内容，完全忽略 children
+  // 只要有 props 内容（imageSrc、badgeType、title、price 任一），就只渲染 props 内容，children 必须为 null，彻底避免混用
   const hasPropsContent = !!(imageSrc || badgeType || title || price);
+
+  // 严格分流：有 props 内容时 children 设为 null，无 props 内容时才传递 children
+  const cardChildren = hasPropsContent ? (
+    <>
+      {imageSrc && (
+        <ProductCard.Image src={imageSrc} alt={title || "Product"} />
+      )}
+      {!!badgeType && (
+        <ProductCard.Badge type={badgeType}>
+          {badgeType || "甄选"}
+        </ProductCard.Badge>
+      )}
+      {title && <ProductCard.Title>{title}</ProductCard.Title>}
+      {price && <ProductCard.Price>{price}</ProductCard.Price>}
+    </>
+  ) : (
+    children
+  );
 
   return (
     <ProductCard
@@ -162,23 +180,7 @@ export const ProductCardWrapper: React.FC<ProductCardWrapperProps> & {
       className={className}
       style={style}
     >
-      {hasPropsContent ? (
-        <>
-          {imageSrc && (
-            <ProductCard.Image src={imageSrc} alt={title || "Product"} />
-          )}
-          {!!badgeType && (
-            <ProductCard.Badge type={badgeType}>
-              {badgeType || "甄选"}
-            </ProductCard.Badge>
-          )}
-          {title && <ProductCard.Title>{title}</ProductCard.Title>}
-          {price && <ProductCard.Price>{price}</ProductCard.Price>}
-        </>
-      ) : (
-        // 只有所有 props 都未传递时才渲染 children
-        children
-      )}
+      {cardChildren}
     </ProductCard>
   );
 };

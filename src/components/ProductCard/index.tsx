@@ -184,9 +184,25 @@ export interface ProductCardProps {
   /** 自定义样式 */
   style?: CSSProperties;
 }
+
+// 递归展开所有 children，支持 Fragment/数组嵌套
+function flattenChildren(children: React.ReactNode): React.ReactNode[] {
+  const result: React.ReactNode[] = [];
+  React.Children.forEach(children, (child) => {
+    if (React.isValidElement(child) && child.type === React.Fragment) {
+      result.push(...flattenChildren(child.props.children));
+    } else if (Array.isArray(child)) {
+      result.push(...flattenChildren(child));
+    } else {
+      result.push(child);
+    }
+  });
+  return result;
+}
+
 /**
  * ProductCard 主组件
- * 支持图片、标题、价格、徽章、操作按钮等复合结构
+ * 只渲染传入的 children（由 Wrapper 层保证 props/children 严格分流），唯一性去重逻辑保留。
  */
 const ProductCard: React.FC<ProductCardProps> & {
   Image: typeof ProductCardImage;
@@ -212,13 +228,13 @@ const ProductCard: React.FC<ProductCardProps> & {
       ? styles.productCardHorizontal
       : styles.productCardVertical;
 
-  // 只渲染每种类型的第一个子组件，后续同类型自动忽略，避免重复渲染
-  const childrenArray = React.Children.toArray(children);
+  // 递归展开所有 children，做全量唯一性去重
+  const childrenArray = flattenChildren(children);
   const typeMap = new Map();
   const uniqueChildren: React.ReactNode[] = [];
   childrenArray.forEach((child: any) => {
-    if (!child || !child.type) {
-      uniqueChildren.push(child);
+    // 过滤 null/undefined/false，只处理有效 ReactElement
+    if (!child || typeof child !== "object" || !("type" in child)) {
       return;
     }
     const typeName = child.type.displayName || child.type.name || child.type;
@@ -240,6 +256,14 @@ const ProductCard: React.FC<ProductCardProps> & {
     }
   });
 
+  // 先找出 imageComponent 和 badgeComponent
+  const imageComponent = uniqueChildren.find(
+    (child: any) => child && child.type === ProductCardImage
+  );
+  const badgeComponent = uniqueChildren.find(
+    (child: any) => child && child.type === ProductCardBadge
+  );
+
   // Section 分区和其它内容分类
   const sections: Record<string, React.ReactNode[]> = {};
   const otherChildren: React.ReactNode[] = [];
@@ -247,18 +271,13 @@ const ProductCard: React.FC<ProductCardProps> & {
     if (child && child.type === ProductCardSection && child.props?.name) {
       if (!sections[child.props.name]) sections[child.props.name] = [];
       sections[child.props.name].push(child);
-    } else {
+    } else if (
+      child !== imageComponent && // 排除已渲染的 imageComponent
+      child !== badgeComponent // 排除已渲染的 badgeComponent
+    ) {
       otherChildren.push(child);
     }
   });
-
-  // 只渲染第一个 Image/Badge
-  const imageComponent = uniqueChildren.find(
-    (child: any) => child.type === ProductCardImage
-  );
-  const badgeComponent = uniqueChildren.find(
-    (child: any) => child.type === ProductCardBadge
-  );
 
   return (
     <div
@@ -272,6 +291,15 @@ const ProductCard: React.FC<ProductCardProps> & {
 
       <div className={styles.productDetails}>
         {otherChildren}
+        {/* 渲染所有 Section 分区 */}
+        {Object.entries(sections).map(([name, nodes]) => (
+          <div
+            key={name}
+            className={styles[`section_${name}`] || styles.section}
+          >
+            {nodes}
+          </div>
+        ))}
         {renderActions && (
           <div className={styles.productActions}>
             {renderActions({
@@ -286,7 +314,6 @@ const ProductCard: React.FC<ProductCardProps> & {
             })}
           </div>
         )}
-
         {customFooter && (
           <div className={styles.productFooter}>{customFooter}</div>
         )}
