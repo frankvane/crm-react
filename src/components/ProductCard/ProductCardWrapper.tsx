@@ -7,7 +7,7 @@
 import { CSSProperties, ReactNode } from "react";
 
 import ProductCard from "./index";
-import { useProductActions } from "./hooks/useProductActions";
+import { useProductContext } from "./context/ProductContext";
 
 /**
  * ProductCardWrapper 组件 props
@@ -22,6 +22,14 @@ import { useProductActions } from "./hooks/useProductActions";
  * @property {string} [className] - 自定义 className
  * @property {CSSProperties} [style] - 自定义样式
  * @property {ReactNode} [children] - 自定义内容（优先级高于 title/price）
+ * @property {(productId: string, added: boolean) => void} [onAddToCart] - 加入购物车状态变更回调
+ * @property {(productId: string, wishlisted: boolean) => void} [onWishlistChange] - 心愿单状态变更回调
+ * @property {string} [addToCartText] - "加入购物车"按钮文案
+ * @property {string} [removeFromCartText] - "移出购物车"按钮文案
+ * @property {string} [addToWishlistText] - "加入心愿单"按钮文案
+ * @property {string} [removeFromWishlistText] - "移出心愿单"按钮文案
+ * @property {(params: {isAdded: boolean; onClick: () => void}) => ReactNode} [renderCartAction] - 自定义渲染购物车操作内容（icon/svg/自定义按钮等）
+ * @property {(params: {isWishlisted: boolean; onClick: () => void}) => ReactNode} [renderWishlistAction] - 自定义渲染心愿单操作内容
  */
 export interface ProductCardWrapperProps {
   productId: string;
@@ -35,12 +43,33 @@ export interface ProductCardWrapperProps {
   className?: string;
   style?: CSSProperties;
   children?: ReactNode;
+  onAddToCart?: (productId: string, added: boolean) => void;
+  onWishlistChange?: (productId: string, wishlisted: boolean) => void;
+  addToCartText?: string;
+  removeFromCartText?: string;
+  addToWishlistText?: string;
+  removeFromWishlistText?: string;
+  /**
+   * 自定义渲染购物车操作内容（icon/svg/自定义按钮等）
+   */
+  renderCartAction?: (params: {
+    isAdded: boolean;
+    onClick: () => void;
+  }) => ReactNode;
+  /**
+   * 自定义渲染心愿单操作内容
+   */
+  renderWishlistAction?: (params: {
+    isWishlisted: boolean;
+    onClick: () => void;
+  }) => ReactNode;
 }
 
 /**
  * ProductCardWrapper 组件
  * 封装 ProductCard 复合用法，自动渲染图片、标题、价格、徽章、操作按钮等
  * 支持自定义 children、footer、actions，适合商品卡片快速集成
+ * 状态管理与全局 context 联动，支持外部回调
  * @param {ProductCardWrapperProps} props
  * @returns {JSX.Element}
  */
@@ -62,30 +91,61 @@ export const ProductCardWrapper: React.FC<ProductCardWrapperProps> & {
   className = "",
   style = {},
   children,
+  onAddToCart,
+  onWishlistChange,
+  addToCartText,
+  removeFromCartText,
+  addToWishlistText,
+  removeFromWishlistText,
+  renderCartAction,
+  renderWishlistAction,
 }) => {
-  const { isAddedToCart, isWishlisted, toggleCart, toggleWishlist } =
-    useProductActions(productId) as {
-      isAddedToCart: boolean;
-      isWishlisted: boolean;
-      toggleCart: () => void;
-      toggleWishlist: () => void;
-    };
+  const { getProductState, toggleState } = useProductContext();
+  const { cart: isAddedToCart, wishlist: isWishlisted } =
+    getProductState(productId);
+
+  const handleCart = () => {
+    toggleState(productId, "cart");
+    onAddToCart?.(productId, !isAddedToCart);
+  };
+  const handleWishlist = () => {
+    toggleState(productId, "wishlist");
+    onWishlistChange?.(productId, !isWishlisted);
+  };
 
   const renderActions = showActions
     ? () => (
         <>
-          <ProductCard.ActionButton
-            onClick={toggleCart}
-            isActive={isAddedToCart}
-          >
-            {isAddedToCart ? "Remove from Cart" : " Add to Cart"}
-          </ProductCard.ActionButton>
-          <ProductCard.ActionButton
-            onClick={toggleWishlist}
-            isActive={isWishlisted}
-          >
-            {isWishlisted ? "Remove from Wishlist" : " Add to Wishlist"}
-          </ProductCard.ActionButton>
+          {renderCartAction ? (
+            renderCartAction({
+              isAdded: isAddedToCart,
+              onClick: handleCart,
+            })
+          ) : (
+            <ProductCard.ActionButton
+              onClick={handleCart}
+              isActive={isAddedToCart}
+            >
+              {isAddedToCart
+                ? removeFromCartText || "移出购物车"
+                : addToCartText || "加入购物车"}
+            </ProductCard.ActionButton>
+          )}
+          {renderWishlistAction ? (
+            renderWishlistAction({
+              isWishlisted: isWishlisted,
+              onClick: handleWishlist,
+            })
+          ) : (
+            <ProductCard.ActionButton
+              onClick={handleWishlist}
+              isActive={isWishlisted}
+            >
+              {isWishlisted
+                ? removeFromWishlistText || "移出心愿单"
+                : addToWishlistText || "加入心愿单"}
+            </ProductCard.ActionButton>
+          )}
         </>
       )
     : undefined;

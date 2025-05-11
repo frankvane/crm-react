@@ -7,6 +7,8 @@
 - ChatMessageList.tsx 移除滚动到顶部时自动加载历史消息的逻辑，现在只有点击"查看更多历史消息"按钮时才会加载更多历史消息。
 - ChatMessageList.tsx 禁止出现横向滚动条，给外层容器样式加上 overflowX: 'hidden'。
 - FileUploader 组件新增 `apiPrefix` 属性，支持自定义 API 前缀，并已透传到 useFileUploadQueue，提升了接口灵活性和可配置性。
+- ProductCardWrapper 组件新增 `renderCartAction` 和 `renderWishlistAction` 两个 props，支持自定义渲染购物车和心愿单操作内容（如 icon、svg、自定义按钮等）。如未传递，仍使用默认按钮。
+- 物流演示页（goods-order/logistics/index.tsx）增加了 ProductCardWrapper 组件 renderCartAction 和 renderWishlistAction 的自定义渲染用法示例，演示如何用 icon/svg/自定义内容替换默认按钮，便于开发者参考和二次开发。
 
 ## 2024-06-09
 
