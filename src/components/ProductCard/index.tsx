@@ -1,12 +1,28 @@
+/**
+ * ProductCard 组件及子组件类型与注释统一导出
+ * 支持商品卡片的图片、标题、价格、徽章、操作按钮等复合结构
+ * @module ProductCard
+ */
+
 import React, { CSSProperties, MouseEventHandler, ReactNode } from "react";
 
 import styles from "./style.module.less";
 import { useProductContext } from "./context/ProductContext";
 
-interface ProductCardImageProps {
+/**
+ * 商品图片组件 props
+ * @property {string} src - 图片地址（必填）
+ * @property {string} [alt] - 图片 alt 文本
+ */
+export interface ProductCardImageProps {
+  /** 图片地址 */
   src: string;
+  /** 图片 alt 文本 */
   alt?: string;
 }
+/**
+ * 商品图片组件
+ */
 const ProductCardImage: React.FC<ProductCardImageProps> = ({ src, alt }) => {
   return (
     <div className={styles.productImage}>
@@ -15,24 +31,50 @@ const ProductCardImage: React.FC<ProductCardImageProps> = ({ src, alt }) => {
   );
 };
 
-interface ProductCardTitleProps {
+/**
+ * 商品标题组件 props
+ * @property {ReactNode} children - 标题内容（必填）
+ */
+export interface ProductCardTitleProps {
+  /** 标题内容 */
   children: ReactNode;
 }
+/**
+ * 商品标题组件
+ */
 const ProductCardTitle: React.FC<ProductCardTitleProps> = ({ children }) => {
   return <div className={styles.productTitle}>{children}</div>;
 };
 
-interface ProductCardPriceProps {
+/**
+ * 商品价格组件 props
+ * @property {ReactNode} children - 价格内容（必填）
+ */
+export interface ProductCardPriceProps {
+  /** 价格内容 */
   children: ReactNode;
 }
+/**
+ * 商品价格组件
+ */
 const ProductCardPrice: React.FC<ProductCardPriceProps> = ({ children }) => {
   return <div className={styles.productPrice}>{children}</div>;
 };
 
-interface ProductCardBadgeProps {
+/**
+ * 商品徽章组件 props
+ * @property {ReactNode} children - 徽章内容（必填）
+ * @property {string} [type] - 徽章类型（如 'premium'）
+ */
+export interface ProductCardBadgeProps {
+  /** 徽章内容 */
   children: ReactNode;
+  /** 徽章类型 */
   type?: string;
 }
+/**
+ * 商品徽章组件
+ */
 const ProductCardBadge: React.FC<ProductCardBadgeProps> = ({
   children,
   type,
@@ -47,11 +89,23 @@ const ProductCardBadge: React.FC<ProductCardBadgeProps> = ({
   );
 };
 
-interface ProductCardActionButtonProps {
+/**
+ * 操作按钮组件 props
+ * @property {ReactNode} children - 按钮内容（必填）
+ * @property {MouseEventHandler<HTMLButtonElement>} [onClick] - 点击事件
+ * @property {boolean} [isActive] - 是否激活态
+ */
+export interface ProductCardActionButtonProps {
+  /** 按钮内容 */
   children: ReactNode;
+  /** 点击事件 */
   onClick?: MouseEventHandler<HTMLButtonElement>;
+  /** 是否激活态 */
   isActive?: boolean;
 }
+/**
+ * 操作按钮组件
+ */
 const ProductCardActionButton: React.FC<ProductCardActionButtonProps> = ({
   children,
   onClick,
@@ -71,21 +125,44 @@ const ProductCardActionButton: React.FC<ProductCardActionButtonProps> = ({
   );
 };
 
+/**
+ * ProductCard 主组件 props
+ * @property {string} productId - 商品唯一标识（必填）
+ * @property {ReactNode} children - 子组件内容（必填，推荐使用 ProductCard.Image、Title、Price、Badge 等）
+ * @property {ReactNode} [customFooter] - 自定义底部内容
+ * @property {(params) => ReactNode} [renderActions] - 自定义操作按钮渲染函数
+ * @property {"vertical"|"horizontal"} [layout="vertical"] - 布局方向
+ * @property {string} [className] - 自定义 className
+ * @property {CSSProperties} [style] - 自定义样式
+ */
 export interface ProductCardProps {
+  /** 商品唯一标识 */
   productId: string;
+  /** 子组件内容 */
   children: ReactNode;
+  /** 自定义底部内容 */
   customFooter?: ReactNode;
+  /**
+   * 自定义操作按钮渲染函数
+   * @param params 当前商品的购物车/心愿单状态与切换方法
+   */
   renderActions?: (params: {
     isAddedToCart: boolean;
     isWishlisted: boolean;
     toggleCart: () => void;
     toggleWishlist: () => void;
   }) => ReactNode;
+  /** 布局方向 */
   layout?: "vertical" | "horizontal";
+  /** 自定义 className */
   className?: string;
+  /** 自定义样式 */
   style?: CSSProperties;
 }
-
+/**
+ * ProductCard 主组件
+ * 支持图片、标题、价格、徽章、操作按钮等复合结构
+ */
 const ProductCard: React.FC<ProductCardProps> & {
   Image: typeof ProductCardImage;
   Title: typeof ProductCardTitle;
