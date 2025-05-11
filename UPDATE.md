@@ -9,6 +9,16 @@
 - FileUploader 组件新增 `apiPrefix` 属性，支持自定义 API 前缀，并已透传到 useFileUploadQueue，提升了接口灵活性和可配置性。
 - ProductCardWrapper 组件新增 `renderCartAction` 和 `renderWishlistAction` 两个 props，支持自定义渲染购物车和心愿单操作内容（如 icon、svg、自定义按钮等）。如未传递，仍使用默认按钮。
 - 物流演示页（goods-order/logistics/index.tsx）增加了 ProductCardWrapper 组件 renderCartAction 和 renderWishlistAction 的自定义渲染用法示例，演示如何用 icon/svg/自定义内容替换默认按钮，便于开发者参考和二次开发。
+- 新增 `src/components/ProductCard/README.md`，系统整理 ProductCard 及 ProductCardWrapper 的标准用法、插槽/复合结构最佳实践、props 说明、典型用法示例、常见问题与注意事项。
+- ProductCard 组件支持 Section 通用插槽（ProductCard.Section），可通过 name 自定义分区，实现商品简介、店铺、促销等任意内容插入，提升复合结构灵活性。
+- renderActions 参数扩展为 ProductCardActionContext，支持传递商品上下文、children、productData、extra 等，允许渲染任意自定义按钮。
+- README.md 补充 Section 插槽和 renderActions 扩展用法及最佳实践示例。
+- 【ProductCard 文档完善】
+  - 从 src/pages/goods-order/logistics/index.tsx 补充了 ProductCardWrapper 只用 props、只用 children、自定义操作按钮的标准用法示例。
+  - 完善了 props/children 优先级说明，明确 props 和 children 不可混用，避免重复渲染。
+  - 完善了 ProductCard Section 插槽与 renderActions 扩展用法示例，结构与 index.tsx 保持一致。
+  - 每个示例前增加了简要说明，便于开发者理解。
+  - 明确 props、插槽、children 的优先级和注意事项。
 
 ## 2024-06-09
 
@@ -332,3 +342,7 @@ StreamChatModal 组件错误处理与 loading 状态统一：支持 errorRender�
 ## 2024-06-13
 
 - FileUploader 组件的 apiPrefix 属性现在有默认值：'http://localhost:3000/api'，未传递时自动使用该默认值，便于本地开发和接口统一。
+
+## 2024-06-13
+
+- 补充完善 ProductCard 组件文档：在 props 及插槽/复合结构用法部分，系统说明了 ProductCard.Section 的用法和作用，增加了标准用法示例和详细说明，便于开发者前置理解 Section 插槽能力，提升文档可读性和组件易用性。
