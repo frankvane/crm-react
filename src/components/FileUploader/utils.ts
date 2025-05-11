@@ -1,5 +1,7 @@
 // 上传相关工具函数
 
+import mime from "mime";
+
 /**
  * 校验文件类型和大小
  * @param params.file 文件对象
@@ -144,4 +146,15 @@ export function ByteConvert(size: number): string {
   if (size < 1024 * 1024) return (size / 1024).toFixed(2) + " KB";
   if (size < 1024 * 1024 * 1024) return (size / 1024 / 1024).toFixed(2) + " MB";
   return (size / 1024 / 1024 / 1024).toFixed(2) + " GB";
+}
+
+/**
+ * 文件类型安全校验：file.type + 扩展名双重校验
+ * @param file 文件对象
+ * @param allowedTypes 允许的MIME类型数组
+ * @returns boolean
+ */
+export function checkFileTypeSafe(file: File, allowedTypes: string[]): boolean {
+  const extMime = mime.getType(file.name) || "";
+  return allowedTypes.includes(file.type) && allowedTypes.includes(extMime);
 }

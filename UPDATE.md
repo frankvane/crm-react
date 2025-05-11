@@ -6,6 +6,7 @@
 - ChatMessageList.tsx 调整"查看更多历史消息"按钮的渲染逻辑，只要消息总数大于 PAGE_SIZE，按钮就一直显示，但点到头不会再加载更多。
 - ChatMessageList.tsx 移除滚动到顶部时自动加载历史消息的逻辑，现在只有点击"查看更多历史消息"按钮时才会加载更多历史消息。
 - ChatMessageList.tsx 禁止出现横向滚动条，给外层容器样式加上 overflowX: 'hidden'。
+- FileUploader 组件新增 `apiPrefix` 属性，支持自定义 API 前缀，并已透传到 useFileUploadQueue，提升了接口灵活性和可配置性。
 
 ## 2024-06-09
 
@@ -325,3 +326,7 @@ StreamChatModal 组件 API 层抽象：支持 apiUrl、apiHeaders、apiParamsTra
 StreamChatModal 组件事件/回调机制完善：支持 onSuccess、onError、onAbort、onMessage、onMinimize 等回调，主项目可灵活接管 AI 回复、异常、中断、流式片段、最小化等事件，实现业务联动和体验提升。
 
 StreamChatModal 组件错误处理与 loading 状态统一：支持 errorRender、loadingRender props，主项目可自定义错误和 loading 展示，默认兜底 UI，提升健壮性和可扩展性。
+
+## 2024-06-13
+
+- FileUploader 组件的 apiPrefix 属性现在有默认值：'http://localhost:3000/api'，未传递时自动使用该默认值，便于本地开发和接口统一。

@@ -8,16 +8,43 @@ import { useNetworkType } from "./hooks/useNetworkType";
 
 // 恢复 FileUploaderProps 定义
 interface FileUploaderProps {
+  apiUrl?: string;
+  uploadUrl?: string;
+  checkUrl?: string;
+  mergeUrl?: string;
+  headers?: Record<string, string>;
+  paramsTransform?: (params: any, type: string) => any;
+  onSuccess?: (file: File, res: any) => void;
+  onError?: (file: File, err: Error) => void;
+  onProgress?: (file: File, percent: number) => void;
+  onMergeSuccess?: (file: File, res: any) => void;
+  onCheckSuccess?: (file: File, res: any) => void;
+  chunkSize?: number;
+  concurrency?: number;
+  maxRetry?: number;
   accept?: string;
+  maxFileSize?: number;
+  maxFileCount?: number;
+  beforeUpload?: (file: File) => boolean | Promise<boolean>;
+  customRequest?: (file: File, chunk: Blob, params: any) => Promise<any>;
+  showProgress?: boolean;
+  showFileList?: boolean;
   maxSizeMB?: number;
   multiple?: boolean;
+  keepAfterUpload?: boolean;
+  removeDelayMs?: number;
+  onRemoveAfterUpload?: (
+    file: File,
+    reason: "upload" | "instant"
+  ) => boolean | void | Promise<boolean | void>;
+  allowedTypes?: string[];
+  apiPrefix?: string;
 }
 
-const FileUploader: React.FC<FileUploaderProps> = ({
-  accept = "*",
-  maxSizeMB = 2048,
-  multiple = true,
-}) => {
+const DEFAULT_API_PREFIX = "http://localhost:3000/api";
+
+const FileUploader: React.FC<FileUploaderProps> = (props) => {
+  const apiPrefix = props.apiPrefix ?? DEFAULT_API_PREFIX;
   const { networkType, concurrency, chunkSize } = useNetworkType();
   const {
     files,
@@ -34,11 +61,27 @@ const FileUploader: React.FC<FileUploaderProps> = ({
     handleStartUploadWithAutoMD5,
     calcTotalSpeed,
   } = useFileUploadQueue({
-    accept,
-    maxSizeMB,
-    multiple,
-    concurrency,
-    chunkSize,
+    accept: props.accept,
+    maxSizeMB: props.maxSizeMB,
+    multiple: props.multiple,
+    concurrency: props.concurrency,
+    chunkSize: props.chunkSize,
+    uploadUrl: props.uploadUrl,
+    checkUrl: props.checkUrl,
+    mergeUrl: props.mergeUrl,
+    headers: props.headers,
+    paramsTransform: props.paramsTransform,
+    onSuccess: props.onSuccess,
+    onError: props.onError,
+    onProgress: props.onProgress,
+    onMergeSuccess: props.onMergeSuccess,
+    onCheckSuccess: props.onCheckSuccess,
+    maxRetry: props.maxRetry,
+    keepAfterUpload: props.keepAfterUpload,
+    removeDelayMs: props.removeDelayMs,
+    onRemoveAfterUpload: props.onRemoveAfterUpload,
+    allowedTypes: props.allowedTypes,
+    apiPrefix,
   });
   const concurrencyRef = useRef(concurrency);
 
@@ -87,8 +130,8 @@ const FileUploader: React.FC<FileUploaderProps> = ({
       <Upload
         beforeUpload={handleBeforeUpload}
         showUploadList={false}
-        accept={accept}
-        multiple={multiple}
+        accept={props.accept}
+        multiple={props.multiple}
         disabled={uploadingAll}
       >
         <Button icon={<UploadOutlined />}>选择文件</Button>

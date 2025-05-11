@@ -5,6 +5,7 @@ import {
   calcSpeedAndLeftTime,
   calcTotalSpeed,
   checkFileBeforeUpload,
+  checkFileTypeSafe,
   createFileChunks,
 } from "../utils";
 import {
@@ -23,20 +24,70 @@ import { useCallback, useEffect, useRef, useState } from "react";
  * @param options.multiple 是否多文件上传（未用到，可忽略）
  * @param options.concurrency 并发上传数
  * @param options.chunkSize 分片大小（字节）
+ * @param options.uploadUrl 上传接口URL
+ * @param options.checkUrl 秒传接口URL
+ * @param options.mergeUrl 合并接口URL
+ * @param options.headers 请求头
+ * @param options.paramsTransform 参数转换函数
+ * @param options.onSuccess 上传成功回调
+ * @param options.onError 上传错误回调
+ * @param options.onProgress 上传进度回调
+ * @param options.onMergeSuccess 合并成功回调
+ * @param options.onCheckSuccess 秒传成功回调
+ * @param options.maxRetry 最大重试次数
+ * @param options.keepAfterUpload 上传完成后是否保留文件
+ * @param options.removeDelayMs 上传完成后延时移除文件的毫秒数
+ * @param options.onRemoveAfterUpload 上传完成后移除文件的回调
+ * @param options.allowedTypes 允许的文件类型
+ * @param options.apiPrefix 接口前缀
  * @returns 所有上传相关状态与操作方法
  */
 export function useFileUploadQueue({
   accept = "*",
   maxSizeMB = 2048,
-  multiple = true,
   concurrency = 3,
   chunkSize = 2 * 1024 * 1024,
+  uploadUrl,
+  checkUrl,
+  mergeUrl,
+  headers,
+  paramsTransform,
+  onSuccess,
+  onError,
+  onProgress,
+  onMergeSuccess,
+  onCheckSuccess,
+  maxRetry = 3,
+  keepAfterUpload = true,
+  removeDelayMs = 2000,
+  onRemoveAfterUpload,
+  allowedTypes = ["image/png", "image/jpeg", "image/gif"],
+  apiPrefix,
 }: {
   accept?: string;
   maxSizeMB?: number;
   multiple?: boolean;
   concurrency?: number;
   chunkSize?: number;
+  uploadUrl?: string;
+  checkUrl?: string;
+  mergeUrl?: string;
+  headers?: Record<string, string>;
+  paramsTransform?: (params: any, type: string) => any;
+  onSuccess?: (file: File, res: any) => void;
+  onError?: (file: File, err: Error) => void;
+  onProgress?: (file: File, percent: number) => void;
+  onMergeSuccess?: (file: File, res: any) => void;
+  onCheckSuccess?: (file: File, res: any) => void;
+  maxRetry?: number;
+  keepAfterUpload?: boolean;
+  removeDelayMs?: number;
+  onRemoveAfterUpload?: (
+    file: File,
+    reason: "upload" | "instant"
+  ) => boolean | void | Promise<boolean | void>;
+  allowedTypes?: string[];
+  apiPrefix?: string;
 }) {
   /**
    * 文件列表
@@ -92,6 +143,11 @@ export function useFileUploadQueue({
    */
   const handleBeforeUpload = useCallback(
     (file: File) => {
+      // 文件类型安全校验
+      if (!checkFileTypeSafe(file, allowedTypes)) {
+        message.error("文件类型不被允许");
+        return Upload.LIST_IGNORE;
+      }
       const ok = checkFileBeforeUpload({
         file,
         accept,
@@ -106,7 +162,7 @@ export function useFileUploadQueue({
       });
       return false; // 阻止自动上传
     },
-    [accept, maxSizeMB]
+    [accept, maxSizeMB, allowedTypes]
   );
 
   /**
@@ -123,33 +179,59 @@ export function useFileUploadQueue({
         // 秒传验证
         const fileId = `${result.fileMD5}-${file.name}-${file.size}`;
         const chunks = createFileChunks(file, chunkSize);
-        const instantRes = await checkInstantUpload({
-          fileId,
-          md5: result.fileMD5,
-          name: file.name,
-          size: file.size,
-          total: chunks.length,
-          chunkMD5s: result.chunkMD5s,
-        });
+        const instantRes = await checkInstantUpload(
+          {
+            fileId,
+            md5: result.fileMD5,
+            name: file.name,
+            size: file.size,
+            total: chunks.length,
+            chunkMD5s: result.chunkMD5s,
+          },
+          {
+            url: checkUrl,
+            apiPrefix,
+            headers,
+            paramsTransform,
+          }
+        );
+        if (onCheckSuccess) onCheckSuccess(file, instantRes);
         setInstantInfo((prev) => ({
           ...prev,
           [file.name + file.size]: instantRes,
         }));
-        // if (instantRes.uploaded) {
-        //   message.success("[秒传] 文件已存在，无需上传");
-        // } else {
-        //   const needUpload = instantRes.chunkCheckResult.filter(
-        //     (c: any) => !c.exist || !c.match
-        //   ).length;
-        //   message.info(`[秒传] 需上传分片数: ${needUpload}`);
-        // }
+        // 秒传成功也受keepAfterUpload控制
+        if (instantRes.uploaded && !keepAfterUpload) {
+          setTimeout(async () => {
+            let shouldRemove = true;
+            if (onRemoveAfterUpload) {
+              const ret = await onRemoveAfterUpload(file, "instant");
+              if (ret === false) shouldRemove = false;
+            }
+            if (shouldRemove) {
+              setFiles((prev) =>
+                prev.filter((f) => f.name + f.size !== file.name + file.size)
+              );
+            }
+          }, removeDelayMs);
+        }
       } catch {
         // message.error("MD5或秒传接口异常");
       } finally {
         setLoadingKey(null);
       }
     },
-    [chunkSize]
+    [
+      chunkSize,
+      checkUrl,
+      headers,
+      paramsTransform,
+      onCheckSuccess,
+      keepAfterUpload,
+      removeDelayMs,
+      onRemoveAfterUpload,
+      apiPrefix,
+    ]
   );
 
   // 找到所有未计算MD5的文件，依次自动计算
@@ -178,7 +260,7 @@ export function useFileUploadQueue({
       let uploadedChunks: number[] = resumeInfo?.uploadedChunks || [];
       if (!resumeInfo) {
         try {
-          uploadedChunks = await getFileStatus({ fileId, md5 });
+          uploadedChunks = await getFileStatus({ fileId, md5 }, { apiPrefix });
         } catch {
           /* 忽略异常 */
         }
@@ -210,16 +292,24 @@ export function useFileUploadQueue({
         let retry = 0;
         let delay = 500;
         const chunkSizeVal = chunk.end - chunk.start;
-        while (retry < 5) {
+        while (retry < maxRetry) {
           try {
-            await uploadFileChunk({
-              fileId,
-              md5,
-              index: chunk.index,
-              chunk: chunk.chunk,
-              name: file.name,
-              total: createFileChunks(file, chunkSize).length,
-            });
+            await uploadFileChunk(
+              {
+                fileId,
+                md5,
+                index: chunk.index,
+                chunk: chunk.chunk,
+                name: file.name,
+                total: createFileChunks(file, chunkSize).length,
+              },
+              {
+                url: uploadUrl,
+                apiPrefix,
+                headers,
+                paramsTransform,
+              }
+            );
             uploadedCount++;
             uploadedBytes += chunkSizeVal;
             uploadedChunks.push(chunk.index);
@@ -255,10 +345,19 @@ export function useFileUploadQueue({
                 },
               }));
             }
+            // 进度回调
+            if (onProgress)
+              onProgress(
+                file,
+                Math.round(
+                  (uploadedCount / createFileChunks(file, chunkSize).length) *
+                    100
+                )
+              );
             break;
           } catch (err: any) {
             retry++;
-            if (retry >= 5) {
+            if (retry >= maxRetry) {
               setUploadingInfo((prev) => ({
                 ...prev,
                 [key]: {
@@ -282,19 +381,42 @@ export function useFileUploadQueue({
         }
       }
       try {
-        await mergeFile({
-          fileId,
-          md5,
-          name: file.name,
-          size: file.size,
-          total: createFileChunks(file, chunkSize).length,
-        });
+        await mergeFile(
+          {
+            fileId,
+            md5,
+            name: file.name,
+            size: file.size,
+            total: createFileChunks(file, chunkSize).length,
+          },
+          {
+            url: mergeUrl,
+            apiPrefix,
+            headers,
+            paramsTransform,
+          }
+        );
         setUploadingInfo((prev) => ({
           ...prev,
           [key]: { progress: 100, status: "done" },
         }));
         setSpeedInfo((prev) => ({ ...prev, [key]: { speed: 0, leftTime: 0 } }));
         setErrorInfo((prev) => ({ ...prev, [key]: "" }));
+        if (onMergeSuccess) onMergeSuccess(file, {});
+        if (onSuccess) onSuccess(file, {});
+        // 自动移除已上传文件
+        if (!keepAfterUpload) {
+          setTimeout(async () => {
+            let shouldRemove = true;
+            if (onRemoveAfterUpload) {
+              const ret = await onRemoveAfterUpload(file, "upload");
+              if (ret === false) shouldRemove = false;
+            }
+            if (shouldRemove) {
+              setFiles((prev) => prev.filter((f) => f.name + f.size !== key));
+            }
+          }, removeDelayMs);
+        }
         // message.success("上传并合并完成");
       } catch (err: any) {
         setUploadingInfo((prev) => ({
@@ -305,6 +427,7 @@ export function useFileUploadQueue({
           ...prev,
           [key]: err?.message || "合并失败",
         }));
+        if (onError) onError(file, err);
         Modal.error({
           title: "合并失败",
           content: err?.message || "合并失败",
@@ -312,7 +435,24 @@ export function useFileUploadQueue({
         // message.error("合并失败");
       }
     },
-    [md5Info, chunkSize]
+    [
+      md5Info,
+      chunkSize,
+      uploadUrl,
+      checkUrl,
+      mergeUrl,
+      headers,
+      paramsTransform,
+      onSuccess,
+      onError,
+      onProgress,
+      onMergeSuccess,
+      maxRetry,
+      keepAfterUpload,
+      removeDelayMs,
+      onRemoveAfterUpload,
+      apiPrefix,
+    ]
   );
 
   // 重试单个文件

@@ -1,7 +1,16 @@
+/**
+ * StreamChatModal 组件
+ *
+ * 支持流式对话、历史消息分页、自动滚动、API 灵活配置、丰富事件回调。
+ * 适用于 AI 聊天、客服、IM 等场景。
+ *
+ * @module StreamChatModal
+ */
+
 import "github-markdown-css/github-markdown-light.css";
 import "antd/dist/reset.css";
 
-import { Alert, Button, Spin, message } from "antd";
+import { Alert, Button, message } from "antd";
 import { DownOutlined, MessageOutlined, UpOutlined } from "@ant-design/icons";
 import React, { useEffect, useRef, useState } from "react";
 
@@ -11,6 +20,30 @@ import type { ChatMessageListRef } from "./ChatMessageList";
 import type { Message } from "./types";
 import type { StreamChatApiOptions } from "./hooks/useStreamChatApi";
 import { useStreamChat } from "./hooks/useStreamChat";
+
+/**
+ * StreamChatModal 组件 Props
+ * @typedef {Object} StreamChatModalProps
+ * @property {boolean} visible - 是否显示弹窗
+ * @property {() => void} onClose - 关闭弹窗回调
+ * @property {string} defaultRole - 默认角色
+ * @property {string} defaultQuestion - 默认提问内容
+ * @property {number|string} [width=400] - 弹窗宽度
+ * @property {number|string} [height=600] - 弹窗高度
+ * @property {Message[]} [messages] - 消息列表（受控）
+ * @property {(msgs: Message[]) => void} [onMessagesChange] - 消息变更回调
+ * @property {string} apiUrl - 聊天 API 地址
+ * @property {Record<string, string>} [apiHeaders] - API 请求头
+ * @property {(params: any) => any} [apiParamsTransform] - API 参数转换
+ * @property {(message: Message) => void} [onSuccess] - AI 回复完成回调
+ * @property {(error: Error) => void} [onError] - 错误回调
+ * @property {() => void} [onAbort] - 中断回调
+ * @property {(message: Message) => void} [onMessage] - 流式片段回调
+ * @property {(minimized: boolean) => void} [onMinimize] - 最小化回调
+ * @property {(error: Error) => React.ReactNode} [errorRender] - 自定义错误渲染
+ * @property {() => React.ReactNode} [loadingRender] - 自定义 loading 渲染
+ * @property {number} [pageSize] - 消息分页大小
+ */
 
 interface StreamChatModalProps extends Omit<StreamChatApiOptions, "signal"> {
   visible: boolean;
@@ -34,6 +67,12 @@ interface StreamChatModalProps extends Omit<StreamChatApiOptions, "signal"> {
   pageSize?: number;
 }
 
+/**
+ * StreamChatModal 聊天弹窗主组件
+ *
+ * @param {StreamChatModalProps} props 组件属性
+ * @returns {JSX.Element|null}
+ */
 const StreamChatModal: React.FC<StreamChatModalProps> = ({
   visible,
   onClose,
@@ -54,6 +93,9 @@ const StreamChatModal: React.FC<StreamChatModalProps> = ({
   loadingRender,
   pageSize,
 }) => {
+  /**
+   * 聊天主流程 hook，管理消息、输入、流式请求等
+   */
   const {
     messages,
     inputValue,
@@ -78,16 +120,26 @@ const StreamChatModal: React.FC<StreamChatModalProps> = ({
     onMessage,
   });
 
+  /** 消息列表 Ref，用于滚动控制 */
   const messageListRef = useRef<ChatMessageListRef>(null);
+  /** 输入框自动聚焦控制 */
   const [autoFocusInput, setAutoFocusInput] = useState(false);
+  /** 是否在顶部/底部，用于按钮禁用 */
   const [isAtTop, setIsAtTop] = useState(true);
   const [isAtBottom, setIsAtBottom] = useState(true);
+  /** 选中文本（用于带入输入框） */
   const [selectedText, setSelectedText] = useState("");
+  /** 最小化状态 */
   const [minimized, setMinimized] = useState(false);
+  /** "带入输入框"按钮 Ref */
   const bringBtnRef = useRef<HTMLButtonElement>(null);
+  /** 错误状态 */
   const [error, setError] = useState<Error | null>(null);
 
-  // 弹窗打开时自动提问
+  /**
+   * 弹窗打开时自动提问
+   * 若 defaultQuestion 存在，自动填充输入框并触发提问
+   */
   useEffect(() => {
     if (visible && defaultQuestion) {
       setInputValue(defaultQuestion);
@@ -96,6 +148,9 @@ const StreamChatModal: React.FC<StreamChatModalProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible, defaultQuestion]);
 
+  /**
+   * 监听选中文本，点击弹窗外部时自动清除
+   */
   useEffect(() => {
     if (!selectedText) return;
     const handleClick = (e: MouseEvent) => {
@@ -112,8 +167,10 @@ const StreamChatModal: React.FC<StreamChatModalProps> = ({
     return () => document.removeEventListener("mousedown", handleClick);
   }, [selectedText]);
 
-  // 事件回调监听
-  // 1. AI回复完成
+  /**
+   * AI 回复完成时触发 onSuccess 回调
+   * 仅 assistant 消息且流式输出结束时触发
+   */
   useEffect(() => {
     if (!messages || messages.length === 0) return;
     const lastMsg = messages[messages.length - 1];
@@ -122,18 +179,17 @@ const StreamChatModal: React.FC<StreamChatModalProps> = ({
     }
   }, [messages, isFetching, onSuccess]);
 
-  // 2. 流式片段
-  // 可根据需要实现更细粒度的流式回调
-
-  // 3. 错误和中断（可在 useStreamChat 内部通过自定义事件或状态提升实现）
-
-  // 错误自动清理（如用户重新输入/提问时）
+  /**
+   * 错误自动清理（如用户重新输入/提问时）
+   */
   useEffect(() => {
     if (!isFetching) return;
     if (error) setError(null);
   }, [isFetching]);
 
-  // 关闭窗口时自动中断流式请求
+  /**
+   * 关闭弹窗时自动中断流式请求
+   */
   const handleClose = () => {
     if (isFetching) abortFetch();
     onClose();
