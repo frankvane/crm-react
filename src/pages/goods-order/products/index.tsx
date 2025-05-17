@@ -1,166 +1,168 @@
-import React, { useCallback, useEffect, useRef } from "react";
-
-// 导入React库中的函数
-import { FixedSizeList as List } from "react-window";
-// 导入react-window库中的FixedSizeList组件
-import ProductCardWrapper from "@/components/ProductCard/ProductCardWrapper";
-// 导入自定义的ProductCardWrapper组件
-import { ProductProvider } from "@/components/ProductCard/context/ProductContext";
-import { Skeleton } from "antd";
+import React, { useState } from "react";
+import { Button, message } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import CategoryNav from "./components/CategoryNav";
+import AddProductModal from "./components/AddProductModal";
 import styles from "./style.module.less";
-import { useInfiniteScroll } from "ahooks";
-
-const PAGE_SIZE = 20;
-const LIST_HEIGHT = 600;
-const ITEM_SIZE = 160;
-const PRELOAD_OFFSET = ITEM_SIZE * 15; // 距离底部4行时预加载
-
-// 模拟异步获取商品数据
-const unsplashImages = [
-  "https://images.unsplash.com/photo-1461988320302-91bde64fc8e4?ixid=2yJhcHBfaWQiOjEyMDd9&fm=jpg&w=200&fit=max",
-  "https://images.unsplash.com/photo-1480694313141-fce5e697ee25?ixid=2yJhcHBfaWQiOjEyMDd9&fm=jpg&w=200&fit=max",
-  "https://images.unsplash.com/photo-1514575110897-1253ff7b2ccb?ixid=2yJhcHBfaWQiOjEyMDd9&fm=jpg&w=200&fit=max",
-  "https://images.unsplash.com/photo-1583847323635-7ad5b93640ad?ixid=2yJhcHBfaWQiOjEyMDd9&fm=jpg&w=200&fit=max",
-  "https://images.unsplash.com/photo-1595121766249-ee5532be40cb?ixid=2yJhcHBfaWQiOjEyMDd9&fm=jpg&w=200&fit=max",
-  "https://images.unsplash.com/photo-1614138159368-242fb95e79e6?ixid=2yJhcHBfaWQiOjEyMDd9&fm=jpg&w=200&fit=max",
-];
-// https://images.unsplash.com/photo-1461988320302-91bde64fc8e4?ixid=2yJhcHBfaWQiOjEyMDd9&fm=jpg&w=200&fit=max
-const fetchProducts = async (page: number) => {
-  await new Promise((resolve) => setTimeout(resolve, 500));
-  if (page > 15) return [];
-  return Array.from({ length: PAGE_SIZE }).map((_, i) => ({
-    id: `product-${page}-${i}`,
-    title: `商品 ${page}-${i}`,
-    imageSrc: unsplashImages[(page * PAGE_SIZE + i) % unsplashImages.length],
-    price: `￥${(Math.random() * 1000).toFixed(2)}`,
-  }));
-};
-
-const Row = React.memo(
-  ({
-    index,
-    style,
-    data,
-    loading,
-    noMore,
-  }: {
-    index: number;
-    style: React.CSSProperties;
-    data: any;
-    loading: boolean;
-    noMore: boolean;
-  }) => {
-    if (!data || (!noMore && index === data.list.length)) {
-      // 最后一行：加载更多
-      return (
-        <div style={style}>
-          {noMore ? "没有更多了" : loading ? "加载中..." : ""}
-        </div>
-      );
-    }
-    const item = data.list[index];
-    if (!item) {
-      // 数据未加载到，渲染 antd Skeleton 骨架屏
-      return (
-        <div style={style}>
-          <Skeleton
-            active
-            paragraph={false}
-            title={false}
-            style={{ height: ITEM_SIZE - 16, borderRadius: 8 }}
-          />
-        </div>
-      );
-    }
-    return (
-      <div style={style}>
-        <ProductCardWrapper
-          productId={item.id}
-          layout="horizontal"
-          imageSrc={item.imageSrc}
-          title={`${item.title}（索引：${index}）`}
-          price={item.price}
-          showActions={true}
-          customFooter={
-            <div className={styles.customFooter}>自定义内容，索引：{index}</div>
-          }
-        />
-      </div>
-    );
-  }
-);
+import { getCategoryTree } from "@/api/modules/category";
+import { createProduct } from "@/api/modules/product";
+import ProductList from "./components/productList";
+import CommentList from './components/commentList';
+import StreamChatModal from '@/components/StreamChatModal';
+// import type { ICreateProductParams } from "@/types/api/product";
 
 const Index = () => {
-  const outerRef = useRef<HTMLDivElement>(null);
+  const queryClient = useQueryClient();
+  // 添加模态框显示状态
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | undefined>();
+  const [selectedProductId, setSelectedProductId] = useState<number | string | undefined>();
+  const [selectedProductName, setSelectedProductName] = useState<string | undefined>();
+  const [aiModalVisible, setAiModalVisible] = useState(false);
 
-  // 使用ahooks库中的useInfiniteScroll函数实现无限滚动
-  const { data, loading, loadMore, noMore } = useInfiniteScroll(
-    async (d) => {
-      const nextPage = d ? Math.floor(d.list.length / PAGE_SIZE) + 1 : 1;
-      const list = d ? d.list : [];
-      const newList = await fetchProducts(nextPage);
-      return {
-        list: [...list, ...newList],
-      };
-    },
-    {
-      manual: true,
-      isNoMore: (d) => !!d && d.list.length >= 300, // 最多15页
+  // 获取各种分类数据
+  const { data: productCategories = [] } = useQuery({
+    queryKey: ["categories", 23],
+    queryFn: () => getCategoryTree(23)
+  });
+
+  const { data: brands = [] } = useQuery({
+    queryKey: ["categories", 21],
+    queryFn: () => getCategoryTree(21)
+  });
+
+  const { data: dosageForms = [] } = useQuery({
+    queryKey: ["categories", 18],
+    queryFn: () => getCategoryTree(18)
+  });
+
+  const { data: units = [] } = useQuery({
+    queryKey: ["categories", 22],
+    queryFn: () => getCategoryTree(22)
+  });
+
+  // 将树形数据转换为只包含叶子节点的选项数组
+  const flattenTreeToOptions = (nodes: any[]): { label: string; value: number }[] => {
+    let options: { label: string; value: number }[] = [];
+    nodes.forEach(node => {
+      if (!node.children || node.children.length === 0) {
+        options.push({ label: node.name, value: node.id });
+      } else if (node.children && node.children.length > 0) {
+        options = options.concat(flattenTreeToOptions(node.children));
+      }
+    });
+    return options;
+  };
+
+  // 处理分类选择
+  const handleCategorySelect = (key: string) => {
+    setSelectedCategoryId(key);
+    console.log('选中的分类ID:', key);
+  };
+
+  // 处理模态框提交
+  const handleSubmit = async (values: any) => {
+    try {
+      await createProduct(values);
+      message.success('创建产品成功');
+      // 刷新产品列表
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+      setIsModalOpen(false);
+    } catch (error: any) {
+      message.error(error?.message || '创建产品失败');
     }
-  );
+  };
 
-  // 初始时主动加载一页
-  useEffect(() => {
-    if (!data) loadMore();
-  }, [data, loadMore]);
+  // 处理模态框关闭
+  const handleCloseModal = () => {
+    console.log('关闭模态框');
+    setIsModalOpen(false);
+  };
 
-  // 滚动到底部时手动触发 loadMore
-  const handleScroll = useCallback(() => {
-    const target = outerRef.current;
-    if (
-      target &&
-      !loading &&
-      !noMore &&
-      target.scrollHeight - target.scrollTop - target.clientHeight <
-        PRELOAD_OFFSET
-    ) {
-      loadMore();
-    }
-  }, [loading, noMore, loadMore]);
+  // 处理打开模态框
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
 
-  useEffect(() => {
-    const target = outerRef.current;
-    if (!target) return;
-    target.addEventListener("scroll", handleScroll);
-    return () => {
-      target.removeEventListener("scroll", handleScroll);
-    };
-  }, [handleScroll]);
+  // 准备下拉选项数据
+  const categoryOptions = flattenTreeToOptions(productCategories);
+  const brandOptions = flattenTreeToOptions(brands);
+  const dosageFormOptions = flattenTreeToOptions(dosageForms);
+  const unitOptions = flattenTreeToOptions(units);
 
   return (
-    <div>
-      <ProductProvider>
-        <List
-          height={LIST_HEIGHT}
-          itemCount={
-            noMore ? data?.list.length || 0 : (data?.list.length || 0) + 1
-          }
-          itemSize={ITEM_SIZE}
-          width={"100%"}
-          outerRef={outerRef}
-          overscanCount={100}
-        >
-          {({ index, style }) => (
-            <Row
-              index={index}
-              style={style}
-              data={data}
-              loading={loading}
-              noMore={noMore}
-            />
+    <div className={styles.container}>
+      {/* 左侧面板 */}
+      <div className={styles.leftPanel}>
+        <CategoryNav onSelect={handleCategorySelect} />
+      </div>
+
+      {/* 中间面板 */}
+      <div className={styles.rightPanel}>
+        <div className={styles.rightPanelContent}>
+          <div className={styles.operationBar}>
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={handleOpenModal}
+            >
+              添加商品
+            </Button>
+          </div>
+          <ProductList
+            categoryId={selectedCategoryId}
+            onShowComments={(id, name) => {
+              setSelectedProductId(id);
+              setSelectedProductName(name);
+            }}
+          />
+        </div>
+
+        <AddProductModal
+          open={isModalOpen}
+          onOk={handleSubmit}
+          onCancel={handleCloseModal}
+          brands={brandOptions}
+          dosageForms={dosageFormOptions}
+          units={unitOptions}
+          categories={categoryOptions}
+        />
+      </div>
+
+      {/* 右侧面板 */}
+      <div className={styles.middlePanel}>
+        <div className={styles.categoryHeader} style={{ display: 'flex', alignItems: 'center' }}>
+          <span>评论{selectedProductName ? `（${selectedProductName}）` : ''}</span>
+          {selectedProductId && (
+            <button
+              style={{ marginLeft: 12, padding: '2px 10px', border: '1px solid #1890ff', borderRadius: 4, background: '#fff', color: '#1890ff', cursor: 'pointer', fontSize: 13 }}
+              onClick={() => setAiModalVisible(true)}
+            >
+              AI分析
+            </button>
           )}
-        </List>
-      </ProductProvider>
+        </div>
+        <div
+          className={styles.categoryContent}
+          style={{
+            opacity: selectedProductId ? 1 : 0,
+            pointerEvents: selectedProductId ? 'auto' : 'none',
+            transition: 'opacity 0.3s',
+          }}
+        >
+          {selectedProductId ? <CommentList productId={selectedProductId} /> : null}
+        </div>
+      </div>
+
+      {/* AI分析弹窗 */}
+      <StreamChatModal
+        visible={aiModalVisible}
+        onClose={() => setAiModalVisible(false)}
+        defaultRole="AI分析师"
+        defaultQuestion={selectedProductName ? `请分析商品"${selectedProductName}"的用户评论，给出主要观点和建议。` : ''}
+        apiUrl="http://localhost:3000/api/stream-chat"
+      />
     </div>
   );
 };
