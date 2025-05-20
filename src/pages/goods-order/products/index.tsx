@@ -12,6 +12,7 @@ import CommentList from './components/commentList';
 import StreamChatModal from '@/components/StreamChatModal';
 // import type { ICreateProductParams } from "@/types/api/product";
 
+
 const Index = () => {
   const queryClient = useQueryClient();
   // 添加模态框显示状态

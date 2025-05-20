@@ -391,3 +391,7 @@ StreamChatModal 组件错误处理与 loading 状态统一：支持 errorRender�
 ## 2024-06-13
 
 - 递归修复 ProductCard 主组件对子组件唯一性渲染：递归展开所有 children（支持 Fragment/数组嵌套），对 Image、Title、Price、Badge 类型做全量唯一性去重，彻底解决嵌套结构下的重复渲染问题。
+
+## 2025-05-20 17:38:00
+
+1. 梳理客户画像系统的目标、输入、流程、实施验证四个部分，形成系统性分析。
