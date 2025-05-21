@@ -426,3 +426,9 @@ StreamChatModal 组件错误处理与 loading 状态统一：支持 errorRender�
    - 新增病例后，过往病历记录区域在最上方展示新病例。
    - 所有接口调用均通过自定义 react-query hooks 实现。
 3. 代码结构与样式保持一致，未影响其他功能。
+
+## 2025-05-21 21:45:28
+1. 合并 AddPatientModal 和 EditPatientModal 为统一的 PatientModal 组件，支持新增和编辑患者。
+2. 删除 EditPatientModal.tsx，所有相关引用已切换为 PatientModal。
+3. 保留新增时的草稿功能，编辑时自动回显患者信息。
+4. 优化表单复用，减少重复代码，提升可维护性。

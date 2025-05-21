@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Modal, Form, Input, Cascader, Select, message } from 'antd';
-import { useCreatePatientMutation } from '@/api/query/usePatientQuery';
+import { useCreatePatientMutation, useUpdatePatientMutation } from '@/api/query/usePatientQuery';
+import type { Patient } from './PatientList';
 import { hybridEncrypt } from './SecretKey';
 import styles from '../style.module.less';
 
@@ -15,15 +16,17 @@ GJKZrwFjNUbkYjNsv+Hai5SuvB+C0pDgiRJsbklw7S6h+pC4bxaS898YPtcxFUjn
 fQIDAQAB
 -----END PUBLIC KEY-----`;
 
-interface AddPatientModalProps {
+interface PatientModalProps {
     visible: boolean;
     onClose: () => void;
+    patient?: Patient | null; // 有则为编辑，无则为新增
 }
 
 const DRAFT_KEY = 'patient_form_draft';
 
-const AddPatientModal: React.FC<AddPatientModalProps> = ({ visible, onClose }) => {
+const PatientModal: React.FC<PatientModalProps> = ({ visible, onClose, patient }) => {
     const [form] = Form.useForm();
+    const isEdit = !!patient;
     const createMutation = useCreatePatientMutation({
         onSuccess: () => {
             message.success('病患创建成功');
@@ -32,8 +35,15 @@ const AddPatientModal: React.FC<AddPatientModalProps> = ({ visible, onClose }) =
             localStorage.removeItem(DRAFT_KEY);
         }
     });
+    const updateMutation = useUpdatePatientMutation({
+        onSuccess: () => {
+            message.success('病患信息已更新');
+            onClose();
+            form.resetFields();
+        }
+    });
 
-    // 工具函数：生成年份、月份、日期三级联动数据
+    // 生成年份、月份、日期三级联动数据
     const getDateCascaderOptions = () => {
         const years = [];
         const currentYear = new Date().getFullYear();
@@ -53,52 +63,88 @@ const AddPatientModal: React.FC<AddPatientModalProps> = ({ visible, onClose }) =
     };
     const dateCascaderOptions = getDateCascaderOptions();
 
-    // 打开弹窗时自动恢复草稿
+    // 新增时支持草稿恢复
     useEffect(() => {
         if (visible) {
-            const draft = localStorage.getItem(DRAFT_KEY);
-            if (draft) {
-                try {
-                    const values = JSON.parse(draft);
-                    form.setFieldsValue(values);
-                } catch {}
+            if (!isEdit) {
+                const draft = localStorage.getItem(DRAFT_KEY);
+                if (draft) {
+                    try {
+                        const values = JSON.parse(draft);
+                        form.setFieldsValue(values);
+                    } catch { }
+                }
+            } else if (patient) {
+                // birthday 处理为数组，兼容多种格式
+                let birthday = patient.birthday;
+                let birthdayArr;
+                if (typeof birthday === 'string') {
+                    const match = birthday.match(/(\d{4})-(\d{2})-(\d{2})/);
+                    if (match) {
+                        birthdayArr = [Number(match[1]), Number(match[2]), Number(match[3])];
+                    }
+                }
+                form.setFieldsValue({ ...patient, birthday: birthdayArr });
             }
         }
-    }, [visible, form]);
+    }, [visible, isEdit, patient, form]);
 
-    // 关闭弹窗时保存草稿
+    // 关闭弹窗时保存草稿（仅新增）
     const handleCancel = () => {
-        const values = form.getFieldsValue();
-        localStorage.setItem(DRAFT_KEY, JSON.stringify(values));
+        if (!isEdit) {
+            const values = form.getFieldsValue();
+            localStorage.setItem(DRAFT_KEY, JSON.stringify(values));
+        }
         onClose();
     };
 
-    const handleCreate = async () => {
+    // 提交
+    const handleSubmit = async () => {
         try {
             const values = await form.validateFields();
-            // birthday 字段格式化
             if (Array.isArray(values.birthday) && values.birthday.length === 3) {
                 values.birthday = `${values.birthday[0]}-${String(values.birthday[1]).padStart(2, '0')}-${String(values.birthday[2]).padStart(2, '0')}`;
             }
-            // gender 字段转为 number
+            if (!values.birthday || !/^\d{4}-\d{2}-\d{2}$/.test(values.birthday) || isNaN(new Date(values.birthday).getTime())) {
+                message.error('出生日期格式不正确');
+                return;
+            }
             if (typeof values.gender === 'string') {
                 values.gender = Number(values.gender);
             }
-            const encryptedData = await hybridEncrypt(values, RSA_PUBLIC_KEY_PEM);
-            createMutation.mutate(encryptedData);
-        } catch (e) { }
+            if (isEdit && patient) {
+                const encryptedData = await hybridEncrypt(values, RSA_PUBLIC_KEY_PEM);
+                updateMutation.mutate({ id: patient.id, data: encryptedData });
+            } else {
+                const encryptedData = await hybridEncrypt(values, RSA_PUBLIC_KEY_PEM);
+                createMutation.mutate(encryptedData);
+            }
+        } catch { }
     };
 
     return (
         <Modal
-            title="新增患者"
+            title={isEdit ? '编辑患者' : '新增患者'}
             open={visible}
-            onOk={handleCreate}
+            onOk={handleSubmit}
             onCancel={handleCancel}
-            confirmLoading={createMutation.isPending}
+            confirmLoading={isEdit ? updateMutation.isPending : createMutation.isPending}
             destroyOnClose
         >
-            <Form form={form} preserve={false} labelCol={{ span: 6 }} className={styles.addPatientModalForm}>
+            <Form
+                key={isEdit && patient ? patient.id : 'empty'}
+                form={form}
+                preserve={false}
+                labelCol={{ span: 6 }}
+                initialValues={isEdit && patient ? {
+                    ...patient,
+                    gender: typeof patient.gender === 'string' ? Number(patient.gender) : patient.gender,
+                    birthday: (typeof patient.birthday === 'string' && patient.birthday.split('-').length === 3)
+                        ? patient.birthday.split('-').map((v, i) => Number(v))
+                        : undefined,
+                } : {}}
+                className={isEdit ? styles.editPatientModalForm : styles.addPatientModalForm}
+            >
                 <Form.Item name="name" label="姓名" rules={[{ required: true, message: '请输入姓名' }]}>
                     <Input placeholder="请输入姓名" />
                 </Form.Item>
@@ -120,7 +166,7 @@ const AddPatientModal: React.FC<AddPatientModalProps> = ({ visible, onClose }) =
                     <Cascader
                         options={dateCascaderOptions}
                         placeholder="请选择出生日期"
-                        className={styles.addPatientModalCascader}
+                        className={isEdit ? styles.editPatientModalCascader : styles.addPatientModalCascader}
                         allowClear
                         changeOnSelect
                     />
@@ -151,4 +197,4 @@ const AddPatientModal: React.FC<AddPatientModalProps> = ({ visible, onClose }) =
     );
 };
 
-export default AddPatientModal; 
+export default PatientModal; 
