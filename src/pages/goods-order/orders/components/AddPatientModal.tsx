@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { Modal, Form, Input, Cascader, Select, message } from 'antd';
 import { useCreatePatientMutation } from '@/api/query/usePatientQuery';
 import { hybridEncrypt } from './SecretKey';
+import styles from '../style.module.less';
 
 // RSA 公钥字符串
 const RSA_PUBLIC_KEY_PEM = `-----BEGIN PUBLIC KEY-----
@@ -97,7 +98,7 @@ const AddPatientModal: React.FC<AddPatientModalProps> = ({ visible, onClose }) =
             confirmLoading={createMutation.isPending}
             destroyOnClose
         >
-            <Form form={form} preserve={false} labelCol={{ span: 6 }}>
+            <Form form={form} preserve={false} labelCol={{ span: 6 }} className={styles.addPatientModalForm}>
                 <Form.Item name="name" label="姓名" rules={[{ required: true, message: '请输入姓名' }]}>
                     <Input placeholder="请输入姓名" />
                 </Form.Item>
@@ -119,7 +120,7 @@ const AddPatientModal: React.FC<AddPatientModalProps> = ({ visible, onClose }) =
                     <Cascader
                         options={dateCascaderOptions}
                         placeholder="请选择出生日期"
-                        style={{ width: '100%' }}
+                        className={styles.addPatientModalCascader}
                         allowClear
                         changeOnSelect
                     />
