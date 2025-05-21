@@ -1,5 +1,6 @@
 import React from 'react';
 import { Form, Input, Button } from 'antd';
+import styles from '../style.module.less';
 
 interface SearchAreaProps {
   onSearch?: (params: Record<string, any>) => void;
@@ -20,49 +21,28 @@ const SearchArea: React.FC<SearchAreaProps> = ({ onSearch }) => {
   };
 
   return (
-    <div
-      style={{
-        background: '#fff',
-        borderRadius: 8,
-        boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
-        padding: '18px 24px',
-        minHeight: 40,
-        flex: 1,
-        width: '100%',
-        border: 'none',
-        display: 'flex',
-        alignItems: 'center',
-      }}
-    >
+    <div className={styles.searchArea}>
       <Form
         form={searchForm}
         layout="vertical"
         onFinish={onFinish}
-        style={{ width: '100%' }}
+        className={styles.searchAreaForm}
       >
-        <div
-          style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: 24,
-            rowGap: 0,
-            alignItems: 'flex-end',
-          }}
-        >
-          <Form.Item label="关键词" name="search" style={{ flex: '1 1 220px', minWidth: 180, marginBottom: 0 }}>
-            <Input placeholder="姓名/手机号/身份证/主治医师" style={{ borderRadius: 8, height: 38 }} />
+        <div className={styles.searchAreaFields}>
+          <Form.Item label="关键词" name="search" className={styles.searchAreaItemSearch}>
+            <Input placeholder="姓名/手机号/身份证/主治医师" className={styles.searchAreaInput} />
           </Form.Item>
-          <Form.Item label="姓名" name="name" style={{ flex: '1 1 120px', minWidth: 100, marginBottom: 0 }}>
-            <Input placeholder="请输入姓名" style={{ borderRadius: 8, height: 38 }} />
+          <Form.Item label="姓名" name="name" className={styles.searchAreaItemName}>
+            <Input placeholder="请输入姓名" className={styles.searchAreaInput} />
           </Form.Item>
-          <Form.Item label="手机号" name="phone" style={{ flex: '1 1 150px', minWidth: 120, marginBottom: 0 }}>
-            <Input placeholder="请输入手机号" style={{ borderRadius: 8, height: 38 }} />
+          <Form.Item label="手机号" name="phone" className={styles.searchAreaItemPhone}>
+            <Input placeholder="请输入手机号" className={styles.searchAreaInput} />
           </Form.Item>
-          <Form.Item label="身份证号" name="id_card" style={{ flex: '1 1 180px', minWidth: 140, marginBottom: 0 }}>
-            <Input placeholder="请输入身份证号" style={{ borderRadius: 8, height: 38 }} />
+          <Form.Item label="身份证号" name="id_card" className={styles.searchAreaItemIdCard}>
+            <Input placeholder="请输入身份证号" className={styles.searchAreaInput} />
           </Form.Item>
-          <Form.Item style={{ flex: '0 0 100px', marginBottom: 0 }}>
-            <Button type="primary" htmlType="submit" style={{ height: 38, borderRadius: 8, fontWeight: 500, fontSize: 16, background: 'linear-gradient(90deg, #1890ff 0%, #40a9ff 100%)', border: 'none', width: 80 }}>
+          <Form.Item className={styles.searchAreaItemBtn}>
+            <Button type="primary" htmlType="submit" className={styles.searchAreaBtn}>
               搜索
             </Button>
           </Form.Item>

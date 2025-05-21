@@ -8,6 +8,7 @@ import EditPatientModal from './EditPatientModal';
 import { useCreateMedicalRecordMutation } from '@/api/query/useMedicalRecordQuery';
 import { Form, Input, DatePicker, Select } from 'antd';
 import dayjs from 'dayjs';
+import styles from '../style.module.less';
 // 病患类型
 export interface Patient {
   id: number;
@@ -90,7 +91,7 @@ const MedicalRecordModal: React.FC<{
   return (
     <Modal
       open={visible}
-      title={<div style={{ textAlign: 'center', fontWeight: 700, fontSize: 20 }}>新增病例</div>}
+      title={<div className={styles.patientDetailModalTitle}>新增病例</div>}
       onCancel={() => {
         form.resetFields();
         onCancel();
@@ -172,7 +173,7 @@ const MedicalRecordDetailModal: React.FC<{
 }> = ({ visible, record, onClose }) => (
   <Modal
     open={visible}
-    title={<div style={{ textAlign: 'center', fontWeight: 700, fontSize: 18 }}>病例详情</div>}
+    title={<div className={styles.patientDetailModalTitle}>病例详情</div>}
     onCancel={onClose}
     footer={null}
     width={480}
@@ -213,38 +214,38 @@ const PatientDetailModal: React.FC<{ visible: boolean; patientId: number | null;
     <Modal 
       open={visible} 
       onCancel={onClose} 
-      title={<div style={{ textAlign: 'center', fontWeight: 700, fontSize: 20, letterSpacing: 2 }}>患者详情</div>} 
+      title={<div className={styles.patientDetailModalTitle}>患者详情</div>} 
       footer={null} 
       width={600}
     >
       {isLoading ? '加载中...' : patient ? (
-        <div style={{ marginBottom: 24 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 24, marginBottom: 8, justifyContent: 'center' }}>
+        <div className={styles.patientDetailModalInfo}>
+          <div className={styles.patientDetailModalRow}>
             <span>姓名：{patient.name}</span>
             <span>性别：{patient.gender === 1 ? '男' : '女'}</span>
             <span>年龄：{patient.birthday ? (new Date().getFullYear() - Number(patient.birthday.split('-')[0])) : '-'}</span>
           </div>
-          <div style={{ textAlign: 'center', marginBottom: 8, color: '#444' }}>联系电话：{patient.phone}</div>
-          <div style={{ textAlign: 'center', marginBottom: 8, color: '#444' }}>家庭住址：{patient.address}</div>
+          <div className={styles.patientDetailModalContact}>联系电话：{patient.phone}</div>
+          <div className={styles.patientDetailModalAddress}>家庭住址：{patient.address}</div>
         </div>
       ) : null}
-      <div style={{ fontWeight: 500, marginBottom: 8 }}>过往病历记录：</div>
-      <div style={{ background: '#f7f7f7', borderRadius: 6, padding: 12, minHeight: 60, marginBottom: 16 }}>
+      <div className={styles.patientDetailModalRecordsTitle}>过往病历记录：</div>
+      <div className={styles.patientDetailModalRecords}>
         {medicalRecords.length === 0 ? '暂无记录' : medicalRecords.map(r => (
-          <div key={r.id} style={{ marginBottom: 6, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div key={r.id} className={styles.patientDetailModalRecordRow}>
             <span>
-              <span style={{ fontWeight: 500 }}>{dayjs(r.visit_date).format('YYYY-MM-DD')}</span> {r.diagnosis}
+              <span className={styles.patientDetailModalRecordDate}>{dayjs(r.visit_date).format('YYYY-MM-DD')}</span> {r.diagnosis}
             </span>
             <button
-              style={{ marginLeft: 12, background: '#1677ff', color: '#fff', border: 'none', borderRadius: 4, padding: '2px 12px', cursor: 'pointer' }}
+              className={styles.patientDetailModalBtnView}
               onClick={() => { setDetailRecord(r); setDetailModalVisible(true); }}
             >查看</button>
           </div>
         ))}
       </div>
-      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
-        <button style={{ background: '#1677ff', color: '#fff', border: 'none', borderRadius: 4, padding: '6px 18px', cursor: 'pointer' }} onClick={() => setRecordModalVisible(true)}>新增</button>
-        <button style={{ background: '#52c41a', color: '#fff', border: 'none', borderRadius: 4, padding: '6px 18px', cursor: 'pointer' }} onClick={onClose}>完成</button>
+      <div className={styles.patientDetailModalActions}>
+        <button className={styles.patientDetailModalBtnAdd} onClick={() => setRecordModalVisible(true)}>新增</button>
+        <button className={styles.patientDetailModalBtnDone} onClick={onClose}>完成</button>
       </div>
       <MedicalRecordModal
         visible={recordModalVisible}
@@ -286,13 +287,9 @@ const PatientList: React.FC<PatientListProps> = ({ searchParams = {} }) => {
   const [detailModalVisible, setDetailModalVisible] = useState(false);
 
   return (
-    <div style={{ background: '#fff', borderRadius: 8, boxShadow: '0 1px 4px rgba(0,0,0,0.04)', minHeight: 400, padding: 24, width: '100%', marginTop: 16 }}>
+    <div className={styles.patientListContainer}>
       <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))',
-          gap: 24,
-        }}
+        className={styles.patientListGrid}
       >
         {isLoading ? '加载中...' : data.list.map((p) => (
           <PatientCard

@@ -3,6 +3,7 @@ import { Modal, Form, Input, Cascader, Select, message } from 'antd';
 import { useUpdatePatientMutation } from '@/api/query/usePatientQuery';
 import type { Patient } from './PatientList';
 import { hybridEncrypt } from './SecretKey';
+import styles from '../style.module.less';
 
 // RSA 公钥字符串
 const RSA_PUBLIC_KEY_PEM = `-----BEGIN PUBLIC KEY-----
@@ -113,6 +114,7 @@ const EditPatientModal: React.FC<EditPatientModalProps> = ({ visible, patient, o
                         ? patient.birthday.split('-').map((v, i) => Number(v))
                         : undefined,
                 } : {}}
+                className={styles.editPatientModalForm}
             >
                 <Form.Item name="name" label="姓名" rules={[{ required: true, message: '请输入姓名' }]}>
                     <Input placeholder="请输入姓名" />
@@ -135,7 +137,7 @@ const EditPatientModal: React.FC<EditPatientModalProps> = ({ visible, patient, o
                     <Cascader
                         options={dateCascaderOptions}
                         placeholder="请选择出生日期"
-                        style={{ width: '100%' }}
+                        className={styles.editPatientModalCascader}
                         allowClear
                         changeOnSelect
                     />
