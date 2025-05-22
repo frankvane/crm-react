@@ -4,7 +4,7 @@ import {
 	useCreatePatientMutation,
 	useUpdatePatientMutation,
 } from "@/api/query/usePatientQuery";
-import type { Patient } from "./PatientList";
+import type { Patient } from "@/types/api/patient";
 import { hybridEncrypt } from "./SecretKey";
 import styles from "../style.module.less";
 
@@ -168,7 +168,7 @@ const PatientModal: React.FC<PatientModalProps> = ({
 								birthday:
 									typeof patient.birthday === "string" &&
 									patient.birthday.split("-").length === 3
-										? patient.birthday.split("-").map((v) => Number(v))
+										? patient.birthday.split("-").map((v: string) => Number(v))
 										: undefined,
 							}
 						: {}
