@@ -11,8 +11,8 @@ import { ReactNode, createContext, useContext, useState } from "react";
  * @property {boolean} wishlist - 是否已加入心愿单
  */
 export interface ProductState {
-  cart: boolean;
-  wishlist: boolean;
+	cart: boolean;
+	wishlist: boolean;
 }
 
 /**
@@ -21,12 +21,12 @@ export interface ProductState {
  * @property {(productId: string, stateType: keyof ProductState) => void} toggleState - 切换指定商品的购物车/心愿单状态
  */
 export interface ProductContextValue {
-  getProductState: (productId: string) => ProductState;
-  toggleState: (productId: string, stateType: keyof ProductState) => void;
+	getProductState: (productId: string) => ProductState;
+	toggleState: (productId: string, stateType: keyof ProductState) => void;
 }
 
 const ProductContext = createContext<ProductContextValue | undefined>(
-  undefined
+	undefined,
 );
 
 /**
@@ -36,47 +36,47 @@ const ProductContext = createContext<ProductContextValue | undefined>(
  * @returns {JSX.Element}
  */
 export const ProductProvider = ({ children }: { children: ReactNode }) => {
-  const [productStates, setProductStates] = useState<
-    Record<string, ProductState>
-  >({});
+	const [productStates, setProductStates] = useState<
+		Record<string, ProductState>
+	>({});
 
-  /**
-   * 切换指定商品的购物车/心愿单状态
-   * @param {string} productId - 商品唯一标识
-   * @param {keyof ProductState} stateType - 状态类型（cart/wishlist）
-   */
-  const toggleState = (productId: string, stateType: keyof ProductState) => {
-    setProductStates((prevStates) => {
-      const currentProductState = prevStates[productId] || {
-        cart: false,
-        wishlist: false,
-      };
-      return {
-        ...prevStates,
-        [productId]: {
-          ...currentProductState,
-          [stateType]: !currentProductState[stateType],
-        },
-      };
-    });
-  };
+	/**
+	 * 切换指定商品的购物车/心愿单状态
+	 * @param {string} productId - 商品唯一标识
+	 * @param {keyof ProductState} stateType - 状态类型（cart/wishlist）
+	 */
+	const toggleState = (productId: string, stateType: keyof ProductState) => {
+		setProductStates((prevStates) => {
+			const currentProductState = prevStates[productId] || {
+				cart: false,
+				wishlist: false,
+			};
+			return {
+				...prevStates,
+				[productId]: {
+					...currentProductState,
+					[stateType]: !currentProductState[stateType],
+				},
+			};
+		});
+	};
 
-  /**
-   * 获取指定商品的购物车/心愿单状态
-   * @param {string} productId - 商品唯一标识
-   * @returns {ProductState}
-   */
-  const getProductState = (productId: string): ProductState =>
-    productStates[productId] || {
-      cart: false,
-      wishlist: false,
-    };
+	/**
+	 * 获取指定商品的购物车/心愿单状态
+	 * @param {string} productId - 商品唯一标识
+	 * @returns {ProductState}
+	 */
+	const getProductState = (productId: string): ProductState =>
+		productStates[productId] || {
+			cart: false,
+			wishlist: false,
+		};
 
-  return (
-    <ProductContext.Provider value={{ getProductState, toggleState }}>
-      {children}
-    </ProductContext.Provider>
-  );
+	return (
+		<ProductContext.Provider value={{ getProductState, toggleState }}>
+			{children}
+		</ProductContext.Provider>
+	);
 };
 
 /**
@@ -86,9 +86,9 @@ export const ProductProvider = ({ children }: { children: ReactNode }) => {
  * @throws {Error} 未在 ProductProvider 内使用时抛出异常
  */
 export const useProductContext = (): ProductContextValue => {
-  const context = useContext(ProductContext);
-  if (!context) {
-    throw new Error("useProductContext must be used within a ProductProvider");
-  }
-  return context;
+	const context = useContext(ProductContext);
+	if (!context) {
+		throw new Error("useProductContext must be used within a ProductProvider");
+	}
+	return context;
 };
