@@ -1,5 +1,13 @@
 # 更新日志
 
+## 2025-05-22 14:37
+
+### 配置修复
+- feat: 调整ESLint、Stylelint和Prettier配置以消除冲突
+- feat: 在Stylelint中添加tab缩进设置
+- feat: 安装并配置eslint-config-prettier和stylelint-config-prettier插件
+- feat: 确保所有格式化工具使用一致的缩进、引号和分号规则
+
 ## 2025-05-22 10:49:00
 
 - 完成代码质量工具配置：

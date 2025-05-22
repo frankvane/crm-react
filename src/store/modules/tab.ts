@@ -106,9 +106,9 @@ export const useTabStore = create<TabState>((set) => ({
 			const newTabs = remainingTabs.some((tab) => tab.key === DEFAULT_TAB.key)
 				? remainingTabs
 				: [
-					DEFAULT_TAB,
-					...remainingTabs.filter((tab) => tab.key !== DEFAULT_TAB.key),
-				];
+						DEFAULT_TAB,
+						...remainingTabs.filter((tab) => tab.key !== DEFAULT_TAB.key),
+					];
 
 			return {
 				tabs: newTabs,

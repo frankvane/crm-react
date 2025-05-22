@@ -29,24 +29,24 @@ export async function checkInstantUpload(
 }> {
 	const reqBody = options?.paramsTransform
 		? options.paramsTransform(
-			{
+				{
+					file_id: fileId,
+					md5,
+					name,
+					size,
+					total,
+					chunk_md5s: chunkMD5s,
+				},
+				"check",
+			)
+		: {
 				file_id: fileId,
 				md5,
 				name,
 				size,
 				total,
 				chunk_md5s: chunkMD5s,
-			},
-			"check",
-		)
-		: {
-			file_id: fileId,
-			md5,
-			name,
-			size,
-			total,
-			chunk_md5s: chunkMD5s,
-		};
+			};
 	const prefix = options?.apiPrefix ?? "";
 	const res = await fetch(options?.url || `${prefix}/file/instant`, {
 		method: "POST",
@@ -155,9 +155,9 @@ export async function mergeFile(
 ) {
 	const reqBody = options?.paramsTransform
 		? options.paramsTransform(
-			{ file_id: fileId, md5, name, size, total },
-			"merge",
-		)
+				{ file_id: fileId, md5, name, size, total },
+				"merge",
+			)
 		: { file_id: fileId, md5, name, size, total };
 	const prefix = options?.apiPrefix ?? "";
 	const res = await fetch(options?.url || `${prefix}/file/merge`, {

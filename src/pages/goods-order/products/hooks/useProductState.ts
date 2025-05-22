@@ -16,35 +16,35 @@ function productReducer(
 	action: ProductAction,
 ): ProductState {
 	switch (action.type) {
-	case "SELECT_CATEGORY":
-		return {
-			...state,
-			selectedCategoryId: action.payload,
-		};
-	case "SELECT_PRODUCT":
-		return {
-			...state,
-			selectedProductId: action.payload.id,
-			selectedProductName: action.payload.name,
-		};
-	case "TOGGLE_MODAL":
-		return {
-			...state,
-			isModalOpen: action.payload,
-		};
-	case "TOGGLE_AI_MODAL":
-		return {
-			...state,
-			aiModalVisible: action.payload,
-		};
-	case "RESET_SELECTION":
-		return {
-			...state,
-			selectedProductId: undefined,
-			selectedProductName: undefined,
-		};
-	default:
-		return state;
+		case "SELECT_CATEGORY":
+			return {
+				...state,
+				selectedCategoryId: action.payload,
+			};
+		case "SELECT_PRODUCT":
+			return {
+				...state,
+				selectedProductId: action.payload.id,
+				selectedProductName: action.payload.name,
+			};
+		case "TOGGLE_MODAL":
+			return {
+				...state,
+				isModalOpen: action.payload,
+			};
+		case "TOGGLE_AI_MODAL":
+			return {
+				...state,
+				aiModalVisible: action.payload,
+			};
+		case "RESET_SELECTION":
+			return {
+				...state,
+				selectedProductId: undefined,
+				selectedProductName: undefined,
+			};
+		default:
+			return state;
 	}
 }
 

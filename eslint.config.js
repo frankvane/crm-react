@@ -3,6 +3,7 @@ import js from "@eslint/js";
 import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
 import tseslint from "typescript-eslint";
+import prettierConfig from "eslint-config-prettier";
 
 export default tseslint.config(
   { ignores: ["dist"] },
@@ -45,5 +46,6 @@ export default tseslint.config(
       // 对象括号间空格
       "object-curly-spacing": ["error", "always"],
     },
-  }
+  },
+  prettierConfig
 );

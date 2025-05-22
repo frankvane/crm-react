@@ -80,20 +80,20 @@ request.interceptors.response.use(
 			const { status, data } = error.response as any;
 			const apiMessage = data && data.message;
 			switch (status) {
-			case 401:
-				// 401 由 axios-auth-refresh 处理
-				break;
-			case 403:
-				message.error(apiMessage || "拒绝访问");
-				break;
-			case 404:
-				message.error(apiMessage || "请求的资源不存在");
-				break;
-			case 500:
-				message.error(apiMessage || "服务器错误");
-				break;
-			default:
-				message.error(apiMessage || "网络错误");
+				case 401:
+					// 401 由 axios-auth-refresh 处理
+					break;
+				case 403:
+					message.error(apiMessage || "拒绝访问");
+					break;
+				case 404:
+					message.error(apiMessage || "请求的资源不存在");
+					break;
+				case 500:
+					message.error(apiMessage || "服务器错误");
+					break;
+				default:
+					message.error(apiMessage || "网络错误");
 			}
 		} else if (error.request) {
 			if (error.code === "ERR_CANCELED") {

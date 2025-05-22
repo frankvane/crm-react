@@ -55,12 +55,12 @@ const CategoryNav: React.FC<CategoryNavProps> = ({ onSelect }) => {
 	// 构建菜单项
 	const rootMenuItems: MenuProps["items"] = productCategory
 		? [
-			{
-				key: String(productCategory.id),
-				label: productCategory.name,
-				children: buildMenuItems(categoryTree),
-			},
-		]
+				{
+					key: String(productCategory.id),
+					label: productCategory.name,
+					children: buildMenuItems(categoryTree),
+				},
+			]
 		: [];
 
 	// 处理菜单选择

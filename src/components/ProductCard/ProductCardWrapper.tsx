@@ -115,39 +115,39 @@ export const ProductCardWrapper: React.FC<ProductCardWrapperProps> & {
 
 	const renderActions = showActions
 		? () => (
-			<>
-				{renderCartAction ? (
-					renderCartAction({
-						isAdded: isAddedToCart,
-						onClick: handleCart,
-					})
-				) : (
-					<ProductCard.ActionButton
-						onClick={handleCart}
-						isActive={isAddedToCart}
-					>
-						{isAddedToCart
-							? removeFromCartText || "移出购物车"
-							: addToCartText || "加入购物车"}
-					</ProductCard.ActionButton>
-				)}
-				{renderWishlistAction ? (
-					renderWishlistAction({
-						isWishlisted: isWishlisted,
-						onClick: handleWishlist,
-					})
-				) : (
-					<ProductCard.ActionButton
-						onClick={handleWishlist}
-						isActive={isWishlisted}
-					>
-						{isWishlisted
-							? removeFromWishlistText || "移出心愿单"
-							: addToWishlistText || "加入心愿单"}
-					</ProductCard.ActionButton>
-				)}
-			</>
-		)
+				<>
+					{renderCartAction ? (
+						renderCartAction({
+							isAdded: isAddedToCart,
+							onClick: handleCart,
+						})
+					) : (
+						<ProductCard.ActionButton
+							onClick={handleCart}
+							isActive={isAddedToCart}
+						>
+							{isAddedToCart
+								? removeFromCartText || "移出购物车"
+								: addToCartText || "加入购物车"}
+						</ProductCard.ActionButton>
+					)}
+					{renderWishlistAction ? (
+						renderWishlistAction({
+							isWishlisted: isWishlisted,
+							onClick: handleWishlist,
+						})
+					) : (
+						<ProductCard.ActionButton
+							onClick={handleWishlist}
+							isActive={isWishlisted}
+						>
+							{isWishlisted
+								? removeFromWishlistText || "移出心愿单"
+								: addToWishlistText || "加入心愿单"}
+						</ProductCard.ActionButton>
+					)}
+				</>
+			)
 		: undefined;
 
 	// 只要有 props 内容（imageSrc、badgeType、title、price 任一），就只渲染 props 内容，children 必须为 null，彻底避免混用

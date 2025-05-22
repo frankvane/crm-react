@@ -160,17 +160,17 @@ const PatientModal: React.FC<PatientModalProps> = ({
 				initialValues={
 					isEdit && patient
 						? {
-							...patient,
-							gender:
+								...patient,
+								gender:
 									typeof patient.gender === "string"
 										? Number(patient.gender)
 										: patient.gender,
-							birthday:
+								birthday:
 									typeof patient.birthday === "string" &&
 									patient.birthday.split("-").length === 3
 										? patient.birthday.split("-").map((v) => Number(v))
 										: undefined,
-						}
+							}
 						: {}
 				}
 				className={

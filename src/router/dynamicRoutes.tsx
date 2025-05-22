@@ -54,11 +54,11 @@ const processRoutes = (routes: any[]): RouteObject[] => {
 			const redirect =
 				childRoutes.length > 0
 					? [
-						{
-							path: "",
-							element: <Navigate to={childRoutes[0]?.path || ""} replace />,
-						},
-					]
+							{
+								path: "",
+								element: <Navigate to={childRoutes[0]?.path || ""} replace />,
+							},
+						]
 					: [];
 
 			// 确定要渲染的元素

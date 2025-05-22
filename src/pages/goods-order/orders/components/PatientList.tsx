@@ -289,24 +289,24 @@ const PatientDetailModal: React.FC<{
 				{medicalRecords.length === 0
 					? "暂无记录"
 					: medicalRecords.map((r) => (
-						<div key={r.id} className={styles.patientDetailModalRecordRow}>
-							<span>
-								<span className={styles.patientDetailModalRecordDate}>
-									{dayjs(r.visit_date).format("YYYY-MM-DD")}
-								</span>{" "}
-								{r.diagnosis}
-							</span>
-							<button
-								className={styles.patientDetailModalBtnView}
-								onClick={() => {
-									setDetailRecord(r);
-									setDetailModalVisible(true);
-								}}
-							>
+							<div key={r.id} className={styles.patientDetailModalRecordRow}>
+								<span>
+									<span className={styles.patientDetailModalRecordDate}>
+										{dayjs(r.visit_date).format("YYYY-MM-DD")}
+									</span>{" "}
+									{r.diagnosis}
+								</span>
+								<button
+									className={styles.patientDetailModalBtnView}
+									onClick={() => {
+										setDetailRecord(r);
+										setDetailModalVisible(true);
+									}}
+								>
 									查看
-							</button>
-						</div>
-					))}
+								</button>
+							</div>
+						))}
 			</div>
 			<div className={styles.patientDetailModalActions}>
 				<button
@@ -372,28 +372,28 @@ const PatientList: React.FC<PatientListProps> = ({ searchParams = {} }) => {
 				{isLoading
 					? "加载中..."
 					: data.list.map((p) => (
-						<PatientCard
-							key={p.id}
-							patient={p}
-							onEdit={(patient) => {
-								setEditingPatient(patient);
-								setEditModalVisible(true);
-							}}
-							onDelete={(patient) => {
-								Modal.confirm({
-									title: "确认删除",
-									content: "确定要删除该患者吗？此操作不可恢复。",
-									okText: "确认",
-									cancelText: "取消",
-									onOk: () => deleteMutation.mutate(patient.id),
-								});
-							}}
-							onDetail={(patient) => {
-								setDetailPatientId(patient.id);
-								setDetailModalVisible(true);
-							}}
-						/>
-					))}
+							<PatientCard
+								key={p.id}
+								patient={p}
+								onEdit={(patient) => {
+									setEditingPatient(patient);
+									setEditModalVisible(true);
+								}}
+								onDelete={(patient) => {
+									Modal.confirm({
+										title: "确认删除",
+										content: "确定要删除该患者吗？此操作不可恢复。",
+										okText: "确认",
+										cancelText: "取消",
+										onOk: () => deleteMutation.mutate(patient.id),
+									});
+								}}
+								onDetail={(patient) => {
+									setDetailPatientId(patient.id);
+									setDetailModalVisible(true);
+								}}
+							/>
+						))}
 			</div>
 			<PatientModal
 				visible={editModalVisible}

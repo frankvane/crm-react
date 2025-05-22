@@ -82,40 +82,40 @@ const RoleResourceModal = ({
 	const renderTreeNodes = (nodes: unknown[]): any[] =>
 		Array.isArray(nodes)
 			? (nodes as any[]).map((node) => ({
-				title: (
-					<div
-						style={{ display: "flex", alignItems: "center", width: "100%" }}
-					>
-						<span
-							style={{
-								minWidth: 180,
-								flexShrink: 0,
-								display: "inline-block",
-							}}
-						>
-							{node.name}
-						</span>
+					title: (
 						<div
-							style={{ flex: 1, display: "flex", justifyContent: "flex-end" }}
+							style={{ display: "flex", alignItems: "center", width: "100%" }}
 						>
-							{Array.isArray(node.actions) && node.actions.length > 0 && (
-								<Checkbox.Group
-									options={node.actions.map((a: any) => ({
-										label: a.name,
-										value: a.id,
-									}))}
-									value={actionChecked[node.id] || []}
-									onChange={(checked) =>
-										onActionCheck(node.id, checked as number[])
-									}
-								/>
-							)}
+							<span
+								style={{
+									minWidth: 180,
+									flexShrink: 0,
+									display: "inline-block",
+								}}
+							>
+								{node.name}
+							</span>
+							<div
+								style={{ flex: 1, display: "flex", justifyContent: "flex-end" }}
+							>
+								{Array.isArray(node.actions) && node.actions.length > 0 && (
+									<Checkbox.Group
+										options={node.actions.map((a: any) => ({
+											label: a.name,
+											value: a.id,
+										}))}
+										value={actionChecked[node.id] || []}
+										onChange={(checked) =>
+											onActionCheck(node.id, checked as number[])
+										}
+									/>
+								)}
+							</div>
 						</div>
-					</div>
-				),
-				key: node.id,
-				children: node.children ? renderTreeNodes(node.children) : undefined,
-			}))
+					),
+					key: node.id,
+					children: node.children ? renderTreeNodes(node.children) : undefined,
+				}))
 			: [];
 
 	useEffect(() => {
