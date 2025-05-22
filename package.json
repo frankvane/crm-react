@@ -10,7 +10,7 @@
     "lint:fix": "eslint . --fix",
     "lint:style": "stylelint \"**/*.{css,less}\" --fix",
     "preview": "vite preview",
-    "prepare": "cd .. && husky crm-react/.husky",
+    "prepare": "husky",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,css,less}\"",
     "postinstall": "npm run prepare",
     "commit": "git-cz"
@@ -78,11 +78,11 @@
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
-      "eslint --fix",
+      "eslint --fix --max-warnings=0",
       "prettier --write"
     ],
     "*.{css,less}": [
-      "stylelint --fix",
+      "stylelint --fix --max-warnings=0",
       "prettier --write"
     ]
   }
