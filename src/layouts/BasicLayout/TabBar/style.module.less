@@ -1,59 +1,60 @@
 .tabBar {
-  background: #fff;
-  padding: 6px 16px 0;
-  border-bottom: 1px solid #f0f0f0;
+	padding: 6px 16px 0;
+	border-bottom: 1px solid #f0f0f0;
+	background: #ffffff;
 
-  :global {
-    .ant-tabs {
-      .ant-tabs-nav {
-        margin: 0;
-      }
+	:global {
+		.ant-tabs {
+			.ant-tabs-nav {
+				margin: 0;
+			}
 
-      .ant-tabs-tab {
-        background: transparent;
-        border: none;
-        padding: 8px 16px;
-        transition: all 0.3s;
+			.ant-tabs-tab {
+				padding: 8px 16px;
+				border: none;
+				background: transparent;
+				transition: all 0.3s;
 
-        &:hover {
-          color: #1890ff;
-        }
+				&:hover {
+					color: #1890ff;
+				}
 
-        &.ant-tabs-tab-active {
-          background: #e6f7ff;
-          border-radius: 4px 4px 0 0;
+				&.ant-tabs-tab-active {
+					background: #e6f7ff;
+					border-radius: 4px 4px 0 0;
 
-          .ant-tabs-tab-btn {
-            color: #1890ff;
-          }
-        }
+					.ant-tabs-tab-btn {
+						color: #1890ff;
+					}
+				}
 
-        .anticon-close {
-          margin-left: 8px;
-          font-size: 12px;
-          &:hover {
-            color: #ff4d4f;
-          }
-        }
-      }
-    }
-  }
+				.anticon-close {
+					margin-left: 8px;
+					font-size: 12px;
+
+					&:hover {
+						color: #ff4d4f;
+					}
+				}
+			}
+		}
+	}
 }
 
 .operations {
-  display: flex;
-  align-items: center;
-  margin-left: 16px;
+	display: flex;
+	align-items: center;
+	margin-left: 16px;
 
-  .action {
-    padding: 8px;
-    font-size: 14px;
-    color: rgba(0, 0, 0, 0.45);
-    cursor: pointer;
-    transition: all 0.3s;
+	.action {
+		padding: 8px;
+		color: rgb(0 0 0 / 0.45);
+		font-size: 14px;
+		transition: all 0.3s;
+		cursor: pointer;
 
-    &:hover {
-      color: #1890ff;
-    }
-  }
+		&:hover {
+			color: #1890ff;
+		}
+	}
 }

@@ -1,170 +1,148 @@
-import React, { useState } from "react";
-import { Button, message } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import React, { lazy, Suspense } from "react";
+import { Layout, Skeleton, message, ConfigProvider } from "antd";
+import { useCreateProductMutation } from "@/api/query/useProductQuery";
 import CategoryNav from "./components/CategoryNav";
 import AddProductModal from "./components/AddProductModal";
 import styles from "./style.module.less";
-import { getCategoryTree } from "@/api/modules/category";
-import { createProduct } from "@/api/modules/product";
 import ProductList from "./components/productList";
-import CommentList from './components/commentList';
-import StreamChatModal from '@/components/StreamChatModal';
-// import type { ICreateProductParams } from "@/types/api/product";
+import { useProductState } from "./hooks/useProductState";
+import { useCategoryData } from "./hooks/useCategoryData";
+import ProductOperationBar from "./components/ProductOperationBar";
+import CommentPanel from "./components/CommentPanel";
 
-const Index = () => {
-  const queryClient = useQueryClient();
-  // 添加模态框显示状态
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedCategoryId, setSelectedCategoryId] = useState<string | undefined>();
-  const [selectedProductId, setSelectedProductId] = useState<number | string | undefined>();
-  const [selectedProductName, setSelectedProductName] = useState<string | undefined>();
-  const [aiModalVisible, setAiModalVisible] = useState(false);
+// 懒加载AI分析对话框组件
+const StreamChatModal = lazy(() => import("@/components/StreamChatModal"));
 
-  // 获取各种分类数据
-  const { data: productCategories = [] } = useQuery({
-    queryKey: ["categories", 23],
-    queryFn: () => getCategoryTree(23)
-  });
+const { Content, Sider } = Layout;
 
-  const { data: brands = [] } = useQuery({
-    queryKey: ["categories", 21],
-    queryFn: () => getCategoryTree(21)
-  });
+/**
+ * 商品管理页面组件
+ */
+const ProductsPage: React.FC = () => {
+	// 使用自定义Hook管理状态
+	const {
+		selectedCategoryId,
+		selectedProductId,
+		selectedProductName,
+		isModalOpen,
+		aiModalVisible,
+		selectCategory,
+		selectProduct,
+		toggleModal,
+		toggleAiModal,
+	} = useProductState();
 
-  const { data: dosageForms = [] } = useQuery({
-    queryKey: ["categories", 18],
-    queryFn: () => getCategoryTree(18)
-  });
+	// 使用自定义Hook加载分类数据
+	const {
+		categoryData: { isLoading },
+		options: { categoryOptions, brandOptions, dosageFormOptions, unitOptions },
+		error,
+	} = useCategoryData();
 
-  const { data: units = [] } = useQuery({
-    queryKey: ["categories", 22],
-    queryFn: () => getCategoryTree(22)
-  });
+	// API调用
+	const createProductMutation = useCreateProductMutation({
+		onSuccess: () => {
+			message.success("创建产品成功");
+			toggleModal(false);
+		},
+	});
 
-  // 将树形数据转换为只包含叶子节点的选项数组
-  const flattenTreeToOptions = (nodes: any[]): { label: string; value: number }[] => {
-    let options: { label: string; value: number }[] = [];
-    nodes.forEach(node => {
-      if (!node.children || node.children.length === 0) {
-        options.push({ label: node.name, value: node.id });
-      } else if (node.children && node.children.length > 0) {
-        options = options.concat(flattenTreeToOptions(node.children));
-      }
-    });
-    return options;
-  };
+	// 处理提交
+	const handleSubmit = async (values: any) => {
+		try {
+			await createProductMutation.mutateAsync(values);
+		} catch (error: any) {
+			message.error(error?.message || "创建产品失败");
+		}
+	};
 
-  // 处理分类选择
-  const handleCategorySelect = (key: string) => {
-    setSelectedCategoryId(key);
-    console.log('选中的分类ID:', key);
-  };
+	// 在数据加载出错时显示错误信息
+	if (error) {
+		message.error("加载分类数据失败");
+	}
 
-  // 处理模态框提交
-  const handleSubmit = async (values: any) => {
-    try {
-      await createProduct(values);
-      message.success('创建产品成功');
-      // 刷新产品列表
-      queryClient.invalidateQueries({ queryKey: ['products'] });
-      setIsModalOpen(false);
-    } catch (error: any) {
-      message.error(error?.message || '创建产品失败');
-    }
-  };
+	return (
+		<ConfigProvider
+			theme={{
+				token: {
+					borderRadius: 4,
+					colorBgContainer: "#fff",
+				},
+			}}
+		>
+			<Layout className={styles.container}>
+				{/* 左侧分类导航 */}
+				<Sider
+					width={240}
+					theme="light"
+					className={styles.leftPanel}
+					breakpoint="lg"
+					collapsedWidth={0}
+				>
+					<CategoryNav onSelect={selectCategory} />
+				</Sider>
 
-  // 处理模态框关闭
-  const handleCloseModal = () => {
-    console.log('关闭模态框');
-    setIsModalOpen(false);
-  };
+				{/* 中间产品列表 */}
+				<Content className={styles.rightPanel}>
+					<Suspense fallback={<Skeleton active />}>
+						<ProductOperationBar
+							onAddProduct={() => toggleModal(true)}
+							isLoading={isLoading}
+						/>
 
-  // 处理打开模态框
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
-  };
+						<ProductList
+							categoryId={selectedCategoryId}
+							onShowComments={(id, name) => selectProduct(id, name)}
+						/>
+					</Suspense>
 
-  // 准备下拉选项数据
-  const categoryOptions = flattenTreeToOptions(productCategories);
-  const brandOptions = flattenTreeToOptions(brands);
-  const dosageFormOptions = flattenTreeToOptions(dosageForms);
-  const unitOptions = flattenTreeToOptions(units);
+					<AddProductModal
+						open={isModalOpen}
+						onOk={handleSubmit}
+						onCancel={() => toggleModal(false)}
+						brands={brandOptions}
+						dosageForms={dosageFormOptions}
+						units={unitOptions}
+						categories={categoryOptions}
+						confirmLoading={createProductMutation.isPending}
+					/>
+				</Content>
 
-  return (
-    <div className={styles.container}>
-      {/* 左侧面板 */}
-      <div className={styles.leftPanel}>
-        <CategoryNav onSelect={handleCategorySelect} />
-      </div>
+				{/* 右侧评论面板 */}
+				<Sider
+					width={300}
+					theme="light"
+					className={styles.middlePanel}
+					breakpoint="md"
+					collapsedWidth={0}
+					reverseArrow
+				>
+					<CommentPanel
+						selectedProductId={selectedProductId}
+						selectedProductName={selectedProductName}
+						onShowAiModal={() => toggleAiModal(true)}
+					/>
+				</Sider>
 
-      {/* 中间面板 */}
-      <div className={styles.rightPanel}>
-        <div className={styles.rightPanelContent}>
-          <div className={styles.operationBar}>
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={handleOpenModal}
-            >
-              添加商品
-            </Button>
-          </div>
-          <ProductList
-            categoryId={selectedCategoryId}
-            onShowComments={(id, name) => {
-              setSelectedProductId(id);
-              setSelectedProductName(name);
-            }}
-          />
-        </div>
-
-        <AddProductModal
-          open={isModalOpen}
-          onOk={handleSubmit}
-          onCancel={handleCloseModal}
-          brands={brandOptions}
-          dosageForms={dosageFormOptions}
-          units={unitOptions}
-          categories={categoryOptions}
-        />
-      </div>
-
-      {/* 右侧面板 */}
-      <div className={styles.middlePanel}>
-        <div className={styles.categoryHeader} style={{ display: 'flex', alignItems: 'center' }}>
-          <span>评论{selectedProductName ? `（${selectedProductName}）` : ''}</span>
-          {selectedProductId && (
-            <button
-              style={{ marginLeft: 12, padding: '2px 10px', border: '1px solid #1890ff', borderRadius: 4, background: '#fff', color: '#1890ff', cursor: 'pointer', fontSize: 13 }}
-              onClick={() => setAiModalVisible(true)}
-            >
-              AI分析
-            </button>
-          )}
-        </div>
-        <div
-          className={styles.categoryContent}
-          style={{
-            opacity: selectedProductId ? 1 : 0,
-            pointerEvents: selectedProductId ? 'auto' : 'none',
-            transition: 'opacity 0.3s',
-          }}
-        >
-          {selectedProductId ? <CommentList productId={selectedProductId} /> : null}
-        </div>
-      </div>
-
-      {/* AI分析弹窗 */}
-      <StreamChatModal
-        visible={aiModalVisible}
-        onClose={() => setAiModalVisible(false)}
-        defaultRole="AI分析师"
-        defaultQuestion={selectedProductName ? `请分析商品"${selectedProductName}"的用户评论，给出主要观点和建议。` : ''}
-        apiUrl="http://localhost:3000/api/stream-chat"
-      />
-    </div>
-  );
+				{/* AI分析弹窗 - 使用React.lazy懒加载 */}
+				<Suspense fallback={null}>
+					{aiModalVisible && (
+						<StreamChatModal
+							visible={aiModalVisible}
+							onClose={() => toggleAiModal(false)}
+							defaultRole="AI分析师"
+							defaultQuestion={
+								selectedProductName
+									? `请分析商品"${selectedProductName}"的用户评论，给出主要观点和建议。`
+									: ""
+							}
+							apiUrl="http://localhost:3000/api/stream-chat"
+						/>
+					)}
+				</Suspense>
+			</Layout>
+		</ConfigProvider>
+	);
 };
 
-export default Index;
+export default ProductsPage;

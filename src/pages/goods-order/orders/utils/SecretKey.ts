@@ -12,21 +12,23 @@
  * 注意：仅导入公钥，私钥绝不能出现在前端。
  */
 export async function importRsaPublicKey(pemKey: string): Promise<CryptoKey> {
-    const pemHeader = "-----BEGIN PUBLIC KEY-----";
-    const pemFooter = "-----END PUBLIC KEY-----";
-    const pemContents = pemKey.substring(pemHeader.length, pemKey.length - pemFooter.length - 1).trim();
-    // Base64解码 PEM内容
-    const binaryDer = Uint8Array.from(atob(pemContents), c => c.charCodeAt(0));
-    return crypto.subtle.importKey(
-        "spki", // SubjectPublicKeyInfo format
-        binaryDer,
-        {
-            name: "RSA-OAEP",
-            hash: "SHA-256",
-        },
-        true, // extractable
-        ["encrypt"] // uses
-    );
+	const pemHeader = "-----BEGIN PUBLIC KEY-----";
+	const pemFooter = "-----END PUBLIC KEY-----";
+	const pemContents = pemKey
+		.substring(pemHeader.length, pemKey.length - pemFooter.length - 1)
+		.trim();
+	// Base64解码 PEM内容
+	const binaryDer = Uint8Array.from(atob(pemContents), (c) => c.charCodeAt(0));
+	return crypto.subtle.importKey(
+		"spki", // SubjectPublicKeyInfo format
+		binaryDer,
+		{
+			name: "RSA-OAEP",
+			hash: "SHA-256",
+		},
+		true, // extractable
+		["encrypt"], // uses
+	);
 }
 
 /**
@@ -39,18 +41,21 @@ export async function importRsaPublicKey(pemKey: string): Promise<CryptoKey> {
  * 该方法会生成一个随机 16 字节 IV，使用 AES-CBC 模式对明文进行加密。
  * 返回密文和 IV，IV 需与密文一同传输给后端。
  */
-export async function encryptAes(data: string, key: CryptoKey): Promise<{ ciphertext: ArrayBuffer, iv: Uint8Array }> {
-    const iv = crypto.getRandomValues(new Uint8Array(16)); // AES-CBC requires 16-byte IV
-    const encodedData = new TextEncoder().encode(data);
-    const ciphertext = await crypto.subtle.encrypt(
-        {
-            name: "AES-CBC",
-            iv: iv,
-        },
-        key,
-        encodedData
-    );
-    return { ciphertext, iv };
+export async function encryptAes(
+	data: string,
+	key: CryptoKey,
+): Promise<{ ciphertext: ArrayBuffer; iv: Uint8Array }> {
+	const iv = crypto.getRandomValues(new Uint8Array(16)); // AES-CBC requires 16-byte IV
+	const encodedData = new TextEncoder().encode(data);
+	const ciphertext = await crypto.subtle.encrypt(
+		{
+			name: "AES-CBC",
+			iv: iv,
+		},
+		key,
+		encodedData,
+	);
+	return { ciphertext, iv };
 }
 
 /**
@@ -62,14 +67,17 @@ export async function encryptAes(data: string, key: CryptoKey): Promise<{ cipher
  * @description
  * 该方法使用 RSA-OAEP 算法对 AES 密钥进行加密，确保密钥安全传输。
  */
-export async function encryptRsaOaep(data: ArrayBuffer, publicKey: CryptoKey): Promise<ArrayBuffer> {
-    return crypto.subtle.encrypt(
-        {
-            name: "RSA-OAEP",
-        },
-        publicKey,
-        data
-    );
+export async function encryptRsaOaep(
+	data: ArrayBuffer,
+	publicKey: CryptoKey,
+): Promise<ArrayBuffer> {
+	return crypto.subtle.encrypt(
+		{
+			name: "RSA-OAEP",
+		},
+		publicKey,
+		data,
+	);
 }
 
 /**
@@ -90,28 +98,30 @@ export async function encryptRsaOaep(data: ArrayBuffer, publicKey: CryptoKey): P
  * - 建议升级为 AES-GCM 模式以获得更高安全性
  */
 export async function hybridEncrypt(data: any, publicKeyPem: string) {
-    const dataString = JSON.stringify(data);
-    // 1. 导入RSA公钥
-    const rsaPublicKey = await importRsaPublicKey(publicKeyPem);
-    // 2. 生成AES密钥
-    const aesKey = await crypto.subtle.generateKey(
-        {
-            name: "AES-CBC",
-            length: 128, // 128, 192, or 256
-        },
-        true, // extractable
-        ["encrypt", "decrypt"] // uses
-    );
-    // 3. 导出AES密钥为 ArrayBuffer，以便用RSA加密
-    const exportedAesKey = await crypto.subtle.exportKey("raw", aesKey);
-    // 4. 使用AES加密数据
-    const { ciphertext, iv } = await encryptAes(dataString, aesKey);
-    // 5. 使用RSA加密AES密钥
-    const encryptedAesKey = await encryptRsaOaep(exportedAesKey, rsaPublicKey);
-    // 返回 Base64 编码的加密结果和 IV
-    return {
-        encryptedData: btoa(String.fromCharCode(...new Uint8Array(ciphertext))),
-        encryptedAesKey: btoa(String.fromCharCode(...new Uint8Array(encryptedAesKey))),
-        iv: btoa(String.fromCharCode(...iv)),
-    };
+	const dataString = JSON.stringify(data);
+	// 1. 导入RSA公钥
+	const rsaPublicKey = await importRsaPublicKey(publicKeyPem);
+	// 2. 生成AES密钥
+	const aesKey = await crypto.subtle.generateKey(
+		{
+			name: "AES-CBC",
+			length: 128, // 128, 192, or 256
+		},
+		true, // extractable
+		["encrypt", "decrypt"], // uses
+	);
+	// 3. 导出AES密钥为 ArrayBuffer，以便用RSA加密
+	const exportedAesKey = await crypto.subtle.exportKey("raw", aesKey);
+	// 4. 使用AES加密数据
+	const { ciphertext, iv } = await encryptAes(dataString, aesKey);
+	// 5. 使用RSA加密AES密钥
+	const encryptedAesKey = await encryptRsaOaep(exportedAesKey, rsaPublicKey);
+	// 返回 Base64 编码的加密结果和 IV
+	return {
+		encryptedData: btoa(String.fromCharCode(...new Uint8Array(ciphertext))),
+		encryptedAesKey: btoa(
+			String.fromCharCode(...new Uint8Array(encryptedAesKey)),
+		),
+		iv: btoa(String.fromCharCode(...iv)),
+	};
 }

@@ -1,273 +1,307 @@
 .container {
-  width: 100%;
-  min-height: 100%;
-  background: #f7f8fa;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  box-sizing: border-box;
-  overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 100%;
+	min-height: 100%;
+	overflow: hidden;
+	background: #f7f8fa;
+	box-sizing: border-box;
 }
 
 .content {
-  width: 100%;
-  max-width: 1200px;
-  margin: 32px 0 0 0;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	width: 100%;
+	max-width: 1200px;
+	margin: 32px 0 0;
 }
 
 .topBar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-  gap: 16px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 16px;
+	gap: 16px;
 }
 
 .patientCard {
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  background: #fafbfc;
-  padding: 20px;
-  min-height: 180px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  border: 1px solid #e5e6eb;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	min-height: 180px;
+	padding: 20px;
+	border: 1px solid #e5e6eb;
+	background: #fafbfc;
+	border-radius: 10px;
+	box-shadow: 0 2px 8px rgb(0 0 0 / 0.08);
 }
+
 .patientCardHeader {
-  margin-bottom: 8px;
+	margin-bottom: 8px;
 }
+
 .patientCardName {
-  font-weight: 600;
-  font-size: 18px;
-  margin-right: 8px;
+	margin-right: 8px;
+	font-size: 18px;
+	font-weight: 600;
 }
+
 .patientCardGender {
-  color: #888;
-  margin-right: 8px;
+	margin-right: 8px;
+	color: #888888;
 }
+
 .patientCardAge {
-  color: #888;
+	color: #888888;
 }
+
 .patientCardInfo {
-  color: #555;
-  font-size: 14px;
-  margin-bottom: 2px;
+	margin-bottom: 2px;
+	color: #555555;
+	font-size: 14px;
 }
+
 .patientCardAddress {
-  color: #555;
-  font-size: 14px;
-  margin-bottom: 10px;
+	margin-bottom: 10px;
+	color: #555555;
+	font-size: 14px;
 }
+
 .patientCardActions {
-  display: flex;
-  gap: 8px;
+	display: flex;
+	gap: 8px;
 }
+
 .patientCardBtnDetail {
-  background: #1677ff;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  padding: 4px 14px;
-  cursor: pointer;
+	padding: 4px 14px;
+	border: none;
+	color: #ffffff;
+	background: #1677ff;
+	border-radius: 4px;
+	cursor: pointer;
 }
+
 .patientCardBtnEdit {
-  background: #ffb300;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  padding: 4px 14px;
-  cursor: pointer;
+	padding: 4px 14px;
+	border: none;
+	color: #ffffff;
+	background: #ffb300;
+	border-radius: 4px;
+	cursor: pointer;
 }
+
 .patientCardBtnDelete {
-  background: #f53f3f;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  padding: 4px 14px;
-  cursor: pointer;
+	padding: 4px 14px;
+	border: none;
+	color: #ffffff;
+	background: #f53f3f;
+	border-radius: 4px;
+	cursor: pointer;
 }
 
 .searchArea {
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
-  padding: 18px 24px;
-  min-height: 40px;
-  flex: 1;
-  width: 100%;
-  border: none;
-  display: flex;
-  align-items: center;
+	display: flex;
+	flex: 1;
+	align-items: center;
+	width: 100%;
+	min-height: 40px;
+	padding: 18px 24px;
+	border: none;
+	background: #ffffff;
+	border-radius: 8px;
+	box-shadow: 0 1px 4px rgb(0 0 0 / 0.04);
 }
+
 .searchAreaForm {
-  width: 100%;
+	width: 100%;
 }
+
 .searchAreaFields {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 24px;
-  row-gap: 0;
-  align-items: flex-end;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 24px;
+	row-gap: 0;
+	align-items: flex-end;
 }
+
 .searchAreaItemSearch {
-  flex: 1 1 220px;
-  min-width: 180px;
-  margin-bottom: 0;
+	flex: 1 1 220px;
+	min-width: 180px;
+	margin-bottom: 0;
 }
+
 .searchAreaItemName {
-  flex: 1 1 120px;
-  min-width: 100px;
-  margin-bottom: 0;
+	flex: 1 1 120px;
+	min-width: 100px;
+	margin-bottom: 0;
 }
+
 .searchAreaItemPhone {
-  flex: 1 1 150px;
-  min-width: 120px;
-  margin-bottom: 0;
+	flex: 1 1 150px;
+	min-width: 120px;
+	margin-bottom: 0;
 }
+
 .searchAreaItemIdCard {
-  flex: 1 1 180px;
-  min-width: 140px;
-  margin-bottom: 0;
+	flex: 1 1 180px;
+	min-width: 140px;
+	margin-bottom: 0;
 }
+
 .searchAreaItemBtn {
-  flex: 0 0 100px;
-  margin-bottom: 0;
+	flex: 0 0 100px;
+	margin-bottom: 0;
 }
+
 .searchAreaInput {
-  border-radius: 8px;
-  height: 38px;
+	border-radius: 8px;
+	height: 38px;
 }
+
 .searchAreaBtn {
-  height: 38px;
-  border-radius: 8px;
-  font-weight: 500;
-  font-size: 16px;
-  background: linear-gradient(90deg, #1890ff 0%, #40a9ff 100%);
-  border: none;
-  width: 80px;
+	width: 80px;
+	height: 38px;
+	border: none;
+	font-size: 16px;
+	font-weight: 500;
+	background: linear-gradient(90deg, #1890ff 0%, #40a9ff 100%);
+	border-radius: 8px;
 }
 
 .patientListContainer {
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
-  min-height: 400px;
-  padding: 24px;
-  width: 100%;
-  margin-top: 16px;
+	width: 100%;
+	min-height: 400px;
+	margin-top: 16px;
+	padding: 24px;
+	background: #ffffff;
+	border-radius: 8px;
+	box-shadow: 0 1px 4px rgb(0 0 0 / 0.04);
 }
+
 .patientListGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-  gap: 24px;
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+	gap: 24px;
 }
 
 // PatientList弹窗和按钮样式
 .patientDetailModalTitle {
-  text-align: center;
-  font-weight: 700;
-  font-size: 20px;
-  letter-spacing: 2px;
+	font-size: 20px;
+	font-weight: 700;
+	text-align: center;
+	letter-spacing: 2px;
 }
+
 .patientDetailModalInfo {
-  margin-bottom: 24px;
+	margin-bottom: 24px;
 }
+
 .patientDetailModalRow {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-  margin-bottom: 8px;
-  justify-content: center;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-bottom: 8px;
+	gap: 24px;
 }
+
 .patientDetailModalContact {
-  text-align: center;
-  margin-bottom: 8px;
-  color: #444;
+	margin-bottom: 8px;
+	color: #444444;
+	text-align: center;
 }
+
 .patientDetailModalAddress {
-  text-align: center;
-  margin-bottom: 8px;
-  color: #444;
+	margin-bottom: 8px;
+	color: #444444;
+	text-align: center;
 }
+
 .patientDetailModalRecordsTitle {
-  font-weight: 500;
-  margin-bottom: 8px;
+	margin-bottom: 8px;
+	font-weight: 500;
 }
+
 .patientDetailModalRecords {
-  background: #f7f7f7;
-  border-radius: 6px;
-  padding: 12px;
-  min-height: 60px;
-  margin-bottom: 16px;
+	min-height: 60px;
+	margin-bottom: 16px;
+	padding: 12px;
+	background: #f7f7f7;
+	border-radius: 6px;
 }
+
 .patientDetailModalRecordRow {
-  margin-bottom: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 6px;
 }
+
 .patientDetailModalRecordDate {
-  font-weight: 500;
+	font-weight: 500;
 }
+
 .patientDetailModalBtnView {
-  margin-left: 12px;
-  background: #1677ff;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  padding: 2px 12px;
-  cursor: pointer;
+	margin-left: 12px;
+	padding: 2px 12px;
+	border: none;
+	color: #ffffff;
+	background: #1677ff;
+	border-radius: 4px;
+	cursor: pointer;
 }
+
 .patientDetailModalActions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
+	display: flex;
+	justify-content: flex-end;
+	gap: 12px;
 }
+
 .patientDetailModalBtnAdd {
-  background: #1677ff;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  padding: 6px 18px;
-  cursor: pointer;
+	padding: 6px 18px;
+	border: none;
+	color: #ffffff;
+	background: #1677ff;
+	border-radius: 4px;
+	cursor: pointer;
 }
+
 .patientDetailModalBtnDone {
-  background: #52c41a;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  padding: 6px 18px;
-  cursor: pointer;
+	padding: 6px 18px;
+	border: none;
+	color: #ffffff;
+	background: #52c41a;
+	border-radius: 4px;
+	cursor: pointer;
 }
 
 .addPatientButton {
-  color: #fff;
-  border: none;
-  background: #1677ff;
-  padding: 8px 20px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 500;
-  font-size: 16px;
-  box-shadow: 0 1px 4px rgba(22,119,255,0.08);
-  transition: background 0.2s;
-  outline: none;
+	padding: 8px 20px;
+	border: none;
+	color: #ffffff;
+	font-size: 16px;
+	font-weight: 500;
+	background: #1677ff;
+	transition: background 0.2s;
+	border-radius: 6px;
+	cursor: pointer;
+	box-shadow: 0 1px 4px rgb(22 119 255 / 0.08);
+	outline: none;
 }
 
 .addPatientModalForm {
-  // 这里可以添加表单整体样式
+	// 这里可以添加表单整体样式
 }
+
 .addPatientModalCascader {
-  width: 100% !important;
+	width: 100% !important;
 }
 
 .editPatientModalForm {
-  // 这里可以添加表单整体样式
+	// 这里可以添加表单整体样式
 }
+
 .editPatientModalCascader {
-  width: 100% !important;
-} 
+	width: 100% !important;
+}

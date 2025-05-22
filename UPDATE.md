@@ -1,5 +1,22 @@
 # 更新日志
 
+## 2025-05-22 14:37
+
+### 配置修复
+- feat: 调整ESLint、Stylelint和Prettier配置以消除冲突
+- feat: 在Stylelint中添加tab缩进设置
+- feat: 安装并配置eslint-config-prettier和stylelint-config-prettier插件
+- feat: 确保所有格式化工具使用一致的缩进、引号和分号规则
+
+## 2025-05-22 10:49:00
+
+- 完成代码质量工具配置：
+  - ESLint: 配置缩进为tab、使用双引号、强制分号结尾、行尾逗号、箭头函数使用括号、console仅警告
+  - Prettier: 配置打印宽度80、使用分号、使用双引号、结尾逗号全部使用、括号间空格、箭头函数始终使用括号、缩进使用tab
+  - Stylelint: 配置缩进4空格、RGB颜色格式、按类型排序属性
+  - Commitlint: 配置标准提交类型（feat、fix、docs、style等）
+  - Husky: 配置pre-commit、commit-msg、pre-push钩子，实现自动代码检查与格式化
+
 ## 2025-05-20 21:57:46
 
 - 在@App.tsx 文件中添加注释内容
@@ -432,3 +449,4 @@ StreamChatModal 组件错误处理与 loading 状态统一：支持 errorRender�
 2. 删除 EditPatientModal.tsx，所有相关引用已切换为 PatientModal。
 3. 保留新增时的草稿功能，编辑时自动回显患者信息。
 4. 优化表单复用，减少重复代码，提升可维护性。
+
