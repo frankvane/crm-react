@@ -1,5 +1,5 @@
 import request from "@/utils/request";
-import type { PatientListResponse } from "@/pages/goods-order/orders/index"; // 路径按实际调整
+import { PatientListResponse } from "@/types/api/patient";
 
 // 获取病患列表
 export function getPatients(params: any): Promise<PatientListResponse> {

@@ -117,7 +117,10 @@ export const useAuthStore = create<IAuthState & IAuthActions>()(
 			fetchCurrentUser: async () => {
 				try {
 					const response = await authApi.getCurrentUser();
-					const { user, roles, resources } = response;
+					const responseData = response.data || response;
+					const user = responseData.user || responseData;
+					const roles = responseData.roles || [];
+					const resources = responseData.resources || [];
 					set({ user, roles, resources, isAuthenticated: true });
 				} catch {
 					set({ user: null, roles: [], resources: [], isAuthenticated: false });

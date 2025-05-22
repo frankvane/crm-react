@@ -12,35 +12,7 @@ import { useCreateMedicalRecordMutation } from "@/api/query/useMedicalRecordQuer
 import { Form, Input, DatePicker } from "antd";
 import dayjs from "dayjs";
 import styles from "../style.module.less";
-// 病患类型
-export interface Patient {
-	id: number;
-	name: string;
-	gender: number;
-	birthday: string;
-	phone: string;
-	id_card: string;
-	address: string;
-	emergency_contact?: string;
-	emergency_phone?: string;
-	doctor?: string;
-	remark?: string;
-	status?: number;
-}
-
-// 病患列表响应类型
-interface PatientListResponse {
-	list: Patient[];
-	pagination: {
-		current: number;
-		pageSize: number;
-		total: number;
-	};
-}
-
-interface PatientListProps {
-	searchParams?: Record<string, any>;
-}
+import { Patient, PatientListResponse } from "@/types/api/patient";
 
 // 病例类型
 type MedicalRecord = {
@@ -52,6 +24,11 @@ type MedicalRecord = {
 	doctor: string;
 	remark?: string;
 };
+
+// 组件props类型
+interface PatientListProps {
+	searchParams?: Record<string, any>;
+}
 
 // ====== 本地病例存储工具函数 ======
 function getLocalMedicalRecords(patientId: number): any[] {
@@ -107,8 +84,6 @@ const MedicalRecordModal: React.FC<{
 				form={form}
 				layout="vertical"
 				onFinish={(values) => {
-					// 日志调试
-					console.log("onFinish values:", values);
 					if (
 						!values.visit_date ||
 						typeof values.visit_date.format !== "function"
@@ -234,7 +209,8 @@ const PatientDetailModal: React.FC<{
 	const { data, isLoading } = usePatientQuery(patientId || 0, {
 		enabled: !!patientId,
 	});
-	const patient = data && (data.data || data);
+	// 使用类型断言解决类型问题
+	const patient = data ? (data as any).data || (data as Patient) : null;
 	// ====== 病历记录状态，优先本地存储 ======
 	const [medicalRecords, setMedicalRecords] = useState<MedicalRecord[]>([]);
 	// 页面加载/切换患者时，自动恢复本地病例
