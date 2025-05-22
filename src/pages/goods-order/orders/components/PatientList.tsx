@@ -4,7 +4,7 @@ import PatientCard from './PatientCard';
 import { getPatients } from '@/api/modules/patient';
 import { Modal, message } from 'antd';
 import { useDeletePatientMutation, usePatientQuery } from '@/api/query/usePatientQuery';
-import EditPatientModal from './EditPatientModal';
+import PatientModal from './PatientModal';
 import { useCreateMedicalRecordMutation } from '@/api/query/useMedicalRecordQuery';
 import { Form, Input, DatePicker, Select } from 'antd';
 import dayjs from 'dayjs';
@@ -286,6 +286,11 @@ const PatientList: React.FC<PatientListProps> = ({ searchParams = {} }) => {
   const [detailPatientId, setDetailPatientId] = useState<number | null>(null);
   const [detailModalVisible, setDetailModalVisible] = useState(false);
 
+  const handleEditModalClose = () => {
+    setEditModalVisible(false);
+    setEditingPatient(null);
+  };
+
   return (
     <div className={styles.patientListContainer}>
       <div
@@ -315,10 +320,10 @@ const PatientList: React.FC<PatientListProps> = ({ searchParams = {} }) => {
           />
         ))}
       </div>
-      <EditPatientModal
+      <PatientModal
         visible={editModalVisible}
+        onClose={handleEditModalClose}
         patient={editingPatient}
-        onClose={() => { setEditModalVisible(false); setEditingPatient(null); }}
       />
       <PatientDetailModal
         visible={detailModalVisible}

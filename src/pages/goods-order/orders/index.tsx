@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import SearchArea from './components/SearchArea';
 import AddPatientButton from './components/AddPatientButton';
 import PatientList from './components/PatientList';
-import AddPatientModal from './components/AddPatientModal';
+import PatientModal from './components/PatientModal';
 import styles from './style.module.less';
 
 const OrdersPage: React.FC = () => {
@@ -18,7 +18,7 @@ const OrdersPage: React.FC = () => {
         </div>
         <PatientList searchParams={searchParams} />
       </div>
-      <AddPatientModal visible={modalVisible} onClose={() => setModalVisible(false)} />
+      <PatientModal visible={modalVisible} onClose={() => setModalVisible(false)} />
     </div>
   );
 };
