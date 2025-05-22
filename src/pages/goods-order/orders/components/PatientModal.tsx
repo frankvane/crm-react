@@ -1,10 +1,13 @@
-import React, { useEffect } from 'react';
-import { Modal, Form, Input, Cascader, Select, message } from 'antd';
-import { useCreatePatientMutation, useUpdatePatientMutation } from '@/api/query/usePatientQuery';
-import type { Patient } from '@/types/api/patient';
-import { hybridEncrypt } from '../utils/SecretKey';
-import styles from '../style.module.less';
-import { RSA_PUBLIC_KEY_PEM } from '@/config/publicKey';
+import React, { useEffect } from "react";
+import { Modal, Form, Input, Cascader, Select, message } from "antd";
+import {
+	useCreatePatientMutation,
+	useUpdatePatientMutation,
+} from "@/api/query/usePatientQuery";
+import type { Patient } from "@/types/api/patient";
+import { hybridEncrypt } from "../utils/SecretKey";
+import styles from "../style.module.less";
+import { RSA_PUBLIC_KEY_PEM } from "@/config/publicKey";
 
 interface PatientModalProps {
 	visible: boolean;

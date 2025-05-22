@@ -109,7 +109,6 @@ request.interceptors.response.use(
 		}
 		// 开发环境统一 log
 		if (import.meta.env.DEV) {
-			// eslint-disable-next-line no-console
 			console.error("Axios Error:", error);
 		}
 		return Promise.reject(error);
