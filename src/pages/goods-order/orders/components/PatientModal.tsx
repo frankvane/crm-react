@@ -2,19 +2,9 @@ import React, { useEffect } from 'react';
 import { Modal, Form, Input, Cascader, Select, message } from 'antd';
 import { useCreatePatientMutation, useUpdatePatientMutation } from '@/api/query/usePatientQuery';
 import type { Patient } from './PatientList';
-import { hybridEncrypt } from './SecretKey';
+import { hybridEncrypt } from '../utils/SecretKey';
 import styles from '../style.module.less';
-
-// RSA 公钥字符串
-const RSA_PUBLIC_KEY_PEM = `-----BEGIN PUBLIC KEY-----
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxs3MYClwvG9wlHQTthGD
-/bI9gK436bvq/ikQnPKAxdzPt31Nf0Sn0v4SlHJtzjv5S3ipymR5o+Z5tDD/hO8O
-dB53jgUibzIeP7+OuO14vd1pqYfS+ksW4riYMC8xQYhfW+UTL0h5wy8zmKeLBwvG
-v7VpBAJGVZze9C+DUN2oIz0Pybvt+nqTzOXwQ/ehSVqR5LfJFNs7piTrf2+bEe9M
-oz+hyx0AsPKtGllJuGOp+hegHSVI1IqhFwYXxH5thV90Dl3epovkYTz99bRUyjfa
-GJKZrwFjNUbkYjNsv+Hai5SuvB+C0pDgiRJsbklw7S6h+pC4bxaS898YPtcxFUjn
-fQIDAQAB
------END PUBLIC KEY-----`;
+import { RSA_PUBLIC_KEY_PEM } from '@/config/publicKey';
 
 interface PatientModalProps {
     visible: boolean;
