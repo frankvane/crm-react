@@ -2,7 +2,6 @@
   "extends": ["stylelint-config-standard"],
   "plugins": ["stylelint-order"],
     "rules": {
-    "indentation": "tab",
     "color-function-notation": ["modern", { "ignore": ["with-var-inside"] }],
     "alpha-value-notation": "number",
     "color-hex-length": "long",
