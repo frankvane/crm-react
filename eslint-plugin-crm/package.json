@@ -1,0 +1,11 @@
+{
+  "name": "eslint-plugin-crm",
+  "version": "1.0.0",
+  "description": "CRM项目自定义ESLint规则",
+  "main": "index.js",
+  "author": "CRM Team",
+  "license": "ISC",
+  "peerDependencies": {
+    "eslint": ">=8.0.0"
+  }
+} 
