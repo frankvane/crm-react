@@ -1,90 +1,51 @@
-import { useMemo } from "react";
-import { useQueries } from "@tanstack/react-query";
-import { getCategoryTree } from "@/api/modules/category";
-import { flattenTreeToOptions } from "../utils";
-import { CategoryData } from "../types";
+/**
+ * @file 获取分类数据
+ * @author 王家壮
+ * @date 2025-05-23
+ * @last_modified_by 最后修改人
+ * @last_modified_time YYYY-MM-DD
+ */
 
-// 分类类型常量
-const CATEGORY_TYPES = {
-	PRODUCT: 23,
-	BRAND: 21,
-	DOSAGE_FORM: 18,
-	UNIT: 22,
-} as const;
+import { useMemo } from "react";
+import {
+	useCategoryTypeQueries,
+	CATEGORY_TYPES,
+} from "@/api/query/useCategoryTypeQuery";
+import { transformToOptions } from "../utils";
 
 /**
  * 加载并处理分类数据的Hook
  * @returns 分类数据和选项
  */
 export function useCategoryData() {
-	// 使用useQueries批量查询
-	const categoryQueries = useQueries({
-		queries: [
-			{
-				queryKey: ["categoryTree", CATEGORY_TYPES.PRODUCT],
-				queryFn: () => getCategoryTree(CATEGORY_TYPES.PRODUCT),
-				staleTime: 5 * 60 * 1000, // 5分钟缓存
-			},
-			{
-				queryKey: ["categoryTree", CATEGORY_TYPES.BRAND],
-				queryFn: () => getCategoryTree(CATEGORY_TYPES.BRAND),
-				staleTime: 5 * 60 * 1000,
-			},
-			{
-				queryKey: ["categoryTree", CATEGORY_TYPES.DOSAGE_FORM],
-				queryFn: () => getCategoryTree(CATEGORY_TYPES.DOSAGE_FORM),
-				staleTime: 5 * 60 * 1000,
-			},
-			{
-				queryKey: ["categoryTree", CATEGORY_TYPES.UNIT],
-				queryFn: () => getCategoryTree(CATEGORY_TYPES.UNIT),
-				staleTime: 5 * 60 * 1000,
-			},
-		],
-	});
+	const categoryQueries = useCategoryTypeQueries();
 
-	// 检查是否有任何查询正在加载
+	// 检查是否有错误
+	const error = categoryQueries.some((query) => query.error);
+
+	// 检查是否正在加载
 	const isLoading = categoryQueries.some((query) => query.isLoading);
 
-	// 检查是否有任何查询发生错误
-	const error = categoryQueries.find((query) => query.error)?.error;
+	// 使用 useMemo 缓存转换后的选项数据
+	const options = useMemo(() => {
+		const [productCategories, brands, dosageForms, units] = categoryQueries.map(
+			(query) => query.data || [],
+		);
 
-	// 提取数据
-	const [productCategories, brands, dosageForms, units] = categoryQueries.map(
-		(query) => query.data || [],
-	);
+		return {
+			categoryOptions: transformToOptions(productCategories),
+			brandOptions: transformToOptions(brands),
+			dosageFormOptions: transformToOptions(dosageForms),
+			unitOptions: transformToOptions(units),
+		};
+	}, [categoryQueries]);
 
-	// 使用useMemo缓存计算结果，避免不必要的重新计算
-	const categoryOptions = useMemo(
-		() => flattenTreeToOptions(productCategories),
-		[productCategories],
-	);
-
-	const brandOptions = useMemo(() => flattenTreeToOptions(brands), [brands]);
-
-	const dosageFormOptions = useMemo(
-		() => flattenTreeToOptions(dosageForms),
-		[dosageForms],
-	);
-
-	const unitOptions = useMemo(() => flattenTreeToOptions(units), [units]);
-
-	// 返回数据和状态
 	return {
 		categoryData: {
-			productCategories,
-			brands,
-			dosageForms,
-			units,
 			isLoading,
-		} as CategoryData,
-		options: {
-			categoryOptions,
-			brandOptions,
-			dosageFormOptions,
-			unitOptions,
+			error,
 		},
-		error,
+		options,
 	};
 }
 

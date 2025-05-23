@@ -1,3 +1,10 @@
+/**
+ * @file 文件描述
+ * @author 王家壮
+ * @date 2005-5-23
+ * @last_modified_by 最后修改人
+ * @last_modified_time YYYY-MM-DD
+ */
 import React, { lazy, Suspense } from "react";
 import { Layout, Skeleton, message, ConfigProvider } from "antd";
 import { useCreateProductMutation } from "@/api/query/useProductQuery";
@@ -9,6 +16,7 @@ import { useProductState } from "./hooks/useProductState";
 import { useCategoryData } from "./hooks/useCategoryData";
 import ProductOperationBar from "./components/ProductOperationBar";
 import CommentPanel from "./components/CommentPanel";
+import { ProductFormValues } from "./types"; // 导入表单值类型
 
 // 懒加载AI分析对话框组件
 const StreamChatModal = lazy(() => import("@/components/StreamChatModal"));
@@ -48,7 +56,7 @@ const ProductsPage: React.FC = () => {
 	});
 
 	// 处理提交
-	const handleSubmit = async (values: any) => {
+	const handleSubmit = async (values: ProductFormValues) => {
 		try {
 			await createProductMutation.mutateAsync(values);
 		} catch (error: any) {

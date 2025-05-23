@@ -1,5 +1,14 @@
+/**
+ * @file 文件描述
+ * @author 开发人员
+ * @date 2025-05-23
+ * @last_modified_by 最后修改人
+ * @last_modified_time 2025-05-23
+ */
+
 import { ICategoryTreeNode } from "@/types/api/category";
 import { Option } from "./types";
+import { TreeData } from "@/types/common";
 
 // 缓存树扁平化结果
 const optionsCache = new Map<string, Option[]>();
@@ -89,3 +98,30 @@ export const isEmpty = (value: any): boolean => {
 		(typeof value === "object" && Object.keys(value).length === 0)
 	);
 };
+
+/**
+ * 将树形数据转换为扁平的选项数组
+ * @param treeData 树形数据
+ * @returns 选项数组
+ */
+export function transformToOptions(
+	treeData: TreeData[],
+): { label: string; value: number }[] {
+	const result: { label: string; value: number }[] = [];
+
+	function traverse(nodes: TreeData[]) {
+		nodes.forEach((node) => {
+			result.push({
+				label: node.name,
+				value: node.id,
+			});
+
+			if (node.children?.length) {
+				traverse(node.children);
+			}
+		});
+	}
+
+	traverse(treeData);
+	return result;
+}

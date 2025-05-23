@@ -1,3 +1,11 @@
+/**
+ * @file 文件描述
+ * @author 开发人员
+ * @date 2025-05-23
+ * @last_modified_by 最后修改人
+ * @last_modified_time 2025-05-23
+ */
+
 import React from "react";
 import {
 	Modal,
@@ -9,24 +17,12 @@ import {
 	Col,
 	Switch,
 } from "antd";
-import type { CreateProductParams } from "@/types/api/product";
+import { AddProductModalProps } from "@/products/types";
+import styles from "./style.module.less";
 
-interface SelectOption {
-	label: string;
-	value: number;
-}
-
-interface AddProductModalProps {
-	open: boolean;
-	onOk: (values: CreateProductParams) => Promise<void>;
-	onCancel: () => void;
-	brands: SelectOption[];
-	dosageForms: SelectOption[];
-	units: SelectOption[];
-	categories: SelectOption[];
-	confirmLoading?: boolean;
-}
-
+/**
+ * 添加产品弹窗组件
+ */
 const AddProductModal: React.FC<AddProductModalProps> = ({
 	open,
 	onOk,
@@ -66,6 +62,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
 			confirmLoading={confirmLoading}
 			destroyOnClose
 			width={800}
+			className={styles.modal}
 		>
 			<Form
 				form={form}
@@ -75,7 +72,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
 					price: 0,
 					stock: 0,
 				}}
-				style={{ maxHeight: "60vh", overflowY: "auto" }}
+				className={styles.form}
 			>
 				<Row gutter={16}>
 					<Col span={12}>

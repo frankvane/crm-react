@@ -1,3 +1,11 @@
+/**
+ * @file 文件描述
+ * @author 开发人员
+ * @date 2025-05-23
+ * @last_modified_by 最后修改人
+ * @last_modified_time 2025-05-23
+ */
+
 import React, { memo } from "react";
 import { Button, Row, Col, Space, Tooltip } from "antd";
 import {
@@ -5,8 +13,8 @@ import {
 	FilterOutlined,
 	ReloadOutlined,
 } from "@ant-design/icons";
-import styles from "../style.module.less";
-import { ProductOperationBarProps } from "../types";
+import styles from "./style.module.less";
+import { ProductOperationBarProps } from "../../types";
 
 /**
  * 产品操作栏组件
@@ -16,7 +24,7 @@ const ProductOperationBar: React.FC<ProductOperationBarProps> = ({
 	isLoading,
 }) => {
 	return (
-		<Row className={styles.operationBar} justify="space-between" align="middle">
+		<Row className={styles.container} justify="space-between" align="middle">
 			<Col>
 				<Space>
 					<Button
