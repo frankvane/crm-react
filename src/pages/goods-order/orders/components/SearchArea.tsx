@@ -1,72 +1,67 @@
+/**
+ * @file 搜索区域组件
+ * @author AI Assistant
+ * @date 2024-07-12
+ */
 import React from "react";
 import { Form, Input, Button } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
 import styles from "../style.module.less";
+import { SearchAreaProps } from "../types";
 
-interface SearchAreaProps {
-	onSearch?: (params: Record<string, any>) => void;
-}
-
+/**
+ * 搜索区域组件
+ * @param props 组件属性
+ * @returns React组件
+ */
 const SearchArea: React.FC<SearchAreaProps> = ({ onSearch }) => {
-	const [searchForm] = Form.useForm();
+	const [form] = Form.useForm();
 
-	// 搜索
-	const onFinish = (values: any) => {
-		// 只传递有值的字段，避免无关参数
-		const params: any = {};
-		if (values.search) params.search = values.search;
-		if (values.name) params.name = values.name;
-		if (values.phone) params.phone = values.phone;
-		if (values.id_card) params.id_card = values.id_card;
-		onSearch?.(params);
+	const handleSearch = (values: any) => {
+		onSearch(values);
+	};
+
+	const handleReset = () => {
+		form.resetFields();
+		onSearch({});
 	};
 
 	return (
 		<div className={styles.searchArea}>
 			<Form
-				form={searchForm}
-				layout="vertical"
-				onFinish={onFinish}
+				form={form}
+				layout="horizontal"
 				className={styles.searchAreaForm}
+				onFinish={handleSearch}
 			>
 				<div className={styles.searchAreaFields}>
-					<Form.Item
-						label="关键词"
-						name="search"
-						className={styles.searchAreaItemSearch}
-					>
+					<Form.Item name="keyword" className={styles.searchAreaItemSearch}>
 						<Input
-							placeholder="姓名/手机号/身份证/主治医师"
+							placeholder="请输入姓名/手机号/身份证号"
 							className={styles.searchAreaInput}
+							allowClear
+							prefix={<SearchOutlined />}
 						/>
 					</Form.Item>
-					<Form.Item
-						label="姓名"
-						name="name"
-						className={styles.searchAreaItemName}
-					>
+					<Form.Item name="name" className={styles.searchAreaItemName}>
 						<Input
-							placeholder="请输入姓名"
+							placeholder="姓名"
 							className={styles.searchAreaInput}
+							allowClear
 						/>
 					</Form.Item>
-					<Form.Item
-						label="手机号"
-						name="phone"
-						className={styles.searchAreaItemPhone}
-					>
+					<Form.Item name="phone" className={styles.searchAreaItemPhone}>
 						<Input
-							placeholder="请输入手机号"
+							placeholder="手机号"
 							className={styles.searchAreaInput}
+							allowClear
 						/>
 					</Form.Item>
-					<Form.Item
-						label="身份证号"
-						name="id_card"
-						className={styles.searchAreaItemIdCard}
-					>
+					<Form.Item name="id_card" className={styles.searchAreaItemIdCard}>
 						<Input
-							placeholder="请输入身份证号"
+							placeholder="身份证号"
 							className={styles.searchAreaInput}
+							allowClear
 						/>
 					</Form.Item>
 					<Form.Item className={styles.searchAreaItemBtn}>
@@ -74,9 +69,13 @@ const SearchArea: React.FC<SearchAreaProps> = ({ onSearch }) => {
 							type="primary"
 							htmlType="submit"
 							className={styles.searchAreaBtn}
+							icon={<SearchOutlined />}
 						>
 							搜索
 						</Button>
+					</Form.Item>
+					<Form.Item>
+						<Button onClick={handleReset}>重置</Button>
 					</Form.Item>
 				</div>
 			</Form>
