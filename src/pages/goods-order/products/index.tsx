@@ -1,3 +1,8 @@
+/**
+ * @file 商品管理页面
+ * @author AI Assistant
+ * @date 2024-03-20
+ */
 import React, { lazy, Suspense } from "react";
 import { Layout, Skeleton, message, ConfigProvider } from "antd";
 import { useCreateProductMutation } from "@/api/query/useProductQuery";
@@ -9,6 +14,7 @@ import { useProductState } from "./hooks/useProductState";
 import { useCategoryData } from "./hooks/useCategoryData";
 import ProductOperationBar from "./components/ProductOperationBar";
 import CommentPanel from "./components/CommentPanel";
+import { ProductFormValues } from "./types";
 
 // 懒加载AI分析对话框组件
 const StreamChatModal = lazy(() => import("@/components/StreamChatModal"));
@@ -34,31 +40,45 @@ const ProductsPage: React.FC = () => {
 
 	// 使用自定义Hook加载分类数据
 	const {
-		categoryData: { isLoading },
+		categoryData: { isLoading, error },
 		options: { categoryOptions, brandOptions, dosageFormOptions, unitOptions },
-		error,
 	} = useCategoryData();
 
 	// API调用
 	const createProductMutation = useCreateProductMutation({
 		onSuccess: () => {
-			message.success("创建产品成功");
+			message.success("创建商品成功");
 			toggleModal(false);
 		},
 	});
 
 	// 处理提交
-	const handleSubmit = async (values: any) => {
+	const handleSubmit = async (values: ProductFormValues) => {
 		try {
-			await createProductMutation.mutateAsync(values);
+			// 转换表单值为API参数格式
+			const apiParams = {
+				...values,
+				brand_id: values.brand_id || 0,
+				dosage_form_id: values.dosage_form_id || 0,
+				unit_id: values.unit_id || 0,
+				specification: values.specification || "",
+				manufacturer: values.manufacturer || "",
+				approval_number: values.approval_number || "",
+				bar_code: values.bar_code || "",
+				image_url: values.image_url || "",
+				description: values.description || "",
+				price: values.price || 0,
+				stock: values.stock || 0,
+			};
+			await createProductMutation.mutateAsync(apiParams);
 		} catch (error: any) {
-			message.error(error?.message || "创建产品失败");
+			message.error(error?.message || "创建商品失败");
 		}
 	};
 
 	// 在数据加载出错时显示错误信息
 	if (error) {
-		message.error("加载分类数据失败");
+		message.error(error.message);
 	}
 
 	return (

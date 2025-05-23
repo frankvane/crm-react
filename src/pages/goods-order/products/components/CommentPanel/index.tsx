@@ -1,8 +1,16 @@
+/**
+ * @file 文件描述
+ * @author 开发人员
+ * @date 2025-05-23
+ * @last_modified_by 最后修改人
+ * @last_modified_time 2025-05-23
+ */
+
 import React, { memo } from "react";
 import { Card, Space, Button, Typography, Spin, Empty } from "antd";
-import CommentList from "./commentList";
-import styles from "../style.module.less";
-import { CommentPanelProps } from "../types";
+import CommentList from "../commentList";
+import styles from "./style.module.less";
+import { CommentPanelProps } from "../../types";
 
 const { Text } = Typography;
 
@@ -42,16 +50,17 @@ const CommentPanel: React.FC<CommentPanelProps> = ({
 					)}
 				</Space>
 			}
-			className={styles.categoryHeader}
+			className={styles.cardHeader}
 			bodyStyle={{ padding: 0 }}
 			bordered={false}
 		>
 			<div
-				className={styles.categoryContent}
+				className={styles.content}
 				style={{
 					opacity: selectedProductId ? 1 : 0,
 					pointerEvents: selectedProductId ? "auto" : "none",
 					transition: "opacity 0.3s",
+					height: "100%" /* 确保评论面板容器占满高度 */,
 				}}
 			>
 				{selectedProductId ? (

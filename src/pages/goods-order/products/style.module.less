@@ -2,79 +2,88 @@
 
 /* @import url("../../../../styles/variables.less"); */
 
+/* 产品模块样式 */
+
 .container {
 	display: flex;
 	height: 80vh;
 	gap: 16px;
 	padding: 16px;
 	background-color: #f5f5f5;
+
+	.leftPanel {
+		width: 220px;
+		height: 100%;
+	}
+
+	.middlePanel {
+		display: flex;
+		flex-direction: column;
+		width: 360px;
+		height: 100%;
+		border: 1px solid #f0f0f0;
+		overflow: hidden;
+		background: #ffffff;
+		border-radius: 4px;
+
+		.categoryHeader {
+			display: flex;
+			flex-shrink: 0;
+			align-items: center;
+			justify-content: space-between;
+			padding: 12px 16px;
+			border-bottom: 1px solid #f0f0f0;
+			font-weight: 500;
+		}
+
+		.categoryContent {
+			position: relative;
+			flex: 1;
+			overflow-y: auto;
+		}
+
+		.categoryType {
+			padding: 12px 16px;
+			border-bottom: 1px solid #f0f0f0;
+			font-weight: 500;
+			background: #f7f7f7;
+		}
+	}
+
+	.rightPanel {
+		flex: 1;
+		height: 100%;
+		border: 1px solid #f0f0f0;
+		overflow: hidden;
+		background: #ffffff;
+		border-radius: 4px;
+
+		.rightPanelContent {
+			display: flex;
+			flex-direction: column;
+			height: 100%;
+
+			.operationBar {
+				display: flex;
+				align-items: center;
+				justify-content: flex-start;
+				padding: 16px;
+				border-bottom: 1px solid #f0f0f0;
+				background: #ffffff;
+			}
+
+			.productList {
+				flex: 1;
+				padding: 16px;
+				overflow-y: auto;
+			}
+		}
+	}
 }
 
-.leftPanel {
-	width: 220px;
-	height: 100%;
-}
-
-.rightPanel {
-	flex: 1;
-	height: 100%;
-	border: 1px solid #f0f0f0;
-	overflow: hidden;
-	background: #ffffff;
-	border-radius: 4px;
-}
-
-.rightPanelContent {
-	display: flex;
-	flex-direction: column;
-	height: 100%;
-}
-
-.operationBar {
+.loadingContainer {
 	display: flex;
 	align-items: center;
-	justify-content: flex-start;
-	padding: 16px;
-	border-bottom: 1px solid #f0f0f0;
-	background: #ffffff;
-}
-
-.productList {
-	flex: 1;
-	padding: 16px;
-	overflow-y: auto;
-}
-
-.middlePanel {
-	display: flex; /* 使用flex布局 */
-	flex-direction: column; /* 垂直排列元素 */
-	width: 360px;
+	justify-content: center;
 	height: 100%;
-	border: 1px solid #f0f0f0;
-	overflow: hidden;
-	background: #ffffff;
-	border-radius: 4px;
-}
-
-.categoryHeader {
-	display: flex;
-	flex-shrink: 0; /* 防止标题被压缩 */
-	align-items: center;
-	justify-content: space-between;
-	padding: 12px 16px;
-	border-bottom: 1px solid #f0f0f0;
-	font-weight: 500;
-}
-
-.categoryContent {
-	position: relative; /* 添加定位上下文 */
-	flex: 1; /* 占据剩余所有空间 */
-	overflow-y: auto;
-}
-
-.categoryType {
-	padding: 12px 16px;
-	border-bottom: 1px solid #f0f0f0;
-	font-weight: 500;
-	background: #f7f7f7;
 }
