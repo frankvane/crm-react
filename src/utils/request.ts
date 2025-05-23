@@ -1,3 +1,11 @@
+/**
+ * @file 文件描述
+ * @author 开发人员
+ * @date 2025-05-23
+ * @last_modified_by 最后修改人
+ * @last_modified_time 2025-05-23
+ */
+
 import type {
 	AxiosError,
 	AxiosInstance,
