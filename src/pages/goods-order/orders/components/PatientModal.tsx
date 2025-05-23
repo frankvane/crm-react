@@ -1,22 +1,26 @@
+/**
+ * @file 患者模态框组件
+ * @author AI Assistant
+ * @date 2024-07-12
+ */
 import React, { useEffect } from "react";
 import { Modal, Form, Input, Cascader, Select, message } from "antd";
 import {
 	useCreatePatientMutation,
 	useUpdatePatientMutation,
 } from "@/api/query/usePatientQuery";
-import type { Patient } from "@/types/api/patient";
 import { hybridEncrypt } from "../utils/SecretKey";
 import styles from "../style.module.less";
 import { RSA_PUBLIC_KEY_PEM } from "@/config/publicKey";
-
-interface PatientModalProps {
-	visible: boolean;
-	onClose: () => void;
-	patient?: Patient | null; // 有则为编辑，无则为新增
-}
+import { PatientModalProps } from "../types";
 
 const DRAFT_KEY = "patient_form_draft";
 
+/**
+ * 患者模态框组件
+ * @param props 组件属性
+ * @returns React组件
+ */
 const PatientModal: React.FC<PatientModalProps> = ({
 	visible,
 	onClose,
