@@ -17,7 +17,7 @@ import {
 	Col,
 	Switch,
 } from "antd";
-import { AddProductModalProps } from "@/products/types";
+import { AddProductModalProps } from "../../types";
 import styles from "./style.module.less";
 
 /**

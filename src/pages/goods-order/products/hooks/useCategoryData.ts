@@ -12,6 +12,7 @@ import {
 	CATEGORY_TYPES,
 } from "@/api/query/useCategoryTypeQuery";
 import { transformToOptions } from "../utils";
+import { CategoryDataState } from "../types";
 
 /**
  * 加载并处理分类数据的Hook
@@ -21,7 +22,9 @@ export function useCategoryData() {
 	const categoryQueries = useCategoryTypeQueries();
 
 	// 检查是否有错误
-	const error = categoryQueries.some((query) => query.error);
+	const error = categoryQueries.some((query) => query.error)
+		? new Error("加载分类数据失败")
+		: null;
 
 	// 检查是否正在加载
 	const isLoading = categoryQueries.some((query) => query.isLoading);
@@ -40,14 +43,15 @@ export function useCategoryData() {
 		};
 	}, [categoryQueries]);
 
+	const categoryData: CategoryDataState = {
+		isLoading,
+		error,
+	};
+
 	return {
-		categoryData: {
-			isLoading,
-			error,
-		},
+		categoryData,
 		options,
 	};
 }
-
 // 导出分类类型常量供其他模块使用
 export { CATEGORY_TYPES };

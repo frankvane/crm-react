@@ -1,3 +1,10 @@
+/**
+ * @file 获取分类数据
+ * @author 王家壮
+ * @date 2025-05-23
+ * @last_modified_by 最后修改人
+ * @last_modified_time YYYY-MM-DD
+ */
 import { useReducer, useCallback } from "react";
 import { ProductState, ProductAction } from "../types";
 
