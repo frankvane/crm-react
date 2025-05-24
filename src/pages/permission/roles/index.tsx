@@ -17,6 +17,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Permission from "@/components/Permission";
 import RoleForm from "./components/RoleForm";
 import RoleResourceModal from "./components/RoleResourceModal";
+import dayjs from "dayjs";
 import styles from "./style.module.less";
 import { useState } from "react";
 
@@ -113,6 +114,7 @@ const Roles = () => {
       title: "创建时间",
       dataIndex: "createdAt",
       key: "createdAt",
+      render: (text: string) => dayjs(text).format("YYYY-MM-DD"),
     },
     {
       title: "操作",
@@ -195,7 +197,7 @@ const Roles = () => {
           </Form.Item>
           <Form.Item>
             <Space>
-              <Button type="primary" htmlType="submit">
+              <Button type="dashed" htmlType="submit">
                 搜索
               </Button>
               <Button onClick={handleReset}>重置</Button>
@@ -206,7 +208,7 @@ const Roles = () => {
         <div className={styles.tableHeader}>
           <Permission permission="permission:roles:add">
             <Button
-              type="primary"
+              type="dashed"
               onClick={() => {
                 setEditingRole(null);
                 setModalVisible(true);
