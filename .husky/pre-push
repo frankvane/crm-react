@@ -1,0 +1,5 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+ 
+echo "正在执行推送前检查..."
+npm run lint && npm run build 

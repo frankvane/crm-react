@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+ 
+echo "正在检查提交消息格式..."
+npx --no -- commitlint --edit "$1" 

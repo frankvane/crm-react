@@ -1,30 +1,29 @@
-import React from 'react';
+/**
+ * @file 添加患者按钮组件
+ * @author AI Assistant
+ * @date 2024-07-12
+ */
+import React from "react";
+import { Button } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
+import { AddPatientButtonProps } from "../types";
 
-interface AddPatientButtonProps {
-  onClick?: () => void;
-}
-
+/**
+ * 添加患者按钮组件
+ * @param props 组件属性
+ * @returns React组件
+ */
 const AddPatientButton: React.FC<AddPatientButtonProps> = ({ onClick }) => {
-  return (
-    <button
-      style={{
-        color: '#fff',
-        border: 'none',
-        background: '#1677ff',
-        padding: '8px 20px',
-        borderRadius: 6,
-        cursor: 'pointer',
-        fontWeight: 500,
-        fontSize: 16,
-        boxShadow: '0 1px 4px rgba(22,119,255,0.08)',
-        transition: 'background 0.2s',
-        outline: 'none',
-      }}
-      onClick={onClick}
-    >
-      新增病患
-    </button>
-  );
+	return (
+		<Button
+			type="primary"
+			icon={<PlusOutlined />}
+			onClick={onClick}
+			size="large"
+		>
+			添加患者
+		</Button>
+	);
 };
 
-export default AddPatientButton; 
+export default AddPatientButton;

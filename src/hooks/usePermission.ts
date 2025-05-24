@@ -2,16 +2,16 @@ import React from "react";
 import { useAuthStore } from "@/store/modules/auth";
 
 interface IPermission {
-  id: number;
-  name: string;
-  code: string;
+	id: number;
+	name: string;
+	code: string;
 }
 
 interface IRole {
-  id: number;
-  name: string;
-  code: string;
-  permissions: IPermission[];
+	id: number;
+	name: string;
+	code: string;
+	permissions: IPermission[];
 }
 
 /**
@@ -20,14 +20,14 @@ interface IRole {
  * @returns 是否有权限
  */
 export function usePermission(permission: string): boolean {
-  const { roles } = useAuthStore();
+	const { roles } = useAuthStore();
 
-  return React.useMemo(() => {
-    // 检查所有角色中是否有对应的权限
-    return roles.some((role: IRole) =>
-      role.permissions.some((p: IPermission) => p.code === permission)
-    );
-  }, [permission, roles]);
+	return React.useMemo(() => {
+		// 检查所有角色中是否有对应的权限
+		return roles.some((role: IRole) =>
+			role.permissions.some((p: IPermission) => p.code === permission),
+		);
+	}, [permission, roles]);
 }
 
 /**
@@ -36,13 +36,13 @@ export function usePermission(permission: string): boolean {
  * @returns 是否有权限
  */
 export function useAnyPermission(permissions: string[]): boolean {
-  const { roles } = useAuthStore();
+	const { roles } = useAuthStore();
 
-  return React.useMemo(() => {
-    return roles.some((role: IRole) =>
-      role.permissions.some((p: IPermission) => permissions.includes(p.code))
-    );
-  }, [permissions, roles]);
+	return React.useMemo(() => {
+		return roles.some((role: IRole) =>
+			role.permissions.some((p: IPermission) => permissions.includes(p.code)),
+		);
+	}, [permissions, roles]);
 }
 
 /**
@@ -51,13 +51,13 @@ export function useAnyPermission(permissions: string[]): boolean {
  * @returns 是否有权限
  */
 export function useAllPermissions(permissions: string[]): boolean {
-  const { roles } = useAuthStore();
+	const { roles } = useAuthStore();
 
-  return React.useMemo(() => {
-    return roles.some((role: IRole) =>
-      permissions.every((permission) =>
-        role.permissions.some((p: IPermission) => p.code === permission)
-      )
-    );
-  }, [permissions, roles]);
+	return React.useMemo(() => {
+		return roles.some((role: IRole) =>
+			permissions.every((permission) =>
+				role.permissions.some((p: IPermission) => p.code === permission),
+			),
+		);
+	}, [permissions, roles]);
 }

@@ -1,27 +1,216 @@
+/* 订单模块样式 */
+
 .container {
-  width: 100%;
-  min-height: 100%;
-  background: #f7f8fa;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  box-sizing: border-box;
-  overflow: hidden;
+	display: flex;
+	height: 80vh;
+	gap: 16px;
+	padding: 16px;
+	background-color: #f5f5f5;
+
+	.content {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		height: 100%;
+		padding: 16px;
+		border: 1px solid #f0f0f0;
+		overflow: hidden;
+		background: #ffffff;
+		border-radius: 4px;
+		box-sizing: border-box;
+
+		.topBar {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			margin-bottom: 16px;
+			padding-bottom: 16px;
+			border-bottom: 1px solid #f0f0f0;
+			gap: 16px;
+		}
+	}
 }
 
-.content {
-  width: 100%;
-  max-width: 1200px;
-  margin: 32px 0 0 0;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
+.patientCard {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	min-height: 180px;
+	padding: 20px;
+	border: 1px solid #e5e6eb;
+	background: #fafbfc;
+	border-radius: 10px;
+	box-shadow: 0 2px 8px rgb(0 0 0 / 0.08);
+
+	.patientCardHeader {
+		margin-bottom: 8px;
+	}
+
+	.patientCardName {
+		margin-right: 8px;
+		font-size: 18px;
+		font-weight: 600;
+	}
+
+	.patientCardGender {
+		margin-right: 8px;
+		color: #888888;
+	}
+
+	.patientCardAge {
+		color: #888888;
+	}
+
+	.patientCardInfo {
+		margin-bottom: 2px;
+		color: #555555;
+		font-size: 14px;
+	}
+
+	.patientCardAddress {
+		margin-bottom: 10px;
+		color: #555555;
+		font-size: 14px;
+	}
+
+	.patientCardActions {
+		display: flex;
+		gap: 8px;
+	}
+
+	.patientCardBtnDetail {
+		padding: 4px 14px;
+		border: none;
+		color: #ffffff;
+		background: #1677ff;
+		border-radius: 4px;
+		cursor: pointer;
+	}
+
+	.patientCardBtnEdit {
+		padding: 4px 14px;
+		border: none;
+		color: #ffffff;
+		background: #ffb300;
+		border-radius: 4px;
+		cursor: pointer;
+	}
+
+	.patientCardBtnDelete {
+		padding: 4px 14px;
+		border: none;
+		color: #ffffff;
+		background: #f53f3f;
+		border-radius: 4px;
+		cursor: pointer;
+	}
 }
 
-.topBar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-  gap: 16px;
-} 
+/* 搜索区域样式 */
+.searchArea {
+	display: flex;
+	flex: 1;
+	align-items: center;
+	width: 100%;
+	min-height: 40px;
+	padding: 18px 24px;
+	border: none;
+	background: #ffffff;
+	border-radius: 8px;
+	box-shadow: 0 1px 4px rgb(0 0 0 / 0.04);
+
+	.searchAreaForm {
+		width: 100%;
+	}
+
+	.searchAreaFields {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 24px;
+		row-gap: 0;
+		align-items: flex-end;
+	}
+
+	.searchAreaItemSearch {
+		flex: 1 1 220px;
+		min-width: 180px;
+		margin-bottom: 0;
+	}
+
+	.searchAreaItemName {
+		flex: 1 1 120px;
+		min-width: 100px;
+		margin-bottom: 0;
+	}
+
+	.searchAreaItemPhone {
+		flex: 1 1 150px;
+		min-width: 120px;
+		margin-bottom: 0;
+	}
+
+	.searchAreaItemIdCard {
+		flex: 1 1 180px;
+		min-width: 140px;
+		margin-bottom: 0;
+	}
+
+	.searchAreaItemBtn {
+		flex: 0 0 100px;
+		margin-bottom: 0;
+	}
+
+	.searchAreaInput {
+		border-radius: 8px;
+		height: 38px;
+	}
+
+	.searchAreaBtn {
+		width: 80px;
+		height: 38px;
+		border: none;
+		font-size: 16px;
+		font-weight: 500;
+		background: linear-gradient(90deg, #1890ff 0%, #40a9ff 100%);
+		border-radius: 8px;
+	}
+}
+
+/* 患者列表样式 */
+.patientListContainer {
+	flex: 1;
+	width: 100%;
+	margin-top: 16px;
+	padding: 24px;
+	background: #ffffff;
+	overflow-y: auto;
+	border-radius: 8px;
+	box-shadow: 0 1px 4px rgb(0 0 0 / 0.04);
+
+	.patientListGrid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+		gap: 24px;
+	}
+}
+
+/* 模态框样式 */
+.patientDetailModalTitle {
+	font-size: 20px;
+	font-weight: 700;
+	text-align: center;
+	letter-spacing: 2px;
+}
+
+.patientDetailModalInfo {
+	margin-bottom: 24px;
+}
+
+/* 加载状态容器 */
+.loadingContainer {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+	padding: 40px 0;
+}

@@ -15,20 +15,20 @@ import { useProductContext } from "./context/ProductContext";
  * @property {string} [alt] - 图片 alt 文本
  */
 export interface ProductCardImageProps {
-  /** 图片地址 */
-  src: string;
-  /** 图片 alt 文本 */
-  alt?: string;
+	/** 图片地址 */
+	src: string;
+	/** 图片 alt 文本 */
+	alt?: string;
 }
 /**
  * 商品图片组件
  */
 const ProductCardImage: React.FC<ProductCardImageProps> = ({ src, alt }) => {
-  return (
-    <div className={styles.productImage}>
-      <img src={src} alt={alt} />
-    </div>
-  );
+	return (
+		<div className={styles.productImage}>
+			<img src={src} alt={alt} />
+		</div>
+	);
 };
 
 /**
@@ -36,14 +36,14 @@ const ProductCardImage: React.FC<ProductCardImageProps> = ({ src, alt }) => {
  * @property {ReactNode} children - 标题内容（必填）
  */
 export interface ProductCardTitleProps {
-  /** 标题内容 */
-  children: ReactNode;
+	/** 标题内容 */
+	children: ReactNode;
 }
 /**
  * 商品标题组件
  */
 const ProductCardTitle: React.FC<ProductCardTitleProps> = ({ children }) => {
-  return <div className={styles.productTitle}>{children}</div>;
+	return <div className={styles.productTitle}>{children}</div>;
 };
 
 /**
@@ -51,14 +51,14 @@ const ProductCardTitle: React.FC<ProductCardTitleProps> = ({ children }) => {
  * @property {ReactNode} children - 价格内容（必填）
  */
 export interface ProductCardPriceProps {
-  /** 价格内容 */
-  children: ReactNode;
+	/** 价格内容 */
+	children: ReactNode;
 }
 /**
  * 商品价格组件
  */
 const ProductCardPrice: React.FC<ProductCardPriceProps> = ({ children }) => {
-  return <div className={styles.productPrice}>{children}</div>;
+	return <div className={styles.productPrice}>{children}</div>;
 };
 
 /**
@@ -67,26 +67,26 @@ const ProductCardPrice: React.FC<ProductCardPriceProps> = ({ children }) => {
  * @property {string} [type] - 徽章类型（如 'premium'）
  */
 export interface ProductCardBadgeProps {
-  /** 徽章内容 */
-  children: ReactNode;
-  /** 徽章类型 */
-  type?: string;
+	/** 徽章内容 */
+	children: ReactNode;
+	/** 徽章类型 */
+	type?: string;
 }
 /**
  * 商品徽章组件
  */
 const ProductCardBadge: React.FC<ProductCardBadgeProps> = ({
-  children,
-  type,
+	children,
+	type,
 }) => {
-  const badgeTypeClass = type
-    ? type === "premium"
-      ? styles.productBadgePremium
-      : styles.productBadgeDefault
-    : "";
-  return (
-    <div className={`${styles.productBadge} ${badgeTypeClass}`}>{children}</div>
-  );
+	const badgeTypeClass = type
+		? type === "premium"
+			? styles.productBadgePremium
+			: styles.productBadgeDefault
+		: "";
+	return (
+		<div className={`${styles.productBadge} ${badgeTypeClass}`}>{children}</div>
+	);
 };
 
 /**
@@ -96,33 +96,33 @@ const ProductCardBadge: React.FC<ProductCardBadgeProps> = ({
  * @property {boolean} [isActive] - 是否激活态
  */
 export interface ProductCardActionButtonProps {
-  /** 按钮内容 */
-  children: ReactNode;
-  /** 点击事件 */
-  onClick?: MouseEventHandler<HTMLButtonElement>;
-  /** 是否激活态 */
-  isActive?: boolean;
+	/** 按钮内容 */
+	children: ReactNode;
+	/** 点击事件 */
+	onClick?: MouseEventHandler<HTMLButtonElement>;
+	/** 是否激活态 */
+	isActive?: boolean;
 }
 /**
  * 操作按钮组件
  */
 const ProductCardActionButton: React.FC<ProductCardActionButtonProps> = ({
-  children,
-  onClick,
-  isActive,
+	children,
+	onClick,
+	isActive,
 }) => {
-  return (
-    <button
-      className={
-        isActive
-          ? `${styles.actionButton} ${styles.actionButtonActive}`
-          : `${styles.actionButton} ${styles.actionButtonNotActive}`
-      }
-      onClick={onClick}
-    >
-      {children}
-    </button>
-  );
+	return (
+		<button
+			className={
+				isActive
+					? `${styles.actionButton} ${styles.actionButtonActive}`
+					: `${styles.actionButton} ${styles.actionButtonNotActive}`
+			}
+			onClick={onClick}
+		>
+			{children}
+		</button>
+	);
 };
 
 /**
@@ -131,28 +131,28 @@ const ProductCardActionButton: React.FC<ProductCardActionButtonProps> = ({
  * @property {ReactNode} children - 分区内容
  */
 export interface ProductCardSectionProps {
-  name: string;
-  children: React.ReactNode;
+	name: string;
+	children: React.ReactNode;
 }
 /**
  * 通用分区插槽 Section
  */
 const ProductCardSection: React.FC<ProductCardSectionProps> = ({
-  children,
+	children,
 }) => <>{children}</>;
 
 /**
  * renderActions 参数上下文类型，支持扩展
  */
 export interface ProductCardActionContext {
-  isAddedToCart: boolean;
-  isWishlisted: boolean;
-  toggleCart: () => void;
-  toggleWishlist: () => void;
-  productId: string;
-  children: React.ReactNode;
-  productData?: any;
-  extra?: any;
+	isAddedToCart: boolean;
+	isWishlisted: boolean;
+	toggleCart: () => void;
+	toggleWishlist: () => void;
+	productId: string;
+	children: React.ReactNode;
+	productData?: any;
+	extra?: any;
 }
 
 /**
@@ -166,38 +166,38 @@ export interface ProductCardActionContext {
  * @property {CSSProperties} [style] - 自定义样式
  */
 export interface ProductCardProps {
-  /** 商品唯一标识 */
-  productId: string;
-  /** 子组件内容 */
-  children: ReactNode;
-  /** 自定义底部内容 */
-  customFooter?: ReactNode;
-  /**
-   * 自定义操作按钮渲染函数
-   * @param params 当前商品的购物车/心愿单状态与切换方法
-   */
-  renderActions?: (params: ProductCardActionContext) => ReactNode;
-  /** 布局方向 */
-  layout?: "vertical" | "horizontal";
-  /** 自定义 className */
-  className?: string;
-  /** 自定义样式 */
-  style?: CSSProperties;
+	/** 商品唯一标识 */
+	productId: string;
+	/** 子组件内容 */
+	children: ReactNode;
+	/** 自定义底部内容 */
+	customFooter?: ReactNode;
+	/**
+	 * 自定义操作按钮渲染函数
+	 * @param params 当前商品的购物车/心愿单状态与切换方法
+	 */
+	renderActions?: (params: ProductCardActionContext) => ReactNode;
+	/** 布局方向 */
+	layout?: "vertical" | "horizontal";
+	/** 自定义 className */
+	className?: string;
+	/** 自定义样式 */
+	style?: CSSProperties;
 }
 
 // 递归展开所有 children，支持 Fragment/数组嵌套
 function flattenChildren(children: React.ReactNode): React.ReactNode[] {
-  const result: React.ReactNode[] = [];
-  React.Children.forEach(children, (child) => {
-    if (React.isValidElement(child) && child.type === React.Fragment) {
-      result.push(...flattenChildren(child.props.children));
-    } else if (Array.isArray(child)) {
-      result.push(...flattenChildren(child));
-    } else {
-      result.push(child);
-    }
-  });
-  return result;
+	const result: React.ReactNode[] = [];
+	React.Children.forEach(children, (child) => {
+		if (React.isValidElement(child) && child.type === React.Fragment) {
+			result.push(...flattenChildren(child.props.children));
+		} else if (Array.isArray(child)) {
+			result.push(...flattenChildren(child));
+		} else {
+			result.push(child);
+		}
+	});
+	return result;
 }
 
 /**
@@ -205,121 +205,121 @@ function flattenChildren(children: React.ReactNode): React.ReactNode[] {
  * 只渲染传入的 children（由 Wrapper 层保证 props/children 严格分流），唯一性去重逻辑保留。
  */
 const ProductCard: React.FC<ProductCardProps> & {
-  Image: typeof ProductCardImage;
-  Title: typeof ProductCardTitle;
-  Price: typeof ProductCardPrice;
-  Badge: typeof ProductCardBadge;
-  ActionButton: typeof ProductCardActionButton;
-  Section: typeof ProductCardSection;
+	Image: typeof ProductCardImage;
+	Title: typeof ProductCardTitle;
+	Price: typeof ProductCardPrice;
+	Badge: typeof ProductCardBadge;
+	ActionButton: typeof ProductCardActionButton;
+	Section: typeof ProductCardSection;
 } = ({
-  productId,
-  children,
-  customFooter,
-  renderActions,
-  layout = "vertical",
-  className = "",
-  style = {},
+	productId,
+	children,
+	customFooter,
+	renderActions,
+	layout = "vertical",
+	className = "",
+	style = {},
 }) => {
-  const { getProductState, toggleState } = useProductContext();
-  const { cart, wishlist } = getProductState(productId);
+	const { getProductState, toggleState } = useProductContext();
+	const { cart, wishlist } = getProductState(productId);
 
-  const layoutClass =
-    layout === "horizontal"
-      ? styles.productCardHorizontal
-      : styles.productCardVertical;
+	const layoutClass =
+		layout === "horizontal"
+			? styles.productCardHorizontal
+			: styles.productCardVertical;
 
-  // 递归展开所有 children，做全量唯一性去重
-  const childrenArray = flattenChildren(children);
-  const typeMap = new Map();
-  const uniqueChildren: React.ReactNode[] = [];
-  childrenArray.forEach((child: any) => {
-    // 过滤 null/undefined/false，只处理有效 ReactElement
-    if (!child || typeof child !== "object" || !("type" in child)) {
-      return;
-    }
-    const typeName = child.type.displayName || child.type.name || child.type;
-    // 只对 Image、Title、Price、Badge 做唯一性控制，其它类型允许多次
-    if (
-      [
-        "ProductCard.Image",
-        "ProductCard.Title",
-        "ProductCard.Price",
-        "ProductCard.Badge",
-      ].includes(typeName)
-    ) {
-      if (!typeMap.has(typeName)) {
-        typeMap.set(typeName, true);
-        uniqueChildren.push(child);
-      }
-    } else {
-      uniqueChildren.push(child);
-    }
-  });
+	// 递归展开所有 children，做全量唯一性去重
+	const childrenArray = flattenChildren(children);
+	const typeMap = new Map();
+	const uniqueChildren: React.ReactNode[] = [];
+	childrenArray.forEach((child: any) => {
+		// 过滤 null/undefined/false，只处理有效 ReactElement
+		if (!child || typeof child !== "object" || !("type" in child)) {
+			return;
+		}
+		const typeName = child.type.displayName || child.type.name || child.type;
+		// 只对 Image、Title、Price、Badge 做唯一性控制，其它类型允许多次
+		if (
+			[
+				"ProductCard.Image",
+				"ProductCard.Title",
+				"ProductCard.Price",
+				"ProductCard.Badge",
+			].includes(typeName)
+		) {
+			if (!typeMap.has(typeName)) {
+				typeMap.set(typeName, true);
+				uniqueChildren.push(child);
+			}
+		} else {
+			uniqueChildren.push(child);
+		}
+	});
 
-  // 先找出 imageComponent 和 badgeComponent
-  const imageComponent = uniqueChildren.find(
-    (child: any) => child && child.type === ProductCardImage
-  );
-  const badgeComponent = uniqueChildren.find(
-    (child: any) => child && child.type === ProductCardBadge
-  );
+	// 先找出 imageComponent 和 badgeComponent
+	const imageComponent = uniqueChildren.find(
+		(child: any) => child && child.type === ProductCardImage,
+	);
+	const badgeComponent = uniqueChildren.find(
+		(child: any) => child && child.type === ProductCardBadge,
+	);
 
-  // Section 分区和其它内容分类
-  const sections: Record<string, React.ReactNode[]> = {};
-  const otherChildren: React.ReactNode[] = [];
-  uniqueChildren.forEach((child: any) => {
-    if (child && child.type === ProductCardSection && child.props?.name) {
-      if (!sections[child.props.name]) sections[child.props.name] = [];
-      sections[child.props.name].push(child);
-    } else if (
-      child !== imageComponent && // 排除已渲染的 imageComponent
-      child !== badgeComponent // 排除已渲染的 badgeComponent
-    ) {
-      otherChildren.push(child);
-    }
-  });
+	// Section 分区和其它内容分类
+	const sections: Record<string, React.ReactNode[]> = {};
+	const otherChildren: React.ReactNode[] = [];
+	uniqueChildren.forEach((child: any) => {
+		if (child && child.type === ProductCardSection && child.props?.name) {
+			if (!sections[child.props.name]) sections[child.props.name] = [];
+			sections[child.props.name].push(child);
+		} else if (
+			child !== imageComponent && // 排除已渲染的 imageComponent
+			child !== badgeComponent // 排除已渲染的 badgeComponent
+		) {
+			otherChildren.push(child);
+		}
+	});
 
-  return (
-    <div
-      className={`${styles.productCard} ${layoutClass} ${className}`}
-      style={style}
-    >
-      <div className={styles.productImageContainer}>
-        {imageComponent}
-        {badgeComponent}
-      </div>
+	return (
+		<div
+			className={`${styles.productCard} ${layoutClass} ${className}`}
+			style={style}
+		>
+			<div className={styles.productImageContainer}>
+				{imageComponent}
+				{badgeComponent}
+			</div>
 
-      <div className={styles.productDetails}>
-        {otherChildren}
-        {/* 渲染所有 Section 分区 */}
-        {Object.entries(sections).map(([name, nodes]) => (
-          <div
-            key={name}
-            className={styles[`section_${name}`] || styles.section}
-          >
-            {nodes}
-          </div>
-        ))}
-        {renderActions && (
-          <div className={styles.productActions}>
-            {renderActions({
-              isAddedToCart: cart,
-              isWishlisted: wishlist,
-              toggleCart: () => toggleState(productId, "cart"),
-              toggleWishlist: () => toggleState(productId, "wishlist"),
-              productId,
-              children,
-              productData: {},
-              extra: {},
-            })}
-          </div>
-        )}
-        {customFooter && (
-          <div className={styles.productFooter}>{customFooter}</div>
-        )}
-      </div>
-    </div>
-  );
+			<div className={styles.productDetails}>
+				{otherChildren}
+				{/* 渲染所有 Section 分区 */}
+				{Object.entries(sections).map(([name, nodes]) => (
+					<div
+						key={name}
+						className={styles[`section_${name}`] || styles.section}
+					>
+						{nodes}
+					</div>
+				))}
+				{renderActions && (
+					<div className={styles.productActions}>
+						{renderActions({
+							isAddedToCart: cart,
+							isWishlisted: wishlist,
+							toggleCart: () => toggleState(productId, "cart"),
+							toggleWishlist: () => toggleState(productId, "wishlist"),
+							productId,
+							children,
+							productData: {},
+							extra: {},
+						})}
+					</div>
+				)}
+				{customFooter && (
+					<div className={styles.productFooter}>{customFooter}</div>
+				)}
+			</div>
+		</div>
+	);
 };
 
 ProductCard.Image = ProductCardImage;
