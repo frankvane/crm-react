@@ -1,21 +1,22 @@
 .container {
 	display: flex;
-	flex-direction: column;
-	align-items: center;
-	width: 100%;
-	min-height: 100%;
-	overflow: hidden;
-	background: #f7f8fa;
-	box-sizing: border-box;
+	height: 80vh;
+	gap: 16px;
+	padding: 16px;
+	background-color: #f5f5f5;
 }
 
 .content {
 	display: flex;
 	flex: 1;
 	flex-direction: column;
-	width: 100%;
-	max-width: 1200px;
-	margin: 32px 0 0;
+	height: 100%;
+	padding: 16px;
+	border: 1px solid #f0f0f0;
+	overflow: hidden;
+	background: #ffffff;
+	border-radius: 4px;
+	box-sizing: border-box;
 }
 
 .topBar {
@@ -23,6 +24,8 @@
 	align-items: center;
 	justify-content: space-between;
 	margin-bottom: 16px;
+	padding-bottom: 16px;
+	border-bottom: 1px solid #f0f0f0;
 	gap: 16px;
 }
 
@@ -171,11 +174,12 @@
 }
 
 .patientListContainer {
+	flex: 1;
 	width: 100%;
-	min-height: 400px;
 	margin-top: 16px;
 	padding: 24px;
 	background: #ffffff;
+	overflow-y: auto;
 	border-radius: 8px;
 	box-shadow: 0 1px 4px rgb(0 0 0 / 0.04);
 }
