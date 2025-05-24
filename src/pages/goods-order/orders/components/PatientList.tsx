@@ -1,3 +1,11 @@
+/**
+ * @file 文件描述
+ * @author 开发人员
+ * @date 2025-05-23
+ * @last_modified_by 最后修改人
+ * @last_modified_time 2025-05-23
+ */
+
 import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import PatientCard from "./PatientCard";
@@ -351,21 +359,27 @@ const PatientList: React.FC<PatientListProps> = ({ searchParams = {} }) => {
 							<PatientCard
 								key={p.id}
 								patient={p}
-								onEdit={(patient) => {
-									setEditingPatient(patient);
+								onEdit={(id) => {
+									// 根据ID找到对应的患者
+									const patient = data.list.find((p) => p.id === id);
+									setEditingPatient(patient || null);
 									setEditModalVisible(true);
 								}}
-								onDelete={(patient) => {
+								onDelete={(id) => {
+									if (id === undefined || id === null) {
+										message.error("无效的患者ID");
+										return;
+									}
 									Modal.confirm({
 										title: "确认删除",
 										content: "确定要删除该患者吗？此操作不可恢复。",
 										okText: "确认",
 										cancelText: "取消",
-										onOk: () => deleteMutation.mutate(patient.id),
+										onOk: () => deleteMutation.mutate(id),
 									});
 								}}
-								onDetail={(patient) => {
-									setDetailPatientId(patient.id);
+								onDetail={(id) => {
+									setDetailPatientId(id);
 									setDetailModalVisible(true);
 								}}
 							/>
