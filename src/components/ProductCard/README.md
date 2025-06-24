@@ -13,7 +13,51 @@
   - `ProductCard.Badge` 商品徽章
   - `ProductCard.ActionButton` 操作按钮
   - `ProductCard.Section` 通用分区插槽（支持 name 属性，语义化分区，内容完全自定义）
-- **ProductCardWrapper** 快速集成封装，支持常用属性直传与自动插槽渲染
+- **withProductCard** 高阶组件（HOC），用于快速集成商品卡片包装和通用逻辑
+
+---
+
+## withProductCard 高阶组件用法
+
+`withProductCard` 是一个高阶组件（HOC），用于快速为自定义内容组件提供商品卡片包装、状态和操作能力。
+
+### 快速用法
+
+```tsx
+import { withProductCard } from "@/components/ProductCard/withProductCard";
+
+// 默认内容组件（可选）
+const DefaultContent = ({ children }) => (children ? <>{children}</> : null);
+
+// 包裹后得到 ProductCardWrapper
+const ProductCardWrapper = withProductCard(DefaultContent);
+
+// 只用 props（推荐）
+<ProductCardWrapper
+  productId="1002"
+  imageSrc="xxx.jpg"
+  title="商品标题"
+  price={<span>￥88.00</span>}
+  badgeType="premium"
+  onAddToCart={(id, added) => console.log(id, added)}
+  onWishlistChange={(id, wish) => console.log(id, wish)}
+/>
+
+// 只用 children（完全自定义结构）
+<ProductCardWrapper productId="p3" onAddToCart={...} onWishlistChange={...}>
+  <ProductCard.Image src="..." alt="..." />
+  <ProductCard.Badge type="premium">限量</ProductCard.Badge>
+  <ProductCard.Title>定制插槽商品</ProductCard.Title>
+  <ProductCard.Price>¥299.00</ProductCard.Price>
+  <div>自定义底部内容</div>
+</ProductCardWrapper>
+```
+
+- props 和 children 不要混用同一内容，否则会重复渲染。
+- 有 imageSrc、badgeType、title、price 等 props 时，优先渲染 props，忽略 children。
+- 原 ProductCardWrapper 组件已废弃，统一使用 HOC 方式。
+
+---
 
 ## ProductCard Props
 
@@ -76,60 +120,7 @@
 </ProductCard>
 ```
 
-## ProductCardWrapper 快速用法
-
-| 属性名                 | 类型                            | 说明                                 | 必填 | 默认值   |
-| ---------------------- | ------------------------------- | ------------------------------------ | ---- | -------- |
-| productId              | string                          | 商品唯一标识                         | 是   | -        |
-| layout                 | "vertical" \| "horizontal"      | 布局方向                             | 否   | vertical |
-| imageSrc               | string                          | 商品图片地址                         | 否   | -        |
-| title                  | string                          | 商品标题                             | 否   | -        |
-| price                  | ReactNode                       | 商品价格                             | 否   | -        |
-| badgeType              | string                          | 徽章类型                             | 否   | -        |
-| customFooter           | ReactNode                       | 自定义底部内容                       | 否   | -        |
-| showActions            | boolean                         | 是否显示操作按钮                     | 否   | true     |
-| className              | string                          | 自定义 className                     | 否   | -        |
-| style                  | CSSProperties                   | 自定义样式                           | 否   | -        |
-| children               | ReactNode                       | 自定义内容（优先级高于 title/price） | 否   | -        |
-| onAddToCart            | (productId, added) => void      | 购物车状态变更回调                   | 否   | -        |
-| onWishlistChange       | (productId, wishlisted) => void | 心愿单状态变更回调                   | 否   | -        |
-| addToCartText          | string                          | "加入购物车"按钮文案                 | 否   | -        |
-| removeFromCartText     | string                          | "移出购物车"按钮文案                 | 否   | -        |
-| addToWishlistText      | string                          | "加入心愿单"按钮文案                 | 否   | -        |
-| removeFromWishlistText | string                          | "移出心愿单"按钮文案                 | 否   | -        |
-| renderCartAction       | (params) => ReactNode           | 自定义渲染购物车操作内容             | 否   | -        |
-| renderWishlistAction   | (params) => ReactNode           | 自定义渲染心愿单操作内容             | 否   | -        |
-
-#### 快速用法示例
-
-```tsx
-<ProductCardWrapper
-  productId="1002"
-  imageSrc="xxx.jpg"
-  title="商品标题"
-  price={<span>￥88.00</span>}
-  badgeType="premium"
-  onAddToCart={(id, added) => console.log(id, added)}
-  onWishlistChange={(id, wish) => console.log(id, wish)}
-/>
-```
-
-## 最佳实践与注意事项
-
-- 推荐使用`ProductProvider`包裹全局，启用商品状态共享。
-- 复合结构建议通过插槽组合，避免嵌套过深。
-- 操作按钮可完全自定义，支持 icon/svg/自定义交互。
-- `ProductCardWrapper`适合快速集成，复杂场景建议直接用`ProductCard`。
-- 支持自定义样式与 className，满足多样化 UI 需求。
-
-## 常见问题
-
-- **如何实现自定义操作按钮？**
-  使用`renderActions`或`renderCartAction`/`renderWishlistAction`传入自定义渲染函数。
-- **如何联动全局购物车/心愿单？**
-  使用`ProductProvider`包裹应用，通过 context 自动管理。
-- **如何自定义卡片内容？**
-  直接传入`children`，或通过插槽子组件组合。
+---
 
 ## renderActions 扩展用法
 
@@ -169,98 +160,6 @@
   {/* ...插槽内容 */}
 </ProductCard>
 ```
-
----
-
-## ProductCardWrapper 用法与最佳实践
-
-### 1. 只用 props（标准用法，推荐）
-
-> 只传 imageSrc、badgeType、title、price 等 props，不传 children，内容只渲染一次。
-
-```tsx
-<ProductCardWrapper
-  productId="p1"
-  imageSrc="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=400&q=80"
-  badgeType="premium"
-  title="时尚运动鞋"
-  price="¥99.00"
-  onAddToCart={handleAddToCart}
-  onWishlistChange={handleWishlistChange}
-/>
-```
-
-### 2. 只用 children（完全自定义结构）
-
-> 不传 imageSrc、badgeType、title、price 等 props，只传 children，内容只渲染一次。
-
-```tsx
-<ProductCardWrapper
-  productId="p3"
-  onAddToCart={handleAddToCart}
-  onWishlistChange={handleWishlistChange}
->
-  <ProductCardWrapper.Image
-    src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80"
-    alt="定制商品"
-  />
-  <ProductCardWrapper.Badge type="premium">限量</ProductCardWrapper.Badge>
-  <ProductCardWrapper.Title>定制插槽商品</ProductCardWrapper.Title>
-  <ProductCardWrapper.Price>¥299.00</ProductCardWrapper.Price>
-  <div style={{ color: "#888", fontSize: 12, marginTop: 8 }}>
-    自定义底部内容
-  </div>
-</ProductCardWrapper>
-```
-
-### 3. 自定义操作按钮（props 用法）
-
-> 只用 props，renderCartAction/renderWishlistAction 支持自定义按钮内容。
-
-```tsx
-<ProductCardWrapper
-  productId="p4"
-  imageSrc="https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80"
-  badgeType="premium"
-  title="自定义操作商品"
-  price="¥299.00"
-  onAddToCart={handleAddToCart}
-  onWishlistChange={handleWishlistChange}
-  renderCartAction={({ isAdded, onClick }) => (
-    <span
-      onClick={onClick}
-      style={{
-        cursor: "pointer",
-        color: isAdded ? "red" : "gray",
-        fontSize: 20,
-        marginRight: 8,
-      }}
-      title={isAdded ? "移出购物车" : "加入购物车"}
-    >
-      {isAdded ? "🛒✔️" : "🛒"}
-    </span>
-  )}
-  renderWishlistAction={({ isWishlisted, onClick }) => (
-    <span
-      onClick={onClick}
-      style={{
-        cursor: "pointer",
-        color: isWishlisted ? "gold" : "gray",
-        fontSize: 20,
-      }}
-      title={isWishlisted ? "移出心愿单" : "加入心愿单"}
-    >
-      {isWishlisted ? "❤️" : "🤍"}
-    </span>
-  )}
-/>
-```
-
-#### ⚠️ 注意
-
-- **props 和 children 不要混用同一内容，否则会重复渲染。**
-- 有 imageSrc、badgeType、title、price 等 props 时，优先渲染 props，忽略 children。
-- 只有 props 都未传递时才渲染 children。
 
 ---
 
@@ -334,9 +233,9 @@
 
 ## props 与插槽优先级说明
 
-- ProductCardWrapper：有 imageSrc、badgeType、title、price 等 props 时，**只渲染 props 内容，忽略 children**。
+- withProductCard HOC：有 imageSrc、badgeType、title、price 等 props 时，**只渲染 props 内容，忽略 children**。
 - ProductCard：完全自定义结构，children 里的内容只渲染一次，支持 Section 分区。
-- 推荐：标准场景用 ProductCardWrapper（props），复杂/自定义场景用 ProductCard（children/插槽）。
+- 推荐：标准场景用 withProductCard（props），复杂/自定义场景用 ProductCard（children/插槽）。
 
 ---
 
