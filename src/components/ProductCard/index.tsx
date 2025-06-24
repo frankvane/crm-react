@@ -284,10 +284,13 @@ const ProductCard: React.FC<ProductCardProps> & {
       className={`${styles.productCard} ${layoutClass} ${className}`}
       style={style}
     >
-      <div className={styles.productImageContainer}>
-        {imageComponent}
-        {badgeComponent}
-      </div>
+      {/* 只有 imageComponent 或 badgeComponent 存在时才渲染容器 */}
+      {(imageComponent || badgeComponent) && (
+        <div className={styles.productImageContainer}>
+          {imageComponent}
+          {badgeComponent}
+        </div>
+      )}
 
       <div className={styles.productDetails}>
         {otherChildren}

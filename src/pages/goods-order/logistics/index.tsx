@@ -1,7 +1,13 @@
 import ProductCard from "@/components/ProductCard";
-import ProductCardWrapper from "@/components/ProductCard/ProductCardWrapper";
 import { ProductProvider } from "@/components/ProductCard/context/ProductContext";
 import React from "react";
+import { withProductCard } from "@/components/ProductCard/withProductCard";
+
+// 默认内容组件，兼容原有 props
+const DefaultContent: React.FC<{ children?: React.ReactNode }> = ({
+  children,
+}) => (children ? <>{children}</> : null);
+const ProductCardWrapper = withProductCard(DefaultContent);
 
 const LogisticsDemo: React.FC = () => {
   // 示例回调
@@ -79,15 +85,13 @@ const LogisticsDemo: React.FC = () => {
             onAddToCart={handleAddToCart}
             onWishlistChange={handleWishlistChange}
           >
-            <ProductCardWrapper.Image
+            <ProductCard.Image
               src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80"
               alt="定制商品"
             />
-            <ProductCardWrapper.Badge type="premium">
-              限量
-            </ProductCardWrapper.Badge>
-            <ProductCardWrapper.Title>定制插槽商品</ProductCardWrapper.Title>
-            <ProductCardWrapper.Price>¥299.00</ProductCardWrapper.Price>
+            <ProductCard.Badge type="premium">限量</ProductCard.Badge>
+            <ProductCard.Title>定制插槽商品</ProductCard.Title>
+            <ProductCard.Price>¥299.00</ProductCard.Price>
             <div style={{ color: "#888", fontSize: 12, marginTop: 8 }}>
               自定义底部内容
             </div>
